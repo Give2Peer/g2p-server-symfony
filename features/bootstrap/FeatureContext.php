@@ -3,6 +3,7 @@
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
@@ -13,6 +14,7 @@ use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Behat\Behat\Context\Context as BehatContext;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\DomCrawler\Crawler;
 
 use Behat\Symfony2Extension\Context\KernelAwareContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
@@ -24,6 +26,9 @@ class FeatureContext
 
     /** @var Client $client */
     protected $client;
+
+    /** @var Crawler $crawler */
+    protected $crawler;
 
     protected function get($id) {
         return static::$kernel->getContainer($id);
@@ -37,42 +42,27 @@ class FeatureContext
     {
         static::bootKernel();
 
-        // add all your fixtures classes that implement
+        // Add all the fixtures classes that implement
         // Doctrine\Common\DataFixtures\FixtureInterface
         $this->loadFixtures(array());
 //        $this->loadFixtures(array(
 //            'Give2Peer\Give2PeerBundle\DataFixtures\ORM\LoadData',
 //        ));
 
-//        $doctrine = new sfDoctrineDropDbTask($configuration->getEventDispatcher(), new sfAnsiColorFormatter());
-//        $doctrine->run(array(), array("--no-confirmation","--env=test"));
-//
-//        $doctrine = new sfDoctrineBuildDbTask($configuration->getEventDispatcher(), new sfAnsiColorFormatter());
-//        $doctrine->run(array(), array("--env=test"));
-//
-//        $doctrine = new sfDoctrineInsertSqlTask($configuration->getEventDispatcher(), new sfAnsiColorFormatter());
-//        $doctrine->run(array(), array("--env=test"));
-
-        /** @var Connection $connection */
-//        $connection = static::$kernel->getContainer()->get('doctrine.dbal.default_connection');
-//        $sm = $connection->getSchemaManager();
-//
-//        $sm->dropAndCreateDatabase();
-
-//        $connection->executeQuery(sprintf('SET FOREIGN_KEY_CHECKS = 0;'));
-//        foreach ($sm->listTableNames() as $tableName) {
-//            $connection->executeQuery(sprintf('TRUNCATE TABLE %s', $tableName));
-//        }
-//        $connection->executeQuery(sprintf('SET FOREIGN_KEY_CHECKS = 1;'));
     }
 
     /**
-     * @AfterScenario
+     * @AfterSuite
      */
-    public function cleanDB(AfterScenarioScope $scope)
+    public static function afterTheSuite(AfterSuiteScope $scope)
     {
-        // clean database after scenarios,
-        // tagged with @database
+        // Let's make a meme : a fortune cookie each time the suite runs okay
+        // not sure how I get the ScenarioTest status out of Scope though.
+        if ($scope->getTestResult()->isPassed()) {
+            try {
+                print(shell_exec('fortune'));
+            } catch (\Exception $e) {}
+        }
     }
 
     /**
@@ -91,21 +81,59 @@ class FeatureContext
     {
         $client = $this->getOrCreateClient();
         $data = $this->fromYaml($pystring);
-        $crawler = $client->request('POST', $route, $data);
+        $this->crawler = $client->request('POST', $route, $data);
     }
 
     /**
-     * @Then /^the request should be accepted$/
+     * @Then /^the request should (not )?be accepted$/
      */
-    public function theRequestShouldBeAccepted()
+    public function theRequestShouldBeAccepted($not = '')
     {
         if (empty($this->client)) {
             throw new Exception("Inexistent client. Request something first.");
         }
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(),
-            sprintf("Response is unsuccessful, with '%d' return code.",
-                $this->client->getResponse()->getStatusCode()));
+        if ($this->client->getResponse()->isSuccessful() && !empty($not)) {
+            $this->fail(
+                sprintf("Response is successful, with '%d' return code " .
+                    "and the following content:\n%s",
+                    $this->client->getResponse()->getStatusCode(),
+                    $this->client->getResponse()->getContent()));
+        }
+
+        if (!$this->client->getResponse()->isSuccessful() && empty($not)) {
+            $this->fail(
+                sprintf("Response is unsuccessful, with '%d' return code " .
+                    "and the following content:\n%s",
+                    $this->client->getResponse()->getStatusCode(),
+                    $this->client->getResponse()->getContent()));
+        }
+    }
+
+    /**
+     * @Then /^the response should include ?:$/
+     */
+    public function theResponseShouldInclude($route, $pystring='')
+    {
+        if (empty($this->client)) {
+            throw new Exception("Inexistent client. Request something first.");
+        }
+
+        $data = (array) $this->fromYaml($pystring);
+
+        $res = $this->client->getResponse();
+
+        $actual = (array) json_decode($res->getContent());
+
+        $intersect = array_intersect_assoc($data, $actual);
+        if (count($data) > count($intersect)) {
+            $notfound = array_diff_assoc($intersect, $data);
+            $this->fail(sprintf(
+                "The response did not include the following:\n%s",
+                print_r($notfound, true)
+            ));
+        }
+
     }
 
     /**

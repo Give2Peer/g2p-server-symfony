@@ -11,9 +11,27 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\ItemRepository")
  */
-class Item
+class Item implements \JsonSerializable
 {
     use ORMBehaviors\Timestampable\Timestampable;
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     */
+    public function jsonSerialize()
+    {
+        return array(
+            'id'          => $this->getId(),
+            'title'       => $this->getTitle(),
+            'location'    => $this->getLocation(),
+            'description' => $this->getDescription(),
+            'created_at'  => $this->getCreatedAt(),
+            'updated_at'  => $this->getUpdatedAt(),
+        );
+    }
 
     /**
      * @var integer
