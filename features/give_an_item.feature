@@ -5,6 +5,10 @@ Feature: Give an item
   I need to give items for free sometimes
 
 
+Background:
+  Given I am the registered user named "Goutte"
+
+
 Scenario: Give an item without a location
   When I POST to /give the following :
 """

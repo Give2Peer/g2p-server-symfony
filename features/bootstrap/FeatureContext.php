@@ -7,6 +7,7 @@ use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
+use Give2Peer\Give2PeerBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
@@ -19,7 +20,12 @@ use Symfony\Component\DomCrawler\Crawler;
 use Behat\Symfony2Extension\Context\KernelAwareContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 
-
+/**
+ * “You will not censor me through bug terrorism.”
+ *     -- James Troup
+ *
+ * Class FeatureContext
+ */
 class FeatureContext
     extends WebTestCase
     implements BehatContext, SnippetAcceptingContext {
@@ -29,6 +35,9 @@ class FeatureContext
 
     /** @var Crawler $crawler */
     protected $crawler;
+
+    /** @var User $user */
+    protected $user;
 
     protected function get($id) {
         return static::$kernel->getContainer($id);
@@ -57,11 +66,8 @@ class FeatureContext
     public static function afterTheSuite(AfterSuiteScope $scope)
     {
         // Let's make a meme : a fortune cookie each time the suite runs okay
-        // not sure how I get the ScenarioTest status out of Scope though.
         if ($scope->getTestResult()->isPassed()) {
-            try {
-                print(shell_exec('fortune'));
-            } catch (\Exception $e) {}
+            try { print(shell_exec('fortune')); } catch (\Exception $e) {}
         }
     }
 
@@ -75,13 +81,41 @@ class FeatureContext
     }
 
     /**
+     * @Given /^I am the registered user named (.*) *$/
+     */
+    public function iAmTheRegisteredUserNamed($name)
+    {
+        /** @var \FOS\UserBundle\Entity\UserManager $um */
+        $um = static::$kernel->getContainer()->get('fos_user.user_manager');
+        $user = $um->findUserByUsername($name);
+
+        if (empty($user)) {
+            $user = $um->createUser();
+            $user->setEmail('peer@give2peer.org');
+            $user->setUsername($name);
+            $user->setPlainPassword($name);
+            $user->setEnabled(true);
+
+            // This will canonicalize, encode, persist and flush
+            $um->updateUser($user);
+        }
+
+        $this->user = $user;
+    }
+
+    /**
      * @When /^I POST to ([^ ]+) the following ?:$/
      */
     public function iPost($route, $pystring='')
     {
         $client = $this->getOrCreateClient();
         $data = $this->fromYaml($pystring);
-        $this->crawler = $client->request('POST', $route, $data);
+        $headers = array();
+        if (!empty($this->user)) {
+            $headers['PHP_AUTH_USER'] = $this->user->getUsername();
+            $headers['PHP_AUTH_PW']   = $this->user->getUsername();
+        }
+        $this->crawler = $client->request('POST', $route, $data, array(), $headers);
     }
 
     /**

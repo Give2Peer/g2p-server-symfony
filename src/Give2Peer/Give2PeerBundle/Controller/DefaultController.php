@@ -15,6 +15,13 @@ class DefaultController extends Controller
         return $this->render('Give2PeerBundle:Default:index.html.twig');
     }
 
+    /**
+     * Give an item whose properties are provided as POST variables.
+     * Only the location property is mandatory.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function giveAction(Request $request)
     {
         // Recover the item data
