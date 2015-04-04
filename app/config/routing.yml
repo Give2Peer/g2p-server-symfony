@@ -1,0 +1,3 @@
+give2_peer:
+    resource: "@Give2PeerBundle/Resources/config/routing.yml"
+    prefix:   /

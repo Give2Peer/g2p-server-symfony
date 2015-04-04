@@ -1,0 +1,8 @@
+give2_peer_homepage:
+    path:     /
+    defaults: { _controller: Give2PeerBundle:Default:index }
+
+give2_peer_give:
+    path:     /give
+    defaults: { _controller: Give2PeerBundle:Default:give }
+    methods:  [POST]
