@@ -113,21 +113,21 @@ class FeatureContext
     /**
      * @Then /^the response should include ?:$/
      */
-    public function theResponseShouldInclude($route, $pystring='')
+    public function theResponseShouldInclude($pystring='')
     {
         if (empty($this->client)) {
             throw new Exception("Inexistent client. Request something first.");
         }
 
-        $data = (array) $this->fromYaml($pystring);
+        $expected = $this->fromYaml($pystring);
 
         $res = $this->client->getResponse();
 
         $actual = (array) json_decode($res->getContent());
 
-        $intersect = array_intersect_assoc($data, $actual);
-        if (count($data) > count($intersect)) {
-            $notfound = array_diff_assoc($intersect, $data);
+        $intersect = array_intersect_assoc($expected, $actual);
+        if (count($expected) > count($intersect)) {
+            $notfound = array_diff_assoc($expected, $intersect);
             $this->fail(sprintf(
                 "The response did not include the following:\n%s",
                 print_r($notfound, true)
@@ -145,7 +145,7 @@ class FeatureContext
         /** @var EntityManager $em */
         $em = $container->get('doctrine.orm.entity_manager');
         $count = $em->createQuery(
-            'SELECT COUNT(i) FROM \Give2Peer\Give2PeerBundle\Entity\Item i'
+            'SELECT COUNT(i) FROM Give2Peer\Give2PeerBundle\Entity\Item i'
         )->getResult();
 
         $this->assertEquals($thatMuch, $count[0][1]);
@@ -163,7 +163,7 @@ class FeatureContext
     }
 
     protected function fromYaml($pystring) {
-        return Yaml::parse($pystring);
+        return Yaml::parse($pystring, true, true);
     }
 
 

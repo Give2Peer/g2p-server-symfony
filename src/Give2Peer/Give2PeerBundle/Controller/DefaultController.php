@@ -22,12 +22,16 @@ class DefaultController extends Controller
         if (null == $location) {
             return new JsonResponse(["error"=>"No location provided."], 400);
         }
+        $title = $request->get('title', '');
+        $description = $request->get('description', '');
 
         // Recover the user data -- todo
 
         // Create the item
         $item = new Item();
         $item->setLocation($location);
+        $item->setTitle($title);
+        $item->setDescription($description);
 
         // Add the item to database
         /** @var EntityManager $em */

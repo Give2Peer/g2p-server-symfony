@@ -25,3 +25,24 @@ location: 66-68 Avenue des Champs-Élysées, 75008 Paris
 location: 66-68 Avenue des Champs-Élysées, 75008 Paris
 """
    And there should be 1 item in the database
+
+
+Scenario: Give an item with a location, a title and a description
+  When I POST to /give the following :
+"""
+location: 66-68 Avenue des Champs-Élysées, 75008 Paris
+title: Alice in Wonderland
+description: |
+  Slightly foxed, good story.
+  Lots of madness, and hats.
+"""
+  Then the request should be accepted
+   And the response should include :
+"""
+location: 66-68 Avenue des Champs-Élysées, 75008 Paris
+title: Alice in Wonderland
+description: |
+  Slightly foxed, good story.
+  Lots of madness, and hats.
+"""
+   And there should be 1 item in the database
