@@ -29,10 +29,8 @@ class User extends BaseUser implements \JsonSerializable
     use ORMBehaviors\Timestampable\Timestampable;
 
     /**
-     * I'm not sure we're using this. Why ?
+     * Specify data which should be serialized to JSON and sent to the clients.
      *
-     * (PHP 5 &gt;= 5.4.0)<br/>
-     * Specify data which should be serialized to JSON
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
      * @return mixed data which can be serialized by <b>json_encode</b>,
      * which is a value of any type other than a resource.
@@ -103,6 +101,14 @@ class User extends BaseUser implements \JsonSerializable
     }
 
     /**
+     * @return Item[]
+     */
+    public function getItemsSpotten()
+    {
+        return $this->itemsSpotten;
+    }
+
+    /**
      * @return String
      */
     public function getRestToken()
@@ -122,13 +128,5 @@ class User extends BaseUser implements \JsonSerializable
         $this->restToken = md5($this->getPassword().'{'.str_shuffle($abc).'}');
 
         return $this->restToken;
-    }
-
-    /**
-     * @return Item[]
-     */
-    public function getItemsSpotten()
-    {
-        return $this->itemsSpotten;
     }
 }

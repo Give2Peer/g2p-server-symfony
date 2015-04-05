@@ -21,7 +21,12 @@ class RestController extends Controller
     }
 
     /**
-     * A Giver is the owner of the item.
+     * A Giver is the legal owner of the item.
+     *
+     * Item attributes can be provided as POST variables :
+     *   - location (mandatory)
+     *   - title
+     *   - description
      *
      * @param Request $request
      * @return JsonResponse
@@ -35,6 +40,8 @@ class RestController extends Controller
      * A Spotter does not own the Item, which is probably just lying around in
      * public space.
      *
+     * See `give`.
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -42,6 +49,10 @@ class RestController extends Controller
     {
         return $this->giveOrSpotAction($request, false);
     }
+
+
+
+    //// UTILS /////////////////////////////////////////////////////////////////
 
     /**
      * Give an item whose properties are provided as POST variables.

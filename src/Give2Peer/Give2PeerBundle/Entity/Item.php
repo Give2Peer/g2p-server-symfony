@@ -73,9 +73,9 @@ class Item implements \JsonSerializable
     private $description;
 
     /**
-     * May be empty if there is no giver, but a spotter.
-     * This is the User that legally owns this Item and transfers its legal
+     * This is the User that legally owned this Item and transferred its legal
      * ownership to somebody else.
+     * May be empty if there is no giver, but a spotter.
      *
      * @var User
      *
@@ -96,6 +96,21 @@ class Item implements \JsonSerializable
      * @ORM\JoinColumn(name="spotter_id", referencedColumnName="id")
      */
     protected $spotter;
+
+    /**
+     * This is the current legal owner of this Item. May be nobody.
+     * This property will change through time, as an Item's ownership is
+     * transferred :
+     * - from a giver to a gatherer
+     * - from a giver to nobody     (abandon)
+     * - from nobody to a gatherer  (public spot)
+     *
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsOwned")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+     */
+    protected $owner;
 
     /**
      * Get id
@@ -212,5 +227,24 @@ class Item implements \JsonSerializable
     public function getSpotter()
     {
         return $this->spotter;
+    }
+
+    /**
+     * @param User $owner
+     * @return Item
+     */
+    public function setOwner($owner)
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getOwner()
+    {
+        return $this->owner;
     }
 }
