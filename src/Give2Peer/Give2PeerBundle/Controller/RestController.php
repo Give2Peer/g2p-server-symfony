@@ -2,8 +2,10 @@
 
 namespace Give2Peer\Give2PeerBundle\Controller;
 
+use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\Item;
+use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,6 +52,47 @@ class RestController extends Controller
         return $this->giveOrSpotAction($request, false);
     }
 
+    /**
+     * Returns a list of at most 10 Items, sorted by increasing distance to
+     * the center of the circle.
+     *
+     *
+     *
+     *
+     * @param float $latitude Latitude of the center of the circle.
+     * @param float $longitude Longitude of the center of the circle.
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function listByCoordinatesAction($latitude, $longitude)
+    {
+        // fixme
+
+        $latitude = floatval($latitude);
+        $longitude = floatval($longitude);
+
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+        $con = $em->getConnection();
+
+        // Register our DISTANCE function, that only pgSQL can understand
+        if ($con->getDatabasePlatform() instanceof PostgreSqlPlatform) {
+            $em->getConfiguration()->addCustomNumericFunction(
+                'DISTANCE',
+                'Give2Peer\Give2PeerBundle\Query\AST\Functions\DistanceFunction'
+            );
+        } else {
+            return new JsonResponse(['error' => 'DB *must* be pgSQL.'], 500);
+        }
+
+        /** @var ItemRepository $repo */
+        $repo = $em->getRepository('Give2PeerBundle:Item');
+
+        $items = $repo->findByDistance($latitude, $longitude, 10000);
+
+        return new JsonResponse($items);
+    }
+
 
 
     //// UTILS /////////////////////////////////////////////////////////////////
@@ -58,6 +101,9 @@ class RestController extends Controller
      * Give an item whose properties are provided as POST variables.
      * Only the location property is mandatory.
      * There is no route acting on this directly, this is a helper.
+     *
+     * This creates an Item with the appropriate attributes, stores it and
+     * sends it back as JSON.
      *
      * @param Request $request
      * @param bool $mine Is the item mine ?

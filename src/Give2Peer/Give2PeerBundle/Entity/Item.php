@@ -308,8 +308,9 @@ class Item implements \JsonSerializable
      * Use Geocoder to fetch the latitude and longitude from our providers.
      * This throws if none can find anything.
      *
+     * todo: refactor
      * This code should not be here, and locale and providers should be
-     * easily configurable.
+     * easily configurable, as well as API keys.
      *
      * See https://github.com/geocoder-php/Geocoder/blob/2.x/README.md#api
      */

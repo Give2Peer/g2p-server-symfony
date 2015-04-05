@@ -7,6 +7,7 @@ use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
+use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -55,13 +56,13 @@ class FeatureContext
 //        ));
         // Loading an empty array still truncates all tables.
         $this->loadFixtures(array());
-
+        //print('BeforeScenario');
     }
 
     /**
      * @AfterSuite
      */
-    public static function afterTheSuite(AfterSuiteScope $scope)
+    public static function gimmeCookieNomNomNom(AfterSuiteScope $scope)
     {
         // Let's make a meme : a fortune cookie each time the suite runs okay
         if ($scope->getTestResult()->isPassed()) {
@@ -70,15 +71,52 @@ class FeatureContext
     }
 
 
-    // STEPS ///////////////////////////////////////////////////////////////////
+    // TRANSFORMERS ////////////////////////////////////////////////////////////
 
     /**
      * A very handy transformer, registered to Behat.
      * @Transform /^(-?\d+)$/
      */
-    public function castStringToNumber($string)
+    public function castStringToInt($string)
     {
         return intval($string);
+    }
+
+    /**
+     * A very handy transformer, registered to Behat.
+     * @Transform /^(-?\d+\.\d*)$/
+     */
+    public function castStringToFloat($string)
+    {
+        return floatval($string);
+    }
+
+
+    // STEPS ///////////////////////////////////////////////////////////////////
+
+    /**
+     * @Given I do nothing
+     */
+    public function iDoNothing() {}
+
+    /**
+     * @Given I print :arg1
+     */
+    public function iPrint($arg1)
+    {
+        print($arg1);
+    }
+
+    /**
+     * @Then /^I (?:print|dump) the response$/
+     */
+    public function iPrintTheResponse()
+    {
+        if (empty($this->client)) {
+            throw new Exception("No client. Request something first.");
+        }
+
+        print($this->client->getResponse()->getContent());
     }
 
     /**
@@ -102,6 +140,40 @@ class FeatureContext
         }
 
         $this->user = $user;
+    }
+
+    /**
+     * @Given /^there is an item at (-?\d+\.\d*) ?, ?(-?\d+\.\d*)$/
+     */
+    public function thereIsAnItemAt($latitude, $longitude)
+    {
+        // Create the item
+        $item = new Item();
+        $item->setTitle("Test item");
+        $item->setLocation("Toulouse");
+        $item->setLatitude($latitude);
+        $item->setLongitude($longitude);
+
+        // Add the item to database
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+        $em->persist($item);
+        $em->flush();
+    }
+
+
+    /**
+     * @When /^I GET ([^ ]+)$/
+     */
+    public function iGet($route)
+    {
+        $client = $this->getOrCreateClient();
+        $headers = array();
+        if (!empty($this->user)) {
+            $headers['PHP_AUTH_USER'] = $this->user->getUsername();
+            $headers['PHP_AUTH_PW']   = $this->user->getUsername();
+        }
+        $this->crawler = $client->request('GET', $route, [], [], $headers);
     }
 
     /**
@@ -172,6 +244,30 @@ class FeatureContext
             ));
         }
 
+    }
+
+    /**
+     * Provide YAML in the pystring, it will be arrayed and compared with the
+     * other array in the response's data.
+     * @Then /^there should be (\d+) items? in the response$/
+     */
+    public function thereShouldBeItemsInTheResponse($howmany)
+    {
+        if (empty($this->client)) {
+            throw new Exception("No client. Request something first.");
+        }
+
+        $response = $this->client->getResponse();
+        $actual = (array) json_decode($response->getContent());
+
+        if (count($actual) != $howmany) {
+            $this->fail(sprintf(
+                "The response sent %d item(s) back,\n" .
+                "Because the response provided:\n%s",
+                print_r(count($actual), true),
+                print_r($actual, true)
+            ));
+        }
     }
 
     /**

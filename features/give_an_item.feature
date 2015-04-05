@@ -31,12 +31,12 @@ location: The ass-end of nowhere !
 Scenario: Give an item with only a postal address location
   When I POST to /give the following :
 """
-location: 66-68 Avenue des Champs-Élysées, 75008 Paris
+location: 66 Avenue des Champs-Élysées, 75008 Paris
 """
   Then the request should be accepted
    And the response should include :
 """
-location: 66-68 Avenue des Champs-Élysées, 75008 Paris
+location: 66 Avenue des Champs-Élysées, 75008 Paris
 """
    And there should be 1 item in the database
 
