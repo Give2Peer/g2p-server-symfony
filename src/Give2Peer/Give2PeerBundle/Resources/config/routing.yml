@@ -13,9 +13,12 @@ give2_peer_spot:
     methods:  [POST]
 
 give2_peer_list_by_coordinates:
-    path:     /list/{latitude}/{longitude}
-    defaults: { _controller: Give2PeerBundle:Rest:listByCoordinates }
+    path:     /list/{latitude}/{longitude}/{skip}
+    defaults:
+        _controller: Give2PeerBundle:Rest:listAroundCoordinates
+        skip: 0
     methods:  [GET]
     requirements:
         latitude:   -?\d+(?:\.\d*)?
         longitude:  -?\d+(?:\.\d*)?
+        skip:         \d+

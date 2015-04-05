@@ -53,21 +53,72 @@ class RestController extends Controller
     }
 
     /**
-     * Returns a list of at most 10 Items, sorted by increasing distance to
+     * Returns a list of at most 32 Items, sorted by increasing distance to
      * the center of the circle.
+     * You can skip the first `$skip` items if you already have them.
      *
+     * The resulting JSON when finding 2 items looks like this :
      *
+     * ```
+     * [
+          {
+            "0": {
+              "id": 100,
+              "title": "Test item",
+              "location": "Toulouse",
+              "latitude": 43.578658,
+              "longitude": 1.468091,
+              "description": null,
+              "created_at": {
+                "date": "2015-04-06 01:16:22",
+                "timezone_type": 3,
+                "timezone": "Europe\/Paris"
+              },
+              "updated_at": {
+                "date": "2015-04-06 01:16:22",
+                "timezone_type": 3,
+                "timezone": "Europe\/Paris"
+              },
+              "giver": null,
+              "spotter": null
+            },
+            "distance": "148.019325545116"
+          },
+          {
+            "0": {
+              "id": 101,
+              "title": "Test item",
+              "location": "Toulouse",
+              "latitude": 43.566591,
+              "longitude": 1.474969,
+              "description": null,
+              "created_at": {
+                "date": "2015-04-06 01:16:22",
+                "timezone_type": 3,
+                "timezone": "Europe\/Paris"
+              },
+              "updated_at": {
+                "date": "2015-04-06 01:16:22",
+                "timezone_type": 3,
+                "timezone": "Europe\/Paris"
+              },
+              "giver": null,
+              "spotter": null
+            },
+            "distance": "1601.20720473937"
+          }
+        ]
+     * ```
      *
-     *
-     * @param float $latitude Latitude of the center of the circle.
+     * @param float $latitude  Latitude of the center of the circle.
      * @param float $longitude Longitude of the center of the circle.
+     * @param int   $skip      How many items to skip in the db query.
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function listByCoordinatesAction($latitude, $longitude)
+    public function listAroundCoordinatesAction($latitude, $longitude, $skip)
     {
-        // fixme
-
+        // This sanitization may not be necessary anymore. Still.
         $latitude = floatval($latitude);
         $longitude = floatval($longitude);
 
@@ -85,12 +136,14 @@ class RestController extends Controller
             return new JsonResponse(['error' => 'DB *must* be pgSQL.'], 500);
         }
 
+        // Ask the repository to do the pgSQL-optimized query for us
         /** @var ItemRepository $repo */
         $repo = $em->getRepository('Give2PeerBundle:Item');
+        $results = $repo->findAround($latitude, $longitude, $skip);
 
-        $items = $repo->findByDistance($latitude, $longitude, 10000);
+//        print_r(json_encode($results));
 
-        return new JsonResponse($items);
+        return new JsonResponse($results);
     }
 
 

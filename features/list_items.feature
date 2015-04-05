@@ -7,12 +7,15 @@ Feature: List items
 # I am there :
 # 6 Rue de Fontainebleau, 31400 Toulouse
 # 43.579909, 1.467469
+# Distance: 0
 
 # 111 Avenue de Lespinet, 31400 Toulouse
 # 43.578658, 1.468091
+# Distance: 148
 
 # 10 Rond-Point Jean Lagasse, 31400 Toulouse
 # 43.566591, 1.474969
+# Distance : 1601
 
 Background:
   Given I am the registered user named "Goutte"
@@ -22,7 +25,8 @@ Background:
 
 # see https://github.com/Behat/Behat/issues/726
 Scenario: Dummy scenario to skip behat's buggy behavior with first scenario
-   Then I do nothing
+   When I do nothing
+   Then nothing happens
 
 
 Scenario: List items around coordinates

@@ -100,6 +100,11 @@ class FeatureContext
     public function iDoNothing() {}
 
     /**
+     * @Then nothing happens
+     */
+    public function nothingHappens() {}
+
+    /**
      * @Given I print :arg1
      */
     public function iPrint($arg1)
