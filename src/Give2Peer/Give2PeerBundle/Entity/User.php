@@ -3,7 +3,9 @@
 namespace Give2Peer\Give2PeerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 use FOS\UserBundle\Entity\User as BaseUser;
+use Give2Peer\Give2PeerBundle\Entity\Item;
 
 /**
  * A User of give2peer.
@@ -23,6 +25,27 @@ class User extends BaseUser implements \JsonSerializable
     // Means that the user has meaningful password, email and username,
     // and has gone through the registration process.
 //    const ROLE_REGISTERED = 'ROLE_REGISTERED'; // fixme: use property instead?
+
+    use ORMBehaviors\Timestampable\Timestampable;
+
+    /**
+     * I'm not sure we're using this. Why ?
+     *
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getId(),
+            'username' => $this->getUsernameCanonical(),
+            'email' => $this->getEmailCanonical(),
+            'created_at' => $this->getCreatedAt(),
+        ];
+    }
 
     /**
      * @var integer
@@ -44,21 +67,22 @@ class User extends BaseUser implements \JsonSerializable
     protected $restToken;
 
     /**
-     * Datetime of the creation of this User account.
-     * Note that this is the date of the creation of the Guest account, not the
-     * exact registration date. They should be pretty close together, though.
-     *
-     */
-//    protected $createdAt;
-
-    /**
      * IP of the client that connected to the website and triggered the
      * automatic Guest user creation.
      * This should be used to banish abusive IPs.
      * Note that this contains the proxy IP if one was used.
-     *
      */
 //    protected $createdBy;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Item", mappedBy="giver")
+     */
+    protected $itemsGiven;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Item", mappedBy="spotter")
+     */
+    protected $itemsSpotten;
 
 
     /**
@@ -70,6 +94,13 @@ class User extends BaseUser implements \JsonSerializable
         $this->refreshRestToken();
     }
 
+    /**
+     * @return Item[]
+     */
+    public function getItemsGiven()
+    {
+        return $this->itemsGiven;
+    }
 
     /**
      * @return String
@@ -78,7 +109,6 @@ class User extends BaseUser implements \JsonSerializable
     {
         return $this->restToken;
     }
-
 
     /**
      * Refresh the token used to auth with WebSocket.
@@ -94,54 +124,11 @@ class User extends BaseUser implements \JsonSerializable
         return $this->restToken;
     }
 
-
     /**
-     * I'm not sure we're using this. Why ?
-     *
-     * (PHP 5 &gt;= 5.4.0)<br/>
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
+     * @return Item[]
      */
-    public function jsonSerialize()
+    public function getItemsSpotten()
     {
-        return [
-            'id' => $this->getId(),
-            'name' => $this->getUsernameCanonical(),
-            'email' => $this->getEmailCanonical(),
-        ];
+        return $this->itemsSpotten;
     }
-
-//    /**
-//     * @return \DateTime
-//     */
-//    public function getCreatedAt()
-//    {
-//        return $this->createdAt;
-//    }
-//
-//    /**
-//     * @param \DateTime $creationDate
-//     */
-//    public function setCreatedAt($creationDate)
-//    {
-//        $this->createdAt = $creationDate;
-//    }
-//
-//    /**
-//     * @param string $createdBy
-//     */
-//    public function setCreatedBy($createdBy)
-//    {
-//        $this->createdBy = $createdBy;
-//    }
-//
-//    /**
-//     * @return string
-//     */
-//    public function getCreatedBy()
-//    {
-//        return $this->createdBy;
-//    }
 }

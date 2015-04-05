@@ -17,6 +17,8 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
+ * THIS IS NOT USED RIGHT NOW. (it's registered, but does nothing)
+ *
  * Hooks the authentication process to try to authenticate the User from the
  * name/restToken pair if he provided it. If they're invalid, 501.
  *
@@ -46,7 +48,12 @@ class Authentication implements EventSubscriberInterface
 
     public function authOrRegister(GetResponseEvent $e)
     {
-        print('authenticate?');
+
+        /**
+         * YES WE'RE NOT DOING ANYTHING HERE FOR NOW
+         */
+
+//        print('authenticate?');
         //$this->createGuestIfNeeded($e->getRequest());
     }
 

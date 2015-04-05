@@ -4,9 +4,13 @@ namespace Give2Peer\Give2PeerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
+use Give2Peer\Give2PeerBundle\Entity\User;
 
 /**
  * Item
+ *
+ * This is a first-class citizen in the give2peer app.
+ * It is the thing that is given, or spotted, and gathered.
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\ItemRepository")
@@ -30,6 +34,8 @@ class Item implements \JsonSerializable
             'description' => $this->getDescription(),
             'created_at'  => $this->getCreatedAt(),
             'updated_at'  => $this->getUpdatedAt(),
+            'giver'       => $this->getGiver(),
+            'spotter'     => $this->getSpotter(),
         );
     }
 
@@ -63,6 +69,19 @@ class Item implements \JsonSerializable
      */
     private $description;
 
+    /**
+     * May be empty if there is no giver, but a spotter.
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsGiven")
+     * @ORM\JoinColumn(name="giver_id", referencedColumnName="id")
+     */
+    protected $giver;
+
+    /**
+     * May be empty if there is no spotter, but a giver
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsSpotten")
+     * @ORM\JoinColumn(name="spotter_id", referencedColumnName="id")
+     */
+    protected $spotter;
 
     /**
      * Get id
@@ -141,5 +160,43 @@ class Item implements \JsonSerializable
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @param User $giver
+     * @return Item
+     */
+    public function setGiver($giver)
+    {
+        $this->giver = $giver;
+
+        return $this;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getGiver()
+    {
+        return $this->giver;
+    }
+
+    /**
+     * @param User $spotter
+     * @return Item
+     */
+    public function setSpotter($spotter)
+    {
+        $this->spotter = $spotter;
+
+        return $this;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getSpotter()
+    {
+        return $this->spotter;
     }
 }

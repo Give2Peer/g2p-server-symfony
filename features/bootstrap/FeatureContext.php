@@ -11,7 +11,6 @@ use Give2Peer\Give2PeerBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
-//use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Behat\Behat\Context\Context as BehatContext;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Symfony\Component\Yaml\Yaml;
@@ -27,7 +26,7 @@ use Behat\Symfony2Extension\Context\KernelDictionary;
  * Class FeatureContext
  */
 class FeatureContext
-    extends WebTestCase
+    extends BaseContext
     implements BehatContext, SnippetAcceptingContext {
 
     /** @var Client $client */
@@ -39,12 +38,10 @@ class FeatureContext
     /** @var User $user */
     protected $user;
 
-    protected function get($id) {
-        return static::$kernel->getContainer($id);
-    }
-
     /**
-     * Prepare system for test suite before it runs
+     * Prepare system for test suite before it runs,
+     * by booting the kernel (in test mode, apparently)
+     * and loading fresh fixtures into an empty db.
      * @BeforeScenario
      */
     public function prepare(BeforeScenarioScope $scope)
@@ -53,10 +50,11 @@ class FeatureContext
 
         // Add all the fixtures classes that implement
         // Doctrine\Common\DataFixtures\FixtureInterface
-        $this->loadFixtures(array());
 //        $this->loadFixtures(array(
 //            'Give2Peer\Give2PeerBundle\DataFixtures\ORM\LoadData',
 //        ));
+        // Loading an empty array still truncates all tables.
+        $this->loadFixtures(array());
 
     }
 
@@ -70,6 +68,9 @@ class FeatureContext
             try { print(shell_exec('fortune')); } catch (\Exception $e) {}
         }
     }
+
+
+    // STEPS ///////////////////////////////////////////////////////////////////
 
     /**
      * A very handy transformer, registered to Behat.
@@ -86,7 +87,7 @@ class FeatureContext
     public function iAmTheRegisteredUserNamed($name)
     {
         /** @var \FOS\UserBundle\Entity\UserManager $um */
-        $um = static::$kernel->getContainer()->get('fos_user.user_manager');
+        $um = $this->get('fos_user.user_manager');
         $user = $um->findUserByUsername($name);
 
         if (empty($user)) {
@@ -115,16 +116,16 @@ class FeatureContext
             $headers['PHP_AUTH_USER'] = $this->user->getUsername();
             $headers['PHP_AUTH_PW']   = $this->user->getUsername();
         }
-        $this->crawler = $client->request('POST', $route, $data, array(), $headers);
+        $this->crawler = $client->request('POST', $route, $data, [], $headers);
     }
 
     /**
      * @Then /^the request should (not )?be accepted$/
      */
-    public function theRequestShouldBeAccepted($not = '')
+    public function theRequestShouldBeAcceptedOrNot($not = '')
     {
         if (empty($this->client)) {
-            throw new Exception("Inexistent client. Request something first.");
+            throw new Exception("No client. Request something first.");
         }
 
         if ($this->client->getResponse()->isSuccessful() && !empty($not)) {
@@ -145,26 +146,29 @@ class FeatureContext
     }
 
     /**
+     * Provide YAML in the pystring, it will be arrayed and compared with the
+     * other array in the response's data.
      * @Then /^the response should include ?:$/
      */
     public function theResponseShouldInclude($pystring='')
     {
         if (empty($this->client)) {
-            throw new Exception("Inexistent client. Request something first.");
+            throw new Exception("No client. Request something first.");
         }
 
         $expected = $this->fromYaml($pystring);
 
-        $res = $this->client->getResponse();
-
-        $actual = (array) json_decode($res->getContent());
+        $response = $this->client->getResponse();
+        $actual = (array) json_decode($response->getContent());
 
         $intersect = array_intersect_assoc($expected, $actual);
         if (count($expected) > count($intersect)) {
             $notfound = array_diff_assoc($expected, $intersect);
             $this->fail(sprintf(
-                "The response did not include the following:\n%s",
-                print_r($notfound, true)
+                "The response did not include the following:\n%s\n" .
+                "Because the response provided:\n%s",
+                print_r($notfound, true),
+                print_r($actual, true)
             ));
         }
 
@@ -175,9 +179,7 @@ class FeatureContext
      */
     public function thereShouldBeItemInTheDatabase($thatMuch)
     {
-        $container = static::$kernel->getContainer();
-        /** @var EntityManager $em */
-        $em = $container->get('doctrine.orm.entity_manager');
+        $em = $this->getEntityManager();
         $count = $em->createQuery(
             'SELECT COUNT(i) FROM Give2Peer\Give2PeerBundle\Entity\Item i'
         )->getResult();
@@ -185,31 +187,20 @@ class FeatureContext
         $this->assertEquals($thatMuch, $count[0][1]);
     }
 
-    ////////////////////////////////////////////////////////////////////////////
 
+    // UTILS ///////////////////////////////////////////////////////////////////
+
+
+    /**
+     * @param array $options
+     * @param array $server
+     * @return Symfony\Bundle\FrameworkBundle\Client
+     */
     protected function getOrCreateClient(array $options = array(),
                                          array $server = array()) {
-
         if (empty($this->client)) {
             $this->client = $this->createClient($options, $server);
         }
         return $this->client;
     }
-
-    protected function fromYaml($pystring) {
-        return Yaml::parse($pystring, true, true);
-    }
-
-
-//    protected $kernel;
-//
-//    /**
-//     * Sets Kernel instance.
-//     *
-//     * @param KernelInterface $kernel
-//     */
-//    public function setKernel(KernelInterface $kernel)
-//    {
-//        $this->$kernel = $kernel;
-//    }
 }

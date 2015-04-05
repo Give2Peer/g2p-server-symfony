@@ -1,90 +1,22 @@
 <?php
 
 
-use Behat\MinkExtension\Context\MinkContext;
-use Behat\Symfony2Extension\Context\KernelAwareContext;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
+use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Security\Core\SecurityContextInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Yaml\Yaml;
 
-abstract class BaseContext extends MinkContext
+abstract class BaseContext extends WebTestCase
 {
-
-//    /**
-//     * @var KernelInterface
-//     */
-//    protected $kernel;
-//
-//    /**
-//     * {@inheritdoc}
-//     */
-//    public function setKernel(KernelInterface $kernel)
-//    {
-//        $this->kernel = $kernel;
-//    }
-
-//    /**
-//     * Find one resource by name.
-//     *
-//     * @param string $type
-//     * @param string $name
-//     *
-//     * @return object
-//     */
-//    protected function findOneByName($type, $name)
-//    {
-//        return $this->findOneBy($type, array('name' => trim($name)));
-//    }
-//
-//    /**
-//     * Find one resource by criteria.
-//     *
-//     * @param string $type
-//     * @param array  $criteria
-//     *
-//     * @return object
-//     *
-//     * @throws \InvalidArgumentException
-//     */
-//    protected function findOneBy($type, array $criteria)
-//    {
-//        $resource = $this
-//            ->getRepository($type)
-//            ->findOneBy($criteria)
-//        ;
-//
-//        if (null === $resource) {
-//            throw new \InvalidArgumentException(
-//                sprintf('%s for criteria "%s" was not found.', str_replace('_', ' ', ucfirst($type)), serialize($criteria))
-//            );
-//        }
-//
-//        return $resource;
-//    }
-//
-//    /**
-//     * Get repository by resource name.
-//     *
-//     * @param string $resource
-//     *
-//     * @return RepositoryInterface
-//     */
-//    protected function getRepository($resource)
-//    {
-//        return $this->getService('sylius.repository.'.$resource);
-//    }
 
     /**
      * Get entity manager.
      *
-     * @return ObjectManager
+     * @return EntityManager
      */
     protected function getEntityManager()
     {
-        return $this->getService('doctrine')->getManager();
+        return $this->get('doctrine')->getManager();
     }
 
     /**
@@ -94,7 +26,7 @@ abstract class BaseContext extends MinkContext
      */
     protected function getContainer()
     {
-        return $this->kernel->getContainer();
+        return static::$kernel->getContainer();
     }
 
     /**
@@ -104,84 +36,10 @@ abstract class BaseContext extends MinkContext
      *
      * @return object
      */
-    protected function getService($id)
+    protected function get($id)
     {
         return $this->getContainer()->get($id);
     }
-
-    /**
-     * Get current user instance.
-     *
-     * @return null|UserInterface
-     *
-     * @throws \Exception
-     */
-    protected function getUser()
-    {
-        $token = $this->getSecurityContext()->getToken();
-
-        if (null === $token) {
-            throw new \Exception('No token found in security context.');
-        }
-
-        return $token->getUser();
-    }
-
-    /**
-     * Get security context.
-     *
-     * @return SecurityContextInterface
-     */
-    protected function getSecurityContext()
-    {
-        return $this->getContainer()->get('security.context');
-    }
-
-    /**
-     * Generate url.
-     *
-     * @param string  $route
-     * @param array   $parameters
-     * @param Boolean $absolute
-     *
-     * @return string
-     */
-    protected function generateUrl($route, array $parameters = array(), $absolute = false)
-    {
-        return $this->locatePath($this->getService('router')->generate($route, $parameters, $absolute));
-    }
-
-//    /**
-//     * Presses button with specified id|name|title|alt|value.
-//     */
-//    protected function pressButton($button)
-//    {
-//        $this->getSession()->getPage()->pressButton($this->fixStepArgument($button));
-//    }
-//
-//    /**
-//     * Clicks link with specified id|title|alt|text.
-//     */
-//    protected function clickLink($link)
-//    {
-//        $this->getSession()->getPage()->clickLink($this->fixStepArgument($link));
-//    }
-//
-//    /**
-//     * Fills in form field with specified id|name|label|value.
-//     */
-//    protected function fillField($field, $value)
-//    {
-//        $this->getSession()->getPage()->fillField($this->fixStepArgument($field), $this->fixStepArgument($value));
-//    }
-
-//    /**
-//     * Selects option in select field with specified id|name|label|value.
-//     */
-//    public function selectOption($select, $option)
-//    {
-//        $this->getSession()->getPage()->selectFieldOption($this->fixStepArgument($select), $this->fixStepArgument($option));
-//    }
 
     /**
      * Returns fixed step argument (with \\" replaced back to ").
@@ -193,5 +51,18 @@ abstract class BaseContext extends MinkContext
     protected function fixStepArgument($argument)
     {
         return str_replace('\\"', '"', $argument);
+    }
+
+    /**
+     * Useful variable transformer, that we choose to use manually.
+     * If we can somehow specify what transformer a pystring should be submitted
+     * to directly in the gherkin without clogging it or loosing the intuitivity
+     * of it, this can become in the future an annotated Transformer.
+     *
+     * @param $pystring
+     * @return array
+     */
+    protected function fromYaml($pystring) {
+        return Yaml::parse($pystring, true, true);
     }
 }
