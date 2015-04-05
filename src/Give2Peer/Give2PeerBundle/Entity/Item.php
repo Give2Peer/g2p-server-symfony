@@ -3,6 +3,7 @@
 namespace Give2Peer\Give2PeerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Geocoder\Result\Geocoded;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 use Give2Peer\Give2PeerBundle\Entity\User;
 
@@ -31,6 +32,8 @@ class Item implements \JsonSerializable
             'id'          => $this->getId(),
             'title'       => $this->getTitle(),
             'location'    => $this->getLocation(),
+            'latitude'    => $this->getLatitude(),
+            'longitude'   => $this->getLongitude(),
             'description' => $this->getDescription(),
             'created_at'  => $this->getCreatedAt(),
             'updated_at'  => $this->getUpdatedAt(),
@@ -49,14 +52,35 @@ class Item implements \JsonSerializable
     private $id;
 
     /**
-     * This is the location, in any form that we can feed to the geolocalisation
-     * service in order to grab the actual numerical coordinates.
+     * This is the full location, in any form that we can feed to the
+     * geolocalisation service in order to grab the actual numerical
+     * coordinates.
+     *
+     * This may also contain IP addresses.
      *
      * @var string
      *
      * @ORM\Column(name="location", type="string", length=512)
      */
     private $location;
+
+    /**
+     * The latitude of the object.
+     *
+     * @var float
+     *
+     * @ORM\Column(name="latitude", type="float", nullable=true)
+     */
+    private $latitude;
+
+    /**
+     * The longitude of the object.
+     *
+     * @var float
+     *
+     * @ORM\Column(name="longitude", type="float", nullable=true)
+     */
+    private $longitude;
 
     /**
      * @var string
@@ -246,5 +270,67 @@ class Item implements \JsonSerializable
     public function getOwner()
     {
         return $this->owner;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLatitude()
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * @param float $latitude
+     */
+    public function setLatitude($latitude)
+    {
+        $this->latitude = $latitude;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLongitude()
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * @param float $longitude
+     */
+    public function setLongitude($longitude)
+    {
+        $this->longitude = $longitude;
+    }
+
+    /**
+     * Use Geocoder to fetch the latitude and longitude from our providers.
+     * This throws if none can find anything.
+     *
+     * This code should not be here, and locale and providers should be
+     * easily configurable.
+     *
+     * See https://github.com/geocoder-php/Geocoder/blob/2.x/README.md#api
+     */
+    public function geolocate() {
+
+        $locale = 'fr_FR';
+
+        $adapter  = new \Geocoder\HttpAdapter\BuzzHttpAdapter();
+        $geocoder = new \Geocoder\Geocoder();
+        $chain    = new \Geocoder\Provider\ChainProvider(array(
+            new \Geocoder\Provider\FreeGeoIpProvider($adapter),
+            new \Geocoder\Provider\HostIpProvider($adapter),
+            new \Geocoder\Provider\OpenStreetMapProvider($adapter, $locale),
+            new \Geocoder\Provider\GoogleMapsProvider($adapter, $locale, 'France', true),
+        ));
+        $geocoder->registerProvider($chain);
+
+        /** @var Geocoded $geocode */
+        $geocode = $geocoder->geocode($this->location);
+
+        $this->latitude = $geocode->getLatitude();
+        $this->longitude = $geocode->getLongitude();
     }
 }

@@ -81,6 +81,12 @@ class RestController extends Controller
         // Create the item
         $item = new Item();
         $item->setLocation($location);
+        try {
+            $item->geolocate();
+        } catch (\Exception $e) {
+            $msg = sprintf("Cannot geolocate: %s", $e->getMessage());
+            return new JsonResponse(["error"=>$msg], 400);
+        }
         $item->setTitle($title);
         $item->setDescription($description);
         if ($mine) {
