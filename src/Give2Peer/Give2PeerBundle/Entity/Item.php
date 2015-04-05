@@ -49,6 +49,9 @@ class Item implements \JsonSerializable
     private $id;
 
     /**
+     * This is the location, in any form that we can feed to the geolocalisation
+     * service in order to grab the actual numerical coordinates.
+     *
      * @var string
      *
      * @ORM\Column(name="location", type="string", length=512)
@@ -71,13 +74,24 @@ class Item implements \JsonSerializable
 
     /**
      * May be empty if there is no giver, but a spotter.
+     * This is the User that legally owns this Item and transfers its legal
+     * ownership to somebody else.
+     *
+     * @var User
+     *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsGiven")
      * @ORM\JoinColumn(name="giver_id", referencedColumnName="id")
      */
     protected $giver;
 
     /**
-     * May be empty if there is no spotter, but a giver
+     * May be empty if there is no spotter, but a giver.
+     * This is a passerby that spotted the Item in a context where it appears
+     * that the Item has no legal owner anymore. (close to the garbage bins, for
+     * example)
+     *
+     * @var User
+     *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsSpotten")
      * @ORM\JoinColumn(name="spotter_id", referencedColumnName="id")
      */
