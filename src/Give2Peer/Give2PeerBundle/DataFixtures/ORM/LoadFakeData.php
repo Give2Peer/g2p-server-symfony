@@ -20,6 +20,32 @@ class LoadFakeData extends DataFixture
      */
     public function load(ObjectManager $manager)
     {
+        $users = [
+            "Goutte",
+            "Shibby",
+            "Gizko",
+            "Karibou",
+            "Georges",
+        ];
+        print(sprintf("Creating a bunch of users : %s.\n", join(', ', $users)));
+
+        /** @var \FOS\UserBundle\Entity\UserManager $um */
+        $um = $this->get('fos_user.user_manager');
+
+        foreach ($users as $username) {
+            $user = $um->createUser();
+            $user->setEmail(strtolower($username).'@give2peer.org');
+            $user->setUsername($username);
+            $user->setPlainPassword($username);
+            $user->setEnabled(true);
+
+            // Canonicalize, encode, persist and flush
+            $um->updateUser($user);
+        }
+
+        print("(their password is their username, don't tell anyone)\n");
+
+
         print("Creating randomly-positioned fake items in france.\n");
 
         $centerLatitude  = 46.605524;

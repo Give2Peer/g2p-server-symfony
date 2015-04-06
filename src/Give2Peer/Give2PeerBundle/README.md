@@ -40,12 +40,6 @@ $ app/console doctrine:fixtures:load --env=test
 Note that the feature suite does not use these fixtures, it makes up its own.
 
 
-Features
---------
-
-
-
-
 BLACKBOARD
 ==========
 

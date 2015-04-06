@@ -1,11 +1,34 @@
 g2p.give2peer.org
 =================
 
-A Symfony project created on April 1, 2015, 6:28 am, which makes use of only one
-small custom bundle, the `Give2PeerBundle`, and a lot of vendor bundles, blessed
-be the `composer` community, we love you.
+A Symfony project created on April 1, 2015, which makes use of only one small
+custom bundle, the `Give2PeerBundle`, and a lot of vendor bundles, blessed be
+the `composer` community ; we love you.
 
 This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org).
+
+A Work in Progress
+==================
+
+These are the features we're working on :
+
+- [X] item location, title, description
+- [X] item finding around coordinates
+- [X] geolocation through third-party services
+- [ ] registration
+- [ ] item images
+- [ ] item tags
+- [ ] https support
+- [ ] proper documentation
+
+Right now, the database online is filled with fake/test data, so that we may
+easily test the client while developing it.
+
+
+The Bundle
+==========
+
+See [the bundle's README](src/Give2Peer/Give2PeerBundle/README.md).
 
 
 REST
