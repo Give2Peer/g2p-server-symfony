@@ -20,6 +20,11 @@ class LoadFakeData extends DataFixture
      */
     public function load(ObjectManager $manager)
     {
+        /** @var \FOS\UserBundle\Entity\UserManager $um */
+        $um = $this->get('fos_user.user_manager');
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+
         $users = [
             "Goutte",
             "Shibby",
@@ -27,10 +32,9 @@ class LoadFakeData extends DataFixture
             "Karibou",
             "Georges",
         ];
-        print(sprintf("Creating a bunch of users : %s.\n", join(', ', $users)));
 
-        /** @var \FOS\UserBundle\Entity\UserManager $um */
-        $um = $this->get('fos_user.user_manager');
+
+        print(sprintf("Creating a bunch of users : %s.\n", join(', ', $users)));
 
         foreach ($users as $username) {
             $user = $um->createUser();
@@ -45,7 +49,6 @@ class LoadFakeData extends DataFixture
 
         print("(their password is their username, don't tell anyone)\n");
 
-
         print("Creating randomly-positioned fake items in france.\n");
 
         $centerLatitude  = 46.605524;
@@ -58,8 +61,8 @@ class LoadFakeData extends DataFixture
         $maxLongitudeDiff = 3.3;
 
         $total = 10000;
-        // Let's create a million items scattered through france
-        for ($i=0; $i<$total; $i++) {
+        // Let's create a bunch of items scattered through france
+        for ($i=1; $i<=$total; $i++) {
             // Pick a location
             $latitude  = $centerLatitude  - $maxLatitudeDiff
                        + rand()/getrandmax() * $maxLatitudeDiff;
@@ -68,21 +71,22 @@ class LoadFakeData extends DataFixture
 
             // Create the item
             $item = new Item();
-            $item->setTitle(sprintf("%s %s",
-                $this->faker->colorName, $this->faker->word));
+            $item->setTitle(substr(sprintf("%s %s",
+                $this->faker->colorName, $this->faker->word), 0, 32));
             $item->setDescription($this->faker->paragraph());
             $item->setLocation("$latitude, $longitude");
             $item->setLatitude($latitude);
             $item->setLongitude($longitude);
 
             // Add the item to database
-            /** @var EntityManager $em */
-            $em = $this->get('doctrine.orm.entity_manager');
             $em->persist($item);
-            $em->flush();
+
+            // Flush batches of 111 items
+            if ($i % 111 == 1) $em->flush();
 
             print("${i} / ${total} items created.\r");
         }
+        $em->flush();
 
         print("\n");
     }
