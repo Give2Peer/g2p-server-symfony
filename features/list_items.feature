@@ -34,3 +34,17 @@ Scenario: List items around coordinates
    Then the request should be accepted
     And there should be 2 items in the response
 
+
+Scenario: List the first 32 of many items around coordinates
+  Given there are 31 items at 43.578658, 1.468091
+   When I GET /list/43.579909/1.467469
+   Then the request should be accepted
+    And there should be 32 items in the response
+
+
+Scenario: List after the first 32 of many items around coordinates
+  Given there are 31 items at 43.578658, 1.468091
+   When I GET /list/43.579909/1.467469/32
+   Then the request should be accepted
+    And there should be 1 item in the response
+

@@ -166,6 +166,16 @@ class FeatureContext
         $em->flush();
     }
 
+    /**
+     * @Given /^there are (\d+) items at (-?\d+\.\d*) ?, ?(-?\d+\.\d*)$/
+     */
+    public function thereAreItemsAt($howMany, $latitude, $longitude)
+    {
+        for ($i=0; $i<$howMany; $i++) {
+            $this->thereIsAnItemAt($latitude, $longitude);
+        }
+    }
+
 
     /**
      * @When /^I GET ([^ ]+)$/
