@@ -145,7 +145,7 @@ class RestController extends Controller
         $results = $repo->findAround($latitude, $longitude, $skip, $maxResults);
 
 //        print_r(json_encode($results));
-        print_r($results);
+//        print_r($results);
 
         return new JsonResponse($results);
     }

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Load the test database with fixtures
+app/console doctrine:fixtures:load -n --env=test

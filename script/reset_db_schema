@@ -1,4 +1,6 @@
 #!/bin/bash
 
+# Resets the database's schema for test env
+
 app/console doctrine:schema:drop --force --env=test
 app/console doctrine:schema:create --env=test

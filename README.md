@@ -1,4 +1,104 @@
 g2p.give2peer.org
 =================
 
-A Symfony project created on April 2, 2015, 2:16 am.
+A Symfony project created on April 1, 2015, 6:28 am, which makes use of only one
+small custom bundle, the `Give2PeerBundle`, and a lot of vendor bundles, blessed
+be the `composer` community, we love you.
+
+This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org).
+
+
+REST
+====
+
+Expect JSON responses.
+
+
+Give
+----
+
+`POST /give`
+  - *location*
+  - *title*
+  - *description*
+
+`POST /spot`
+  - alias of give, when we're not the legal owner
+
+
+Find
+----
+
+`GET /find/{latitude}/{longitude}`
+  - fetches at most 32 items present around the provided coordinates,
+    sorted by increasing distance.
+  - returns an array of `[ 0 => <item>, 'distance' => <distance> ]`.
+    Yes, each result is a weird mixed array. If you can fix that, be my guest.
+  - each item is a full JSONed instance with as much data as we need.
+  - provides the pictures URI (separate request, async'ed, for them)
+
+Example JSON sent back with two items found :
+
+```
+[
+  {
+    "0": {
+      "id": 100,
+      "title": "Test item",
+      "location": "Toulouse",
+      "latitude": 43.578658,
+      "longitude": 1.468091,
+      "description": null,
+      "created_at": {
+        "date": "2015-04-06 01:16:22",
+        "timezone_type": 3,
+        "timezone": "Europe\/Paris"
+      },
+      "updated_at": {
+        "date": "2015-04-06 01:16:22",
+        "timezone_type": 3,
+        "timezone": "Europe\/Paris"
+      },
+      "giver": null,
+      "spotter": null
+    },
+    "distance": "148.019325545116"
+  },
+  {
+    "0": {
+      "id": 101,
+      "title": "Test item",
+      "location": "Toulouse",
+      "latitude": 43.566591,
+      "longitude": 1.474969,
+      "description": null,
+      "created_at": {
+        "date": "2015-04-06 01:16:22",
+        "timezone_type": 3,
+        "timezone": "Europe\/Paris"
+      },
+      "updated_at": {
+        "date": "2015-04-06 01:16:22",
+        "timezone_type": 3,
+        "timezone": "Europe\/Paris"
+      },
+      "giver": null,
+      "spotter": null
+    },
+    "distance": "1601.20720473937"
+  }
+]
+```
+
+Todo
+----
+
+`POST /paint/{item}`
+  - adds a file {image} to {item}
+
+
+`GET /item/{item}/picture_{n}.jpg`
+  - WebP might be nice
+  - {n} is provided by the item properties, and maybe we'll provide the URI
+
+
