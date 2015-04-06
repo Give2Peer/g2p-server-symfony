@@ -6,6 +6,7 @@ use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
+use Give2Peer\Give2PeerBundle\Entity\TagRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -168,6 +169,11 @@ class RestController extends Controller
      */
     protected function giveOrSpotAction(Request $request, $mine)
     {
+        /** @var SecurityContext $sc */
+        $sc = $this->get('security.context');
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+
         // Recover the item data
         $location = $request->get('location');
         if (null == $location) {
@@ -175,10 +181,14 @@ class RestController extends Controller
         }
         $title = $request->get('title', '');
         $description = $request->get('description', '');
+        $tagnames = $request->get('tags', []);
+
+        // Fetch the Tags -- Ignore tags not found, for now.
+        /** @var TagRepository $tagsRepo */
+        $tagsRepo = $em->getRepository('Give2PeerBundle:Tag');
+        $tags = $tagsRepo->findTags($tagnames);
 
         // Recover the user data
-        /** @var SecurityContext $sc */
-        $sc = $this->get('security.context');
         $user = $sc->getToken()->getUser();
 
         // Create the item
@@ -192,6 +202,9 @@ class RestController extends Controller
         }
         $item->setTitle($title);
         $item->setDescription($description);
+        foreach ($tags as $tag) {
+            $item->addTag($tag);
+        }
         if ($mine) {
             $item->setGiver($user);
         } else {
@@ -199,8 +212,6 @@ class RestController extends Controller
         }
 
         // Add the item to database
-        /** @var EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
         $em->persist($item);
         $em->flush();
 

@@ -10,6 +10,13 @@ Background:
   Given I am the registered user named "Goutte"
 
 
+# see https://github.com/Behat/Behat/issues/726
+  Scenario: Dummy scenario to skip behat's buggy behavior with first scenario
+    When I do nothing
+    Then nothing happens
+
+
+
 Scenario: Give an item without a location
   When I POST to /give the following :
 """
@@ -17,6 +24,7 @@ nope: I'm not going to tell you where it is !
 """
   Then the request should not be accepted
    And there should be 0 items in the database
+
 
 
 Scenario: Give an item with an ungeolocalizable location
@@ -28,6 +36,7 @@ location: The ass-end of nowhere !
    And there should be 0 items in the database
 
 
+
 Scenario: Give an item with only a postal address location
   When I POST to /give the following :
 """
@@ -37,8 +46,11 @@ location: 66 Avenue des Champs-Élysées, 75008 Paris
    And the response should include :
 """
 location: 66 Avenue des Champs-Élysées, 75008 Paris
+latitude: 48.8708484
+longitude: 2.3053611
 """
    And there should be 1 item in the database
+
 
 
 Scenario: Give an item with only an IP address location
@@ -56,22 +68,59 @@ longitude: 1.444
    And there should be 1 item in the database
 
 
-Scenario: Give an item with a location, a title and a description
-  When I POST to /give the following :
+
+Scenario: Give an item with a location, a title, a description, and tags
+  Given there is a tag named "book"
+    And there is a tag named "pristine"
+   When I POST to /give the following :
 """
 location: 66 Avenue des Champs-Élysées, 75008 Paris
 title: Alice in Wonderland
 description: |
   Slightly foxed, good story.
   Lots of madness, and hats.
+tags:
+  - book
+  - pristine
 """
-  Then the request should be accepted
-   And the response should include :
+   Then the request should be accepted
+    And the response should include :
 """
+giver:
+  username: goutte
 location: 66 Avenue des Champs-Élysées, 75008 Paris
+latitude: 48.8708484
+longitude: 2.3053611
 title: Alice in Wonderland
 description: |
   Slightly foxed, good story.
   Lots of madness, and hats.
+tags:
+  - book
+  - pristine
 """
-   And there should be 1 item in the database
+    And there should be 1 item in the database
+
+
+
+Scenario: Give an item with a location and ignore non-existing tags
+  Given there is a tag named "wood"
+   When I POST to /give the following :
+"""
+location: 66 Avenue des Champs-Élysées, 75008 Paris
+tags:
+  - wood
+  - nope
+"""
+   Then the request should be accepted
+    And the response should include :
+"""
+tags:
+  - wood
+"""
+    And the response should not include :
+"""
+tags:
+  - nope
+"""
+    And there should be 1 item in the database

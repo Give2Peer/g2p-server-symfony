@@ -8,6 +8,7 @@ use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\Item;
+use Give2Peer\Give2PeerBundle\Entity\Tag;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -22,6 +23,37 @@ use Behat\Symfony2Extension\Context\KernelDictionary;
 
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
+
+/**
+ * Returns whatever is in $array1 but not in $array2.
+ * Could be optimized, if it mattered :3
+ *
+ * @param $array1
+ * @param $array2
+ * @return array
+ */
+function array_diff_assoc_recursive($array1, $array2) {
+    $diff = array();
+    foreach ($array1 as $k => $v) {
+        if (!isset($array2[$k])) {
+            $diff[$k] = $v;
+        }
+        else if (!is_array($v) && is_array($array2[$k])) {
+            $diff[$k] = $v;
+        }
+        else if (is_array($v) && !is_array($array2[$k])) {
+            $diff[$k] = $v;
+        }
+        else if (is_array($v) && is_array($array2[$k])) {
+            $array3 = array_diff_assoc_recursive($v, $array2[$k]);
+            if (!empty($array3)) $diff[$k] = $array3;
+        }
+        else if ((string)$v != (string)$array2[$k]) {
+            $diff[$k] = $v;
+        }
+    }
+    return $diff;
+}
 
 /**
  * “You will not censor me through bug terrorism.”
@@ -136,7 +168,7 @@ class FeatureContext
     }
 
     /**
-     * @Given /^I am the registered user named (.*) *$/
+     * @Given /^I am the registered user named "(.*)" *$/
      */
     public function iAmTheRegisteredUserNamed($name)
     {
@@ -156,6 +188,22 @@ class FeatureContext
         }
 
         $this->user = $user;
+    }
+
+    /**
+     * @Given /^there is a tag named "(\w+)" *$/
+     */
+    public function thereIsATagNamed($name)
+    {
+        // Create the tag
+        $tag = new Tag();
+        $tag->setName($name);
+
+        // Add the tag to database
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+        $em->persist($tag);
+        $em->flush();
     }
 
     /**
@@ -247,30 +295,40 @@ class FeatureContext
     /**
      * Provide YAML in the pystring, it will be arrayed and compared with the
      * other array in the response's data.
-     * @Then /^the response should include ?:$/
+     * @Then /^the response should( not)? include ?:$/
      */
-    public function theResponseShouldInclude($pystring='')
+    public function theResponseShouldInclude($not='', $pystring=false)
     {
         if (empty($this->client)) {
             throw new Exception("No client. Request something first.");
         }
+        $response = $this->client->getResponse();
+
+        // Function will be provided only one parameter if `( not)?` matches not
+        if (false === $pystring) { $pystring = $not; $not = ''; }
 
         $expected = $this->fromYaml($pystring);
+        $actual = json_decode($response->getContent(), true);
+        $missing = array_diff_assoc_recursive($expected, $actual);
+        $notMissing = array_diff_assoc_recursive($expected, $missing);
 
-        $response = $this->client->getResponse();
-        $actual = (array) json_decode($response->getContent());
-
-        $intersect = array_intersect_assoc($expected, $actual);
-        if (count($expected) > count($intersect)) {
-            $notfound = array_diff_assoc($expected, $intersect);
+        if (empty($not) && !empty($missing)) {
             $this->fail(sprintf(
                 "The response did not include the following:\n%s\n" .
                 "Because the response provided:\n%s",
-                print_r($notfound, true),
+                print_r($missing, true),
                 print_r($actual, true)
             ));
         }
 
+        if (!empty($not) && !empty($notMissing)) {
+            $this->fail(sprintf(
+                "The response did include the following:\n%s\n" .
+                "Because the response provided:\n%s",
+                print_r($notMissing, true),
+                print_r($actual, true)
+            ));
+        }
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Give2Peer\Give2PeerBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Geocoder\Result\Geocoded;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
@@ -35,6 +36,7 @@ class Item implements \JsonSerializable
             'latitude'    => $this->getLatitude(),
             'longitude'   => $this->getLongitude(),
             'description' => $this->getDescription(),
+            'tags'        => $this->getTagnames(),
             'created_at'  => $this->getCreatedAt(),
             'updated_at'  => $this->getUpdatedAt(),
             'giver'       => $this->getGiver(),
@@ -97,6 +99,16 @@ class Item implements \JsonSerializable
     private $description;
 
     /**
+     * Tags are easy to select, and allow for nice hunting filters.
+     *
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="Tag", inversedBy="items")
+     * @ORM\JoinTable(name="items_tags")
+     */
+    private $tags;
+
+    /**
      * This is the User that legally owned this Item and transferred its legal
      * ownership to somebody else.
      * May be empty if there is no giver, but a spotter.
@@ -135,6 +147,11 @@ class Item implements \JsonSerializable
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
      */
     protected $owner;
+
+
+    public function __construct() {
+        $this->tags = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -213,6 +230,44 @@ class Item implements \JsonSerializable
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @param Tag $tag
+     */
+    public function addTag(Tag $tag)
+    {
+        $tag->addItem($this); // synchronously update the inverse side
+        $this->tags[] = $tag;
+    }
+
+    /**
+     * @param Tag $tag
+     */
+    public function removeTag(Tag $tag)
+    {
+        $tag->removeItem($this); // synchronously update the inverse side
+        $this->tags->removeElement($tag);
+    }
+
+    /**
+     * @return ArrayCollection of Tag
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTagnames()
+    {
+        $names = [];
+        foreach ($this->tags as $tag) {
+            $names[] = $tag->getName();
+        }
+        return $names;
     }
 
     /**

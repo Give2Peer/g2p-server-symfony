@@ -15,9 +15,9 @@ These are the features we're working on :
 - [X] item location, title, description
 - [X] item finding around coordinates
 - [X] geolocation through third-party services
+- [X] item tags
 - [ ] registration
 - [ ] item images
-- [ ] item tags
 - [ ] https support
 - [ ] proper documentation
 
