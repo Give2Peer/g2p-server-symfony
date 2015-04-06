@@ -7,23 +7,13 @@ use Doctrine\ORM\EntityRepository;
 /**
  * ItemRepository
  *
- * DISTANCE function is our custom function leveraging pgSQL's inner functions.
+ * The SQL DISTANCE function is our custom function leveraging pgSQL's inner
+ * functions of extension `earthdistance`.
  *
+ * See : http://www.postgresql.org/docs/9.2/static/earthdistance.html
  */
 class ItemRepository extends EntityRepository
 {
-    public function findAroundQB($latitude, $longitude, $skipTheFirstN, $maxResults)
-    {
-        return $this->createQueryBuilder('e')
-            ->addSelect('DISTANCE(e.latitude, e.longitude, :latitude, :longitude) AS distance')
-            ->addOrderBy('distance')
-            ->setFirstResult($skipTheFirstN)
-            ->setMaxResults($maxResults)
-            ->setParameter('latitude', $latitude)
-            ->setParameter('longitude', $longitude)
-            ;
-    }
-
     /**
      * List items by increasing distance to provided `$latitude`/`$longitude`.
      * You can paginate by skipping results and setting a max limit to the
@@ -43,12 +33,24 @@ class ItemRepository extends EntityRepository
             ;
     }
 
+    public function findAroundQB($latitude, $longitude, $skipTheFirstN, $maxResults)
+    {
+        return $this->createQueryBuilder('e')
+            ->addSelect('DISTANCE(e.latitude, e.longitude, :latitude, :longitude) AS distance')
+            ->addOrderBy('distance')
+            ->setFirstResult($skipTheFirstN)
+            ->setMaxResults($maxResults)
+            ->setParameter('latitude', $latitude)
+            ->setParameter('longitude', $longitude)
+            ;
+    }
+
     public function findByDistanceQB($latitude, $longitude, $distanceMax)
     {
         return $this->createQueryBuilder('e')
             ->addSelect('DISTANCE(e.latitude, e.longitude, :latitude, :longitude) AS distance')
             ->andWhere('DISTANCE(e.latitude, e.longitude, :latitude, :longitude) <= :distanceMax')
-            ->addOrderBy('distance', 'DESC')
+            ->addOrderBy('distance')
             ->setParameter('latitude', $latitude)
             ->setParameter('longitude', $longitude)
             ->setParameter('distanceMax', $distanceMax)

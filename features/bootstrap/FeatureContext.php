@@ -20,6 +20,9 @@ use Symfony\Component\DomCrawler\Crawler;
 use Behat\Symfony2Extension\Context\KernelAwareContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 
+use Faker\Factory as FakerFactory;
+use Faker\Generator;
+
 /**
  * “You will not censor me through bug terrorism.”
  *     -- James Troup
@@ -38,6 +41,14 @@ class FeatureContext
 
     /** @var User $user */
     protected $user;
+
+    /** @var Generator $faker */
+    protected $faker;
+
+    public function __construct()
+    {
+        $this->faker = FakerFactory::create();
+    }
 
     /**
      * Prepare system for test suite before it runs,
@@ -154,8 +165,9 @@ class FeatureContext
     {
         // Create the item
         $item = new Item();
-        $item->setTitle("Test item");
-        $item->setLocation("Toulouse");
+        $item->setTitle(sprintf("%s %s",
+            $this->faker->colorName, $this->faker->word));
+        $item->setLocation("$latitude, $longitude");
         $item->setLatitude($latitude);
         $item->setLongitude($longitude);
 

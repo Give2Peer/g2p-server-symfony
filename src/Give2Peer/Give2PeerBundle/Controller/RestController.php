@@ -118,6 +118,8 @@ class RestController extends Controller
      */
     public function listAroundCoordinatesAction($latitude, $longitude, $skip)
     {
+        $maxResults = 32; // move this outta here
+
         // This sanitization may not be necessary anymore. Still.
         $latitude = floatval($latitude);
         $longitude = floatval($longitude);
@@ -127,6 +129,7 @@ class RestController extends Controller
         $con = $em->getConnection();
 
         // Register our DISTANCE function, that only pgSQL can understand
+        // Move this into a kernel hook ? or a more specific hook, maybe ?
         if ($con->getDatabasePlatform() instanceof PostgreSqlPlatform) {
             $em->getConfiguration()->addCustomNumericFunction(
                 'DISTANCE',
@@ -139,9 +142,10 @@ class RestController extends Controller
         // Ask the repository to do the pgSQL-optimized query for us
         /** @var ItemRepository $repo */
         $repo = $em->getRepository('Give2PeerBundle:Item');
-        $results = $repo->findAround($latitude, $longitude, $skip);
+        $results = $repo->findAround($latitude, $longitude, $skip, $maxResults);
 
 //        print_r(json_encode($results));
+        print_r($results);
 
         return new JsonResponse($results);
     }

@@ -47,6 +47,7 @@
         "coduo/php-matcher":                    "~1.0",
         "phpspec/phpspec":                      "~2.1",
         "phpunit/phpunit":                      "~4.1",
+        "fzaninotto/faker":                     "~1.2",
         "kzykhys/ciconia":                      "~1.0",
         "liip/functional-test-bundle":          "~1.2",
         "doctrine/doctrine-fixtures-bundle":    "~2.2"
