@@ -19,8 +19,9 @@ class UserRepository extends EntityRepository
             ->select('COUNT(u)')
             ->from($this->getEntityName(), 'u')
             ->where('u.createdBy = :created_by')
+            ->andWhere('u.createdAt >= :since')
             ->setParameter('created_by', $ip)
-            // fixme: use $since
+            ->setParameter('since', $since)
             ->getQuery()
             ->execute()
             [0][1] // first column of first row

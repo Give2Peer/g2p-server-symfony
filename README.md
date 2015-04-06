@@ -131,7 +131,8 @@ Example JSON sent back with two items found :
 Error Codes
 -----------
 
-700 USERNAME_TAKEN
+001 Username already taken
+002 Too many registrations
 
 Todo
 ----

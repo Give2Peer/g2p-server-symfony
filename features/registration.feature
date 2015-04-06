@@ -29,6 +29,6 @@ password: hO5vP=
     And the response should include :
 """
 error:
-    code: 700
+    code: 1
 """
     And there should be 1 user in the database

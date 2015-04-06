@@ -55,17 +55,19 @@ class RestController extends Controller
         // Rebuke if username is taken
         $user = $um->findUserByUsername($username);
         if (null != $user) {
-            return new ErrorJsonResponse("Username already taken", 700);
+            return new ErrorJsonResponse("Username already taken", 001);
         }
 
         // Rebuke if too many Users created in 2 days from this IP
         // See http://php.net/manual/fr/dateinterval.construct.php
+        $allowed = 42;
         $duration = new \DateInterval("P2D");
         $since = new \DateTime();
         $since = $since->sub($duration);
         $count = $um->countUsersCreatedBy($clientIp, $since);
-
-        print("${clientIp} created ${count} users.");
+        if ($count > $allowed) {
+            return new ErrorJsonResponse("Too many registrations from IP", 002, 429);
+        }
 
         // Create a new User
         /** @var User $user */
