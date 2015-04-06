@@ -16,7 +16,7 @@ These are the features we're working on :
 - [X] item finding around coordinates
 - [X] geolocation through third-party services
 - [X] item tags
-- [ ] registration
+- [X] registration
 - [ ] item images
 - [ ] https support
 - [ ] proper documentation
@@ -126,6 +126,12 @@ Example JSON sent back with two items found :
   }
 ]
 ```
+
+
+Error Codes
+-----------
+
+700 USERNAME_TAKEN
 
 Todo
 ----

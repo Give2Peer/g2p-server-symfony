@@ -78,3 +78,5 @@ fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main
     user_class: Give2Peer\Give2PeerBundle\Entity\User
+    service:
+        user_manager: g2p.user_manager

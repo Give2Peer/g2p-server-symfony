@@ -18,7 +18,7 @@ use Give2Peer\Give2PeerBundle\Entity\Item;
  *
  * User is a reserved word in SQL, so we use "peer" instead.
  * @ORM\Table(name="peer")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\UserRepository")
  */
 class User extends BaseUser implements \JsonSerializable
 {
@@ -56,21 +56,22 @@ class User extends BaseUser implements \JsonSerializable
 
     /**
      * A token for REST auth.
+     * Right now it is NOT USED.
      * It should be refreshed, here's some ways to do it :
      * - CRON tasks (we'll need those eventually)
-     * - ws RPC on disconnect() <= unreliable, as Ive observed, as clients don't
-     *                             always run onleave events.
+     *
      * @ORM\Column(name="rest_token", type="string", length=32)
      */
     protected $restToken;
 
     /**
-     * IP of the client that connected to the website and triggered the
-     * automatic Guest user creation.
-     * This should be used to banish abusive IPs.
+     * IP of the client that registered.
+     * This is used to banish abusive IPs.
      * Note that this contains the proxy IP if one was used.
+     *
+     * @ORM\Column(name="created_by", type="string", nullable=true)
      */
-//    protected $createdBy;
+    protected $createdBy;
 
     /**
      * @ORM\OneToMany(targetEntity="Item", mappedBy="giver")
@@ -128,5 +129,21 @@ class User extends BaseUser implements \JsonSerializable
         $this->restToken = md5($this->getPassword().'{'.str_shuffle($abc).'}');
 
         return $this->restToken;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * @param mixed $createdBy
+     */
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
     }
 }

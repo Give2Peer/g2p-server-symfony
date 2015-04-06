@@ -7,6 +7,10 @@ use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
 use Give2Peer\Give2PeerBundle\Entity\TagRepository;
+use Give2Peer\Give2PeerBundle\Entity\User;
+use Give2Peer\Give2PeerBundle\Entity\UserManager;
+use Give2Peer\Give2PeerBundle\Exception\UsernameTakenException;
+use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,6 +25,63 @@ class RestController extends Controller
     {
         // todo: why not provide some documentation here ?
         return $this->render('Give2PeerBundle:Default:index.html.twig');
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function registerAction(Request $request)
+    {
+        /** @var SecurityContext $sc */
+        //$sc = $this->get('security.context');
+        /** @var EntityManager $em */
+        //$em = $this->get('doctrine.orm.entity_manager');
+        /** @var UserManager $um */
+        $um = $this->get('fos_user.user_manager');
+
+        // Recover the user data
+        $username = $request->get('username');
+        $password = $request->get('password');
+        $clientIp = $request->getClientIp();
+
+        if (null == $username) {
+            return new JsonResponse(["error"=>"No username provided."], 400);
+        }
+        if (null == $password) {
+            return new JsonResponse(["error"=>"No password provided."], 400);
+        }
+
+        // Rebuke if username is taken
+        $user = $um->findUserByUsername($username);
+        if (null != $user) {
+            return new ErrorJsonResponse("Username already taken", 700);
+        }
+
+        // Rebuke if too many Users created in 2 days from this IP
+        // See http://php.net/manual/fr/dateinterval.construct.php
+        $duration = new \DateInterval("P2D");
+        $since = new \DateTime();
+        $since = $since->sub($duration);
+        $count = $um->countUsersCreatedBy($clientIp, $since);
+
+        print("${clientIp} created ${count} users.");
+
+        // Create a new User
+        /** @var User $user */
+        $user = $um->createUser();
+        $user->setEmail('peer@give2peer.org');
+        $user->setUsername($username);
+        $user->setPlainPassword($password);
+        $user->setCreatedBy($clientIp);
+        $user->setEnabled(true);
+
+
+        // This will canonicalize, encode, persist and flush
+        $um->updateUser($user);
+
+        // Send the user as response
+        return new JsonResponse($user);
     }
 
     /**

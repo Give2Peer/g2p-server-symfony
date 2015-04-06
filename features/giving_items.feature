@@ -1,9 +1,9 @@
 @rest
 @geocode
-Feature: Give an item
+Feature: Giving items
   In order to bring joy
-  As a user
-  I need to give items for free sometimes
+  As a nice being
+  I want to give items for free
 
 
 Background:

@@ -1,10 +1,19 @@
 # List of tags : http://symfony.com/doc/current/reference/dic_tags.html
 
 services:
-    g2p.authentication:
+    g2p.event_subscriber_authentication:
         class: Give2Peer\Give2PeerBundle\EventSubscriber\Authentication
         arguments:
             - @security.token_storage
             - @fos_user.user_manager
         tags:
             - { name: kernel.event_subscriber }
+
+    g2p.user_manager:
+        class: Give2Peer\Give2PeerBundle\Entity\UserManager
+        arguments:
+            - @security.encoder_factory
+            - @fos_user.util.username_canonicalizer
+            - @fos_user.util.email_canonicalizer
+            - @fos_user.entity_manager
+            - Give2Peer\Give2PeerBundle\Entity\User

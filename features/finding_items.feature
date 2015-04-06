@@ -1,7 +1,7 @@
 @rest
 Feature: Find items
-  In order to find stuff I could use or recycle
-  As a user
+  In order to use or recycle items
+  As a gatherer
   I need to fetch the items in my vicinity
 
 # I am there :

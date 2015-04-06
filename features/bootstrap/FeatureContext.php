@@ -172,23 +172,25 @@ class FeatureContext
      */
     public function iAmTheRegisteredUserNamed($name)
     {
-        /** @var \FOS\UserBundle\Entity\UserManager $um */
-        $um = $this->get('fos_user.user_manager');
+        $um = $this->getUserManager();
         $user = $um->findUserByUsername($name);
 
         if (empty($user)) {
-            $user = $um->createUser();
-            $user->setEmail('peer@give2peer.org');
-            $user->setUsername($name);
-            $user->setPlainPassword($name);
-            $user->setEnabled(true);
-
-            // This will canonicalize, encode, persist and flush
-            $um->updateUser($user);
+            $user = $this->createUser($name);
         }
 
         $this->user = $user;
     }
+
+    /**
+     * @Given /^there is a user named "(.*)" *$/
+     */
+    public function thereIsAUserNamed($name)
+    {
+        $this->createUser($name);
+    }
+
+
 
     /**
      * @Given /^there is a tag named "(\w+)" *$/
@@ -200,8 +202,7 @@ class FeatureContext
         $tag->setName($name);
 
         // Add the tag to database
-        /** @var EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
+        $em = $this->getEntityManager();
         $em->persist($tag);
         $em->flush();
     }
@@ -221,7 +222,7 @@ class FeatureContext
 
         // Add the item to database
         /** @var EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
+        $em = $this->getEntityManager();
         $em->persist($item);
         $em->flush();
     }
@@ -275,12 +276,18 @@ class FeatureContext
             throw new Exception("No client. Request something first.");
         }
 
+        $content = $this->client->getResponse()->getContent();
+        // Good try, but it floods the console too much :(
+        //try {
+        //    $content = json_encode(json_decode($content), JSON_PRETTY_PRINT);
+        //} catch (\Exception $e) {}
+
         if ($this->client->getResponse()->isSuccessful() && !empty($not)) {
             $this->fail(
                 sprintf("Response is successful, with '%d' return code " .
                     "and the following content:\n%s",
                     $this->client->getResponse()->getStatusCode(),
-                    $this->client->getResponse()->getContent()));
+                    $content));
         }
 
         if (!$this->client->getResponse()->isSuccessful() && empty($not)) {
@@ -288,7 +295,7 @@ class FeatureContext
                 sprintf("Response is unsuccessful, with '%d' return code " .
                     "and the following content:\n%s",
                     $this->client->getResponse()->getStatusCode(),
-                    $this->client->getResponse()->getContent()));
+                    $content));
         }
     }
 
@@ -356,21 +363,48 @@ class FeatureContext
     }
 
     /**
-     * @Then /^there should be (\d+) items? in the database$/
+     * @Then /^there should be (\d+) (item|tag|user)s? in the database$/
      */
-    public function thereShouldBeItemInTheDatabase($thatMuch)
+    public function thereShouldBeItemInTheDatabase($thatMuch, $what)
     {
         $em = $this->getEntityManager();
-        $count = $em->createQuery(
-            'SELECT COUNT(i) FROM Give2Peer\Give2PeerBundle\Entity\Item i'
-        )->getResult();
+        $count = $em->createQueryBuilder()
+            ->select('COUNT(e)')
+            ->from(sprintf('Give2PeerBundle:%s', ucfirst($what)), 'e')
+            ->getQuery()
+            ->execute()
+            [0][1]
+            ;
 
-        $this->assertEquals($thatMuch, $count[0][1]);
+        $this->assertEquals($thatMuch, $count);
     }
 
 
     // UTILS ///////////////////////////////////////////////////////////////////
 
+
+
+    /**
+     * Create a dummy user named $name with password $name
+     *
+     * @param $name
+     * @return User
+     */
+    protected function createUser($name)
+    {
+        $um = $this->getUserManager();
+
+        $user = $um->createUser();
+        $user->setEmail('peer@give2peer.org');
+        $user->setUsername($name);
+        $user->setPlainPassword($name);
+        $user->setEnabled(true);
+
+        // This will canonicalize, encode, persist and flush
+        $um->updateUser($user);
+
+        return $user;
+    }
 
     /**
      * @param array $options

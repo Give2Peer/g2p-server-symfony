@@ -2,6 +2,7 @@
 
 
 use Doctrine\ORM\EntityManager;
+use Give2Peer\Give2PeerBundle\Entity\UserManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -17,6 +18,16 @@ abstract class BaseContext extends WebTestCase
     protected function getEntityManager()
     {
         return $this->get('doctrine')->getManager();
+    }
+
+    /**
+     * Get user manager.
+     *
+     * @return UserManager
+     */
+    protected function getUserManager()
+    {
+        return $this->get('fos_user.user_manager');
     }
 
     /**
