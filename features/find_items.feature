@@ -1,8 +1,8 @@
 @rest
-Feature: List items
+Feature: Find items
   In order to find stuff I could use or recycle
   As a user
-  I need to list items in my vicinity
+  I need to fetch the items in my vicinity
 
 # I am there :
 # 6 Rue de Fontainebleau, 31400 Toulouse
@@ -29,22 +29,22 @@ Scenario: Dummy scenario to skip behat's buggy behavior with first scenario
    Then nothing happens
 
 
-Scenario: List items around coordinates
-   When I GET /list/43.579909/1.467469
+Scenario: List 2 of 2 items around coordinates
+   When I GET /find/43.579909/1.467469
    Then the request should be accepted
     And there should be 2 items in the response
 
 
-Scenario: List the first 32 of many items around coordinates
+Scenario: List the first 32 of 33 items around coordinates
   Given there are 31 items at 43.578658, 1.468091
-   When I GET /list/43.579909/1.467469
+   When I GET /find/43.579909/1.467469
    Then the request should be accepted
     And there should be 32 items in the response
 
 
-Scenario: List after the first 32 of many items around coordinates
+Scenario: List after the first 32 of 33 items around coordinates
   Given there are 31 items at 43.578658, 1.468091
-   When I GET /list/43.579909/1.467469/32
+   When I GET /find/43.579909/1.467469/32
    Then the request should be accepted
     And there should be 1 item in the response
 

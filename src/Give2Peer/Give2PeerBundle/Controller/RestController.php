@@ -116,7 +116,7 @@ class RestController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function listAroundCoordinatesAction($latitude, $longitude, $skip)
+    public function findAroundCoordinatesAction($latitude, $longitude, $skip)
     {
         $maxResults = 32; // move this outta here
 

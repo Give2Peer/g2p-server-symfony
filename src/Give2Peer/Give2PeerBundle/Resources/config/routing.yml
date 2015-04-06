@@ -12,10 +12,10 @@ give2_peer_spot:
     defaults: { _controller: Give2PeerBundle:Rest:spot }
     methods:  [POST]
 
-give2_peer_list_by_coordinates:
-    path:     /list/{latitude}/{longitude}/{skip}
+give2_peer_find_around:
+    path:     /find/{latitude}/{longitude}/{skip}
     defaults:
-        _controller: Give2PeerBundle:Rest:listAroundCoordinates
+        _controller: Give2PeerBundle:Rest:findAroundCoordinates
         skip: 0
     methods:  [GET]
     requirements:

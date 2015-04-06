@@ -13,12 +13,26 @@ REST
 
 Expect JSON responses.
 
+Authentication
+--------------
+
+Use HTTP basic auth.
+
+Yes, we'll need https.
+
+Authentication will still probably be subject to upgrades, like using perishable
+authentication tokens instead of the user password each time.
+
 
 Give
 ----
 
 `POST /give`
-  - *location*
+  - *location* (mandatory)
+    Multiple formats are accepted :
+      - "43.578658, 1.468091"
+      - "10 Rond-Point Jean Lagasse, 31400 Toulouse"
+      - "91.121.148.102"
   - *title*
   - *description*
 
@@ -35,7 +49,7 @@ Find
   - returns an array of `[ 0 => <item>, 'distance' => <distance> ]`.
     Yes, each result is a weird mixed array. If you can fix that, be my guest.
   - each item is a full JSONed instance with as much data as we need.
-  - provides the pictures URI (separate request, async'ed, for them)
+  - (todo) provides the pictures URI (get them with a separate request)
 
 Example JSON sent back with two items found :
 
