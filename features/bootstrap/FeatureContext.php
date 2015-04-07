@@ -11,6 +11,7 @@ use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\Tag;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Behat\Behat\Context\Context as BehatContext;
@@ -90,6 +91,7 @@ class FeatureContext
      */
     public function prepare(BeforeScenarioScope $scope)
     {
+        // Boot the kernel
         static::bootKernel();
 
         // Add all the fixtures classes that implement
@@ -99,7 +101,11 @@ class FeatureContext
 //        ));
         // Loading an empty array still truncates all tables.
         $this->loadFixtures(array());
-        //print('BeforeScenario');
+
+        // Empty the public directory where pictures are
+        // THIS IS DANGEROUS !
+        // It means that this test suite can never EVER be run on the prod server
+        // This is BAD.
     }
 
     /**
@@ -135,7 +141,8 @@ class FeatureContext
     }
 
 
-    // STEPS ///////////////////////////////////////////////////////////////////
+    // DUMMY STEPS /////////////////////////////////////////////////////////////
+
 
     /**
      * @Given I do nothing
@@ -167,6 +174,10 @@ class FeatureContext
         print($this->client->getResponse()->getContent());
     }
 
+
+    // FIXTURES STEPS //////////////////////////////////////////////////////////
+
+
     /**
      * @Given /^I am the registered user named "(.*)" *$/
      */
@@ -189,8 +200,6 @@ class FeatureContext
     {
         $this->createUser($name);
     }
-
-
 
     /**
      * @Given /^there is a tag named "(\w+)" *$/
@@ -238,18 +247,15 @@ class FeatureContext
     }
 
 
+    // REQUEST STEPS ///////////////////////////////////////////////////////////
+
+
     /**
      * @When /^I GET ([^ ]+)$/
      */
     public function iGet($route)
     {
-        $client = $this->getOrCreateClient();
-        $headers = array();
-        if (!empty($this->user)) {
-            $headers['PHP_AUTH_USER'] = $this->user->getUsername();
-            $headers['PHP_AUTH_PW']   = $this->user->getUsername();
-        }
-        $this->crawler = $client->request('GET', $route, [], [], $headers);
+        $this->request('GET', $route);
     }
 
     /**
@@ -257,15 +263,41 @@ class FeatureContext
      */
     public function iPost($route, $pystring='')
     {
-        $client = $this->getOrCreateClient();
         $data = $this->fromYaml($pystring);
-        $headers = array();
-        if (!empty($this->user)) {
-            $headers['PHP_AUTH_USER'] = $this->user->getUsername();
-            $headers['PHP_AUTH_PW']   = $this->user->getUsername();
-        }
-        $this->crawler = $client->request('POST', $route, $data, [], $headers);
+        $this->request('POST', $route, $data);
     }
+
+    /**
+     * @When /^I POST to ([^ ]+) the file (.+)?$/
+     */
+    public function iPostTheFile($route, $filePath)
+    {
+        // We need to make a copy of the file, 'cause it will be *moved*
+        $sinfo = new \SplFileInfo($filePath);
+        $extension = $sinfo->getExtension();
+        $tmpFilePath = $sinfo->getBasename('.'.$extension).'_copy.'.$extension;
+
+        $finfo = new finfo;
+        $mime = $finfo->file($sinfo->getRealPath(), FILEINFO_MIME);
+
+        copy($filePath, $tmpFilePath);
+
+        $picture = new UploadedFile(
+            $tmpFilePath,
+            $sinfo->getFilename(),
+            $mime,
+            filesize($filePath),
+            UPLOAD_ERR_OK,
+            true // test mode ?
+        );
+        $files = ['picture' => $picture];
+
+        $this->request('POST', $route, [], $files);
+    }
+
+
+    // RESPONSE STEPS //////////////////////////////////////////////////////////
+
 
     /**
      * @Then /^the request should (not )?be accepted$/
@@ -302,20 +334,19 @@ class FeatureContext
     /**
      * Provide YAML in the pystring, it will be arrayed and compared with the
      * other array in the response's data.
-     * @Then /^the response should( not)? include ?:$/
+     * @Then /^the response should((?: not)?) include ?:$/
      */
-    public function theResponseShouldInclude($not='', $pystring=false)
+    public function theResponseShouldInclude($not='', $pystring='')
     {
         if (empty($this->client)) {
             throw new Exception("No client. Request something first.");
         }
-        $response = $this->client->getResponse();
-
-        // Function will be provided only one parameter if `( not)?` matches not
-        if (false === $pystring) { $pystring = $not; $not = ''; }
 
         $expected = $this->fromYaml($pystring);
+
+        $response = $this->client->getResponse();
         $actual = json_decode($response->getContent(), true);
+
         $missing = array_diff_assoc_recursive($expected, $actual);
         $notMissing = array_diff_assoc_recursive($expected, $missing);
 
@@ -339,11 +370,9 @@ class FeatureContext
     }
 
     /**
-     * Provide YAML in the pystring, it will be arrayed and compared with the
-     * other array in the response's data.
      * @Then /^there should be (\d+) items? in the response$/
      */
-    public function thereShouldBeItemsInTheResponse($howmany)
+    public function thereShouldBeItemsInTheResponse($howMany)
     {
         if (empty($this->client)) {
             throw new Exception("No client. Request something first.");
@@ -352,7 +381,7 @@ class FeatureContext
         $response = $this->client->getResponse();
         $actual = (array) json_decode($response->getContent());
 
-        if (count($actual) != $howmany) {
+        if (count($actual) != $howMany) {
             $this->fail(sprintf(
                 "The response sent %d item(s) back,\n" .
                 "Because the response provided:\n%s",
@@ -361,6 +390,10 @@ class FeatureContext
             ));
         }
     }
+
+
+    // CHECKS STEPS ////////////////////////////////////////////////////////////
+
 
     /**
      * @Then /^there should be (\d+) (item|tag|user)s? in the database$/
@@ -380,8 +413,31 @@ class FeatureContext
     }
 
 
-    // UTILS ///////////////////////////////////////////////////////////////////
+    /**
+     * @Then /^there should((?: not)?) be a file at (.*?) *$/
+     */
+    public function thereShouldBeAFileAt($not, $path)
+    {
+        $not = ($not == '') ? false : true;
+        // If not absolute, assume relative to parent of kernel dir
+        if (strpos($path, DIRECTORY_SEPARATOR) !== 0) {
+            $prepend = $this->get('kernel')->getRootDir().'/../';
+            // you can use getcwd() if the above causes you trouble
+            //$prepend = getcwd();
+            $path = $prepend . DIRECTORY_SEPARATOR . $path;
+        }
 
+        $thereIsFile = is_file($path);
+        if ($not && $thereIsFile) {
+            $this->fail("File found at ${path}");
+        }
+        if (!$not && !$thereIsFile) {
+            $this->fail("No file found at ${path}");
+        }
+    }
+
+
+    // UTILS ///////////////////////////////////////////////////////////////////
 
 
     /**
@@ -417,5 +473,36 @@ class FeatureContext
             $this->client = $this->createClient($options, $server);
         }
         return $this->client;
+    }
+
+    /**
+     * Like Client's request, but with our contextual HTTP auth in the headers.
+     *
+     * @param $method
+     * @param $uri
+     * @param array $parameters
+     * @param array $files
+     * @param array $server
+     * @param null $content
+     * @param bool $changeHistory
+     * @return Crawler
+     */
+    protected function request($method, $uri, array $parameters = array(),
+                               array $files = array(), array $server = array(),
+                               $content = null, $changeHistory = true)
+    {
+        $client = $this->getOrCreateClient();
+
+        if (!empty($this->user)) {
+            $server['PHP_AUTH_USER'] = $this->user->getUsername();
+            $server['PHP_AUTH_PW']   = $this->user->getUsername();
+        }
+
+        $this->crawler = $client->request(
+            $method, $uri, $parameters, $files,
+            $server, $content, $changeHistory
+        );
+
+        return $this->crawler;
     }
 }

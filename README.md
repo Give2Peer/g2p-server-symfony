@@ -131,8 +131,12 @@ Example JSON sent back with two items found :
 Error Codes
 -----------
 
+Still not sure about this. Maybe start at 700 ?
+
 001 Username already taken
 002 Too many registrations
+003 Wrong or missing picture file
+
 
 Todo
 ----

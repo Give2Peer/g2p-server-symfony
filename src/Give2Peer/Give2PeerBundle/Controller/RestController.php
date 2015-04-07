@@ -9,13 +9,19 @@ use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
 use Give2Peer\Give2PeerBundle\Entity\TagRepository;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Give2Peer\Give2PeerBundle\Entity\UserManager;
-use Give2Peer\Give2PeerBundle\Exception\UsernameTakenException;
 use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 
+/**
+ * Routes are configured in YAML, in `Resources/config.routing.yml`.
+ *
+ * Class RestController
+ * @package Give2Peer\Give2PeerBundle\Controller
+ */
 class RestController extends Controller
 {
     /**
@@ -62,11 +68,10 @@ class RestController extends Controller
         // See http://php.net/manual/fr/dateinterval.construct.php
         $allowed = 42;
         $duration = new \DateInterval("P2D");
-        $since = new \DateTime();
-        $since = $since->sub($duration);
+        $since = (new \DateTime())->sub($duration);
         $count = $um->countUsersCreatedBy($clientIp, $since);
         if ($count > $allowed) {
-            return new ErrorJsonResponse("Too many registrations from IP", 002, 429);
+            return new ErrorJsonResponse("Too many registrations", 002, 429);
         }
 
         // Create a new User
@@ -77,7 +82,6 @@ class RestController extends Controller
         $user->setPlainPassword($password);
         $user->setCreatedBy($clientIp);
         $user->setEnabled(true);
-
 
         // This will canonicalize, encode, persist and flush
         $um->updateUser($user);
@@ -114,6 +118,49 @@ class RestController extends Controller
     public function spotAction(Request $request)
     {
         return $this->giveOrSpotAction($request, false);
+    }
+
+    /**
+     * @param $itemId
+     * @param Request $request
+     * @return JsonResponse|ErrorJsonResponse
+     */
+    public function pictureUploadAction($itemId, Request $request)
+    {
+        $publicPath = $this->get('kernel')->getRootDir() . '/../web/pictures';
+        $publicPath .= DIRECTORY_SEPARATOR . (string) $itemId;
+
+        if (empty($request->files)) {
+            return new ErrorJsonResponse("No `picture` file provided.", 003);
+        }
+
+        /** @var UploadedFile $file */
+        $file = $request->files->get('picture');
+
+        if (null == $file) {
+            return new ErrorJsonResponse("No `picture` file provided.", 003);
+        }
+
+        // Check extension
+        // This may be improved later -- hi, you, future self ! Remember me ?
+        $allowedExtensions = [ 'jpg', 'jpeg' ];
+        if (!in_array($file->getExtension(), $allowedExtensions)) {
+            return new ErrorJsonResponse(sprintf(
+                "Extension '%s' unsupported. Supported : %s",
+                $file->getExtension(), join(', ', $allowedExtensions)
+            ), 003);
+        }
+
+        try {
+            // Move the file to a publicly available path
+            $file->move($publicPath, '1.jpg');
+
+        } catch (\Exception $e) {
+            return new ErrorJsonResponse(sprintf(
+                "Picture unrecognized : %s", $e->getMessage()), 003);
+        }
+
+        return new JsonResponse(42); // fixme
     }
 
     /**

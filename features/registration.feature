@@ -1,5 +1,4 @@
 @rest
-@wip
 Feature: Registration
   In order to use the REST API behind HTTP authentication
   As a client

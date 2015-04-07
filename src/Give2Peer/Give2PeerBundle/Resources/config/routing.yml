@@ -17,6 +17,13 @@ give2_peer_spot:
     defaults: { _controller: Give2PeerBundle:Rest:spot, _format: json }
     methods:  [POST]
 
+give2_peer_picture_upload:
+    path:     /picture/{itemId}
+    defaults: { _controller: Give2PeerBundle:Rest:pictureUpload, _format: json }
+    methods:  [POST]
+    requirements:
+        itemId: \d+
+
 give2_peer_find_around:
     path:     /find/{latitude}/{longitude}/{skip}
     defaults:
