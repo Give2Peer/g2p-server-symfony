@@ -34,7 +34,8 @@ See [the bundle's README](src/Give2Peer/Give2PeerBundle/README.md).
 REST
 ====
 
-Expect JSON responses.
+Expect `JSON` responses.
+
 
 Authentication
 --------------
@@ -106,7 +107,7 @@ Example JSON sent back with two items found :
       "location": "Toulouse",
       "latitude": 43.578658,
       "longitude": 1.468091,
-      "description": null,
+      "description": "This is a test item",
       "created_at": {
         "date": "2015-04-06 01:16:22",
         "timezone_type": 3,
@@ -125,20 +126,18 @@ Example JSON sent back with two items found :
   {
     "0": {
       "id": 101,
-      "title": "Test item",
+      "title": null,
       "location": "Toulouse",
       "latitude": 43.566591,
       "longitude": 1.474969,
       "description": null,
       "created_at": {
         "date": "2015-04-06 01:16:22",
-        "timezone_type": 3,
-        "timezone": "Europe\/Paris"
+        "timezone_type": 3, "timezone": "Europe\/Paris"
       },
       "updated_at": {
         "date": "2015-04-06 01:16:22",
-        "timezone_type": 3,
-        "timezone": "Europe\/Paris"
+        "timezone_type": 3, "timezone": "Europe\/Paris"
       },
       "giver": null,
       "spotter": null
@@ -147,6 +146,15 @@ Example JSON sent back with two items found :
   }
 ]
 ```
+
+
+Pictures
+--------
+
+`POST /pictures/{itemId}`
+  - Send a JPG file in a input named 'picture'.
+
+`GET /pictures/{itemId}/1.jpg`
 
 
 Error Codes
@@ -158,16 +166,3 @@ Still not sure about this. Maybe start at 700 ? Maybe use strings ?
 002 BANNED_FOR_ABUSE     Too many registrations
 003 UNSUPPORTED_FILE     Wrong or missing picture file uploaded
 004 NOT_AUTHORIZED       Not authorized
-
-Todo
-----
-
-`POST /paint/{item}`
-  - adds a file {image} to {item}
-
-
-`GET /item/{item}/picture_{n}.jpg`
-  - WebP might be nice
-  - {n} is provided by the item properties, and maybe we'll provide the URI
-
-
