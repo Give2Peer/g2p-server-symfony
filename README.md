@@ -12,12 +12,12 @@ A Work in Progress
 
 These are the features we're working on :
 
-- [X] item location, title, description
+- [X] item location, title, description, tags
 - [X] item finding around coordinates
-- [X] geolocation through third-party services
-- [X] item tags
-- [X] registration
 - [X] item images
+- [X] list tags
+- [X] geolocation through third-party services
+- [X] registration
 - [ ] https support
 - [ ] proper documentation
 
@@ -45,6 +45,22 @@ Yes, we'll need https.
 
 Authentication will still probably be subject to upgrades, like using perishable
 authentication tokens instead of the user password each time.
+
+
+Registration
+------------
+
+Clients can register users using the following API :
+
+`POST /register`
+  - *username*
+  - *password*
+  - Returns the user.
+
+See the error codes below to see what the API sends back when the username is
+already taken.
+
+This API is throttled to a fixed number of queries per day and per IP.
 
 
 Give
@@ -136,12 +152,12 @@ Example JSON sent back with two items found :
 Error Codes
 -----------
 
-Still not sure about this. Maybe start at 700 ?
+Still not sure about this. Maybe start at 700 ? Maybe use strings ?
 
-001 Username already taken
-002 Too many registrations
-003 Wrong or missing picture file
-004 Not authorized
+001 UNAVAILABLE_USERNAME Username already taken
+002 BANNED_FOR_ABUSE     Too many registrations
+003 UNSUPPORTED_FILE     Wrong or missing picture file uploaded
+004 NOT_AUTHORIZED       Not authorized
 
 Todo
 ----

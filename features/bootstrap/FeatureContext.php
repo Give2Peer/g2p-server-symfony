@@ -1,10 +1,7 @@
 <?php
 
-use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Testwork\Hook\Scope\AfterSuiteScope;
-use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\Item;
@@ -27,7 +24,7 @@ use Faker\Generator;
 
 /**
  * Returns whatever is in $array1 but not in $array2.
- * Could be optimized, if it mattered :3
+ * Can be optimized, if it matters to you :3
  *
  * @param $array1
  * @param $array2
@@ -314,18 +311,18 @@ class FeatureContext
     public function iPostTheFile($route, $filePath)
     {
         // We need to make a copy of the file, 'cause it will be *moved*
-        $sinfo = new \SplFileInfo($filePath);
-        $extension = $sinfo->getExtension();
-        $tmpFilePath = $sinfo->getBasename('.'.$extension).'_copy.'.$extension;
+        $sInfo = new \SplFileInfo($filePath);
+        $extension = $sInfo->getExtension();
+        $tmpFilePath = $sInfo->getBasename('.'.$extension).'_copy.'.$extension;
 
-        $finfo = new finfo;
-        $mime = $finfo->file($sinfo->getRealPath(), FILEINFO_MIME);
+        $fInfo = new finfo;
+        $mime = $fInfo->file($sInfo->getRealPath(), FILEINFO_MIME);
 
         copy($filePath, $tmpFilePath);
 
         $picture = new UploadedFile(
             $tmpFilePath,
-            $sinfo->getFilename(),
+            $sInfo->getFilename(),
             $mime,
             filesize($filePath),
             UPLOAD_ERR_OK,
@@ -375,6 +372,7 @@ class FeatureContext
     /**
      * Provide YAML in the pystring, it will be arrayed and compared with the
      * other array in the response's data.
+     *
      * @Then /^the response should((?: not)?) include ?:$/
      */
     public function theResponseShouldInclude($not='', $pystring='')
