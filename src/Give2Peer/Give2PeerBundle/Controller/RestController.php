@@ -185,7 +185,20 @@ class RestController extends Controller
                 "Picture unrecognized : %s", $e->getMessage()), 003);
         }
 
-        return new JsonResponse(42); // fixme
+        return new JsonResponse('ok'); // todo: return something meaningful
+    }
+
+
+    public function tagsAction(Request $request)
+    {
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+
+        $repo = $em->getRepository('Give2PeerBundle:Tag');
+
+        $tags = $repo->getTagNames();
+
+        return new JsonResponse($tags);
     }
 
     /**

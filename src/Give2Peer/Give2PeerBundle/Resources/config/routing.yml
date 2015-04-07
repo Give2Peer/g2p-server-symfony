@@ -24,6 +24,11 @@ give2_peer_picture_upload:
     requirements:
         itemId: \d+
 
+give2_peer_tags:
+    path:     /tags
+    defaults: { _controller: Give2PeerBundle:Rest:tags, _format: json }
+    methods:  [GET]
+
 give2_peer_find_around:
     path:     /find/{latitude}/{longitude}/{skip}
     defaults:

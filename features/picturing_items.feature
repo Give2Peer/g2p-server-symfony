@@ -1,5 +1,4 @@
 @rest
-@wip
 Feature: Picturing items
   In order to describe better than with a thousand words
   As a spotter or a giver

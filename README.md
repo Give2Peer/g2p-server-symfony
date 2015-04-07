@@ -66,6 +66,11 @@ Give
 Find
 ----
 
+`GET /tags`
+  - returns an array of tags, with no guaranteed sorting.
+  - each tag is string of maximum 16 characters.
+
+
 `GET /find/{latitude}/{longitude}`
   - fetches at most 32 items present around the provided coordinates,
     sorted by increasing distance.

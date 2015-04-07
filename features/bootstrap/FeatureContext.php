@@ -194,13 +194,17 @@ class FeatureContext
     /**
      * @Then /^I (?:print|dump) the response$/
      */
-    public function iPrintTheResponse()
+    public function iDumpTheResponse()
     {
         if (empty($this->client)) {
             throw new Exception("No client. Request something first.");
         }
+        $content = $this->client->getResponse()->getContent();
+        try {
+            $content = json_encode(json_decode($content), JSON_PRETTY_PRINT);
+        } catch (\Exception $e) {}
 
-        print($this->client->getResponse()->getContent());
+        print($content."\n");
     }
 
 

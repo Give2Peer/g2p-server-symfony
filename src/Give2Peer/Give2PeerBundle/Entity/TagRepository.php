@@ -32,4 +32,28 @@ class TagRepository extends EntityRepository
             ->setParameter('tagnames', array_values($tagnames))
             ;
     }
+
+    /**
+     * Returns an array of strings, the tag names of all the tags.
+     */
+    public function getTagNames()
+    {
+        $results = $this->getTagNamesQb()->getQuery()->execute();
+        $names = [];
+        foreach ($results as $result) {
+            $names[] = $result['name'];
+        }
+        return $names;
+    }
+
+    /**
+     * Returns an array of strings, the tag names of all the tags.
+     */
+    public function getTagNamesQb()
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('t.name')
+            ->from($this->getEntityName(), 't')
+            ;
+    }
 }
