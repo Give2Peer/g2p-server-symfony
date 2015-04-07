@@ -17,7 +17,7 @@ use Give2Peer\Give2PeerBundle\Entity\Item;
  * We use FOS User : https://github.com/FriendsOfSymfony/FOSUserBundle/blob/master/Resources/doc/index.md
  *
  * User is a reserved word in SQL, so we use "peer" instead.
- * @ORM\Table(name="peer")
+ * @ORM\Table(name="Peer")
  * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\UserRepository")
  */
 class User extends BaseUser implements \JsonSerializable

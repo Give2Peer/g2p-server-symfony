@@ -87,12 +87,39 @@ class FeatureContext
      * Prepare system for test suite before it runs,
      * by booting the kernel (in test mode, apparently)
      * and loading fresh fixtures into an empty db.
+     *
+     * This is run before each new Scenario.
+     *
      * @BeforeScenario
      */
     public function prepare(BeforeScenarioScope $scope)
     {
-        // Boot the kernel
+        // (Re)Boot the kernel
         static::bootKernel();
+
+        // Empty the database by TRUNCATING the tables and RESETTING the indices
+        // This is more complicated than it should, because of pgSQL
+        $tables = [
+            'Peer', // yes, User is named Peer in the database
+            'Item',
+            'Tag',
+        ];
+        // Try to get the above list procedurally to avoid maintaining it
+        // 1. Nope, TMI
+        //$tables = $doc->query('SELECT * FROM pg_catalog.pg_tables')->fetchAll();
+
+        /** @var Connection $dbal */
+        $dbal = $this->get('doctrine.dbal.default_connection');
+        foreach ($tables as $table) {
+            $dbal->query("TRUNCATE TABLE ${table} RESTART IDENTITY CASCADE")
+                 ->execute()
+                 ;
+            // WOW !! RESTART IDENTITY does not work, don't know why ?!
+            // ... well, we reset the primary keys by hand, that works
+            $dbal->query("ALTER SEQUENCE ${table}_id_seq RESTART WITH 1")
+                 ->execute()
+                 ;
+        }
 
         // Add all the fixtures classes that implement
         // Doctrine\Common\DataFixtures\FixtureInterface
@@ -106,6 +133,8 @@ class FeatureContext
         // THIS IS DANGEROUS !
         // It means that this test suite can never EVER be run on the prod server
         // This is BAD.
+        // So, no. I'll move some things to configuration, and we'll try again.
+        // Meanwhile, just delete by hand the files created in web/pictures
     }
 
     /**
@@ -217,10 +246,16 @@ class FeatureContext
     }
 
     /**
-     * @Given /^there is an item at (-?\d+\.\d*) ?, ?(-?\d+\.\d*)$/
+     * @Given /^(there is|I give|I spot) an item at (-?\d+\.\d*) ?, ?(-?\d+\.\d*)$/
      */
-    public function thereIsAnItemAt($latitude, $longitude)
+    public function thereIsAnItemAt($action, $latitude, $longitude)
     {
+        $giver   = ($action == 'I give') ? true : false;
+        $spotter = ($action == 'I spot') ? true : false;
+        if (($giver||$spotter) && empty($this->user)) {
+            $this->fail("There is no I. You are no-one. You cannot give.");
+        }
+
         // Create the item
         $item = new Item();
         $item->setTitle(sprintf("%s %s",
@@ -228,6 +263,8 @@ class FeatureContext
         $item->setLocation("$latitude, $longitude");
         $item->setLatitude($latitude);
         $item->setLongitude($longitude);
+        if ($giver)   $item->setGiver($this->user);
+        if ($spotter) $item->setSpotter($this->user);
 
         // Add the item to database
         /** @var EntityManager $em */
@@ -242,7 +279,7 @@ class FeatureContext
     public function thereAreItemsAt($howMany, $latitude, $longitude)
     {
         for ($i=0; $i<$howMany; $i++) {
-            $this->thereIsAnItemAt($latitude, $longitude);
+            $this->thereIsAnItemAt('', $latitude, $longitude);
         }
     }
 

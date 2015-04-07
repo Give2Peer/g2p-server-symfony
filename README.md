@@ -17,7 +17,7 @@ These are the features we're working on :
 - [X] geolocation through third-party services
 - [X] item tags
 - [X] registration
-- [ ] item images
+- [X] item images
 - [ ] https support
 - [ ] proper documentation
 
@@ -136,7 +136,7 @@ Still not sure about this. Maybe start at 700 ?
 001 Username already taken
 002 Too many registrations
 003 Wrong or missing picture file
-
+004 Not authorized
 
 Todo
 ----

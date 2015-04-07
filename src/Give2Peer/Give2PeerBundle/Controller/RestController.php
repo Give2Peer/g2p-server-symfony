@@ -127,6 +127,31 @@ class RestController extends Controller
      */
     public function pictureUploadAction($itemId, Request $request)
     {
+        /** @var SecurityContext $sc */
+        $sc = $this->get('security.context');
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+
+        // Sanitize (this is *mandatory* !)
+        $itemId = intval($itemId);
+
+        // Recover the user data and check if we're the giver or the spotter
+        // Later on we'll add authorization through spending NRG points.
+        $user = $sc->getToken()->getUser();
+
+        /** @var ItemRepository $repo */
+        $repo = $em->getRepository('Give2PeerBundle:Item');
+        /** @var Item $item */
+        $item = $repo->find($itemId);
+
+        if (null == $item) {
+            return new ErrorJsonResponse("Not authorized: no item", 004);
+        }
+
+        if ($item->getGiver() != $user && $item->getSpotter() != $user) {
+            return new ErrorJsonResponse("Not authorized.", 004);
+        }
+
         $publicPath = $this->get('kernel')->getRootDir() . '/../web/pictures';
         $publicPath .= DIRECTORY_SEPARATOR . (string) $itemId;
 
