@@ -60,7 +60,7 @@ class LoadFakeData extends DataFixture
         $maxLatitudeDiff  = 4.0;
         $maxLongitudeDiff = 3.3;
 
-        $total = 10000;
+        $total = 1000;
         // Let's create a bunch of items scattered through france
         for ($i=1; $i<=$total; $i++) {
             // Pick a location
