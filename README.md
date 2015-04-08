@@ -96,53 +96,53 @@ Find
   - each item is a full JSONed instance with as much data as we need.
   - (todo) provides the pictures URI (get them with a separate request)
 
-Example JSON sent back with two items found :
+Here is an example of `JSON` sent back with two items found :
 
 ```
 [
   {
-    "0": {
-      "id": 100,
-      "title": "Test item",
-      "location": "Toulouse",
-      "latitude": 43.578658,
-      "longitude": 1.468091,
-      "description": "This is a test item",
-      "created_at": {
-        "date": "2015-04-06 01:16:22",
-        "timezone_type": 3,
-        "timezone": "Europe\/Paris"
-      },
-      "updated_at": {
-        "date": "2015-04-06 01:16:22",
-        "timezone_type": 3,
-        "timezone": "Europe\/Paris"
-      },
-      "giver": null,
-      "spotter": null
+    "id": 529,
+    "title": "Plum maiores",
+    "location": "43.59528538094, 1.4899757103897",
+    "latitude": 43.59528538094,
+    "longitude": 1.4899757103897,
+    "distance": "2494.63965368956",
+    "description": "Consequuntur rem quod ab omnis aut aut nesciunt quaerat.",
+    "tags": [],
+    "created_at": {
+      "date": "2015-04-08 16:50:16",
+      "timezone_type": 3,
+      "timezone": "Europe\/Paris"
     },
-    "distance": "148.019325545116"
+    "updated_at": {
+      "date": "2015-04-08 16:50:16",
+      "timezone_type": 3,
+      "timezone": "Europe\/Paris"
+    },
+    "giver": null,
+    "spotter": null
   },
   {
-    "0": {
-      "id": 101,
-      "title": null,
-      "location": "Toulouse",
-      "latitude": 43.566591,
-      "longitude": 1.474969,
-      "description": null,
-      "created_at": {
-        "date": "2015-04-06 01:16:22",
-        "timezone_type": 3, "timezone": "Europe\/Paris"
-      },
-      "updated_at": {
-        "date": "2015-04-06 01:16:22",
-        "timezone_type": 3, "timezone": "Europe\/Paris"
-      },
-      "giver": null,
-      "spotter": null
+    "id": 76,
+    "title": "LimeGreen libero",
+    "location": "43.548083594727, 1.4953072156219",
+    "latitude": 43.548083594727,
+    "longitude": 1.4953072156219,
+    "distance": "4194.49735510112",
+    "description": "Eum dolore saepe repellendus autem accusantium inventore.",
+    "tags": [],
+    "created_at": {
+      "date": "2015-04-08 16:50:12",
+      "timezone_type": 3,
+      "timezone": "Europe\/Paris"
     },
-    "distance": "1601.20720473937"
+    "updated_at": {
+      "date": "2015-04-08 16:50:12",
+      "timezone_type": 3,
+      "timezone": "Europe\/Paris"
+    },
+    "giver": null,
+    "spotter": null
   }
 ]
 ```

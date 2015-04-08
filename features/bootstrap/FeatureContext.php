@@ -118,11 +118,6 @@ class FeatureContext
                  ;
         }
 
-        // Add all the fixtures classes that implement
-        // Doctrine\Common\DataFixtures\FixtureInterface
-//        $this->loadFixtures(array(
-//            'Give2Peer\Give2PeerBundle\DataFixtures\ORM\LoadData',
-//        ));
         // Loading an empty array still truncates all tables.
         $this->loadFixtures(array());
 
@@ -207,6 +202,18 @@ class FeatureContext
 
     // FIXTURES STEPS //////////////////////////////////////////////////////////
 
+    /**
+     * @Given I load the fixtures
+     */
+    public function iLoadTheFixtures()
+    {
+        // Add all the fixtures classes that implement
+        // Doctrine\Common\DataFixtures\FixtureInterface
+        $this->loadFixtures(array(
+            'Give2Peer\Give2PeerBundle\DataFixtures\ORM\LoadTagsData',
+            'Give2Peer\Give2PeerBundle\DataFixtures\ORM\LoadFakeData',
+        ));
+    }
 
     /**
      * @Given /^I am the registered user named "(.*)" *$/

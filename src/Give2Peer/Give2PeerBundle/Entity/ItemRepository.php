@@ -19,6 +19,12 @@ class ItemRepository extends EntityRepository
      * You can paginate by skipping results and setting a max limit to the
      * number of results you want.
      *
+     * Returns an array of :
+     * [
+     *   'item'     => <item properties>,
+     *   'distance' => <distance in meters>
+     * ]
+     *
      * @param $latitude
      * @param $longitude
      * @param $skipTheFirstN
@@ -27,10 +33,15 @@ class ItemRepository extends EntityRepository
      */
     public function findAround($latitude, $longitude, $skipTheFirstN=0, $maxResults=32)
     {
-        return $this->findAroundQB($latitude, $longitude, $skipTheFirstN, $maxResults)
+        $items = [];
+        $rows = $this->findAroundQB($latitude, $longitude, $skipTheFirstN, $maxResults)
             ->getQuery()
             ->execute()
             ;
+        foreach ($rows as $row) {
+            $items[] = $row[0]->setDistance($row['distance']);
+        }
+        return $items;
     }
 
     public function findAroundQB($latitude, $longitude, $skipTheFirstN, $maxResults)

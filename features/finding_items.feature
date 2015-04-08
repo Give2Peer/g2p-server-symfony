@@ -48,3 +48,11 @@ Scenario: List after the first 32 of 33 items around coordinates
    Then the request should be accepted
     And there should be 1 item in the response
 
+
+# Handy dumper for creating mock JSON
+#Scenario: Dump fixtures items
+#  Given I load the fixtures
+#   When I GET /find/43.579909/1.467469
+#   Then the request should be accepted
+#    And I dump the response
+

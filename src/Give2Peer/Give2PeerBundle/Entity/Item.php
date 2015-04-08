@@ -35,6 +35,7 @@ class Item implements \JsonSerializable
             'location'    => $this->getLocation(),
             'latitude'    => $this->getLatitude(),
             'longitude'   => $this->getLongitude(),
+            'distance'    => $this->getDistance(),
             'description' => $this->getDescription(),
             'tags'        => $this->getTagnames(),
             'created_at'  => $this->getCreatedAt(),
@@ -83,6 +84,15 @@ class Item implements \JsonSerializable
      * @ORM\Column(name="longitude", type="float", nullable=true)
      */
     private $longitude;
+
+    /**
+     * When we serialize Items in JSON, we usually want to provide the distance
+     * at which the item is. This property is obviously highly dynamic.
+     * We (may) enrich the Item with this property right before sending it in
+     * the response.
+     * @var float
+     */
+    private $distance;
 
     /**
      * @var string
@@ -360,8 +370,29 @@ class Item implements \JsonSerializable
     }
 
     /**
+     * @return float
+     */
+    public function getDistance()
+    {
+        return $this->distance;
+    }
+
+    /**
+     * @param float $distance
+     * @return Item
+     */
+    public function setDistance($distance)
+    {
+        $this->distance = $distance;
+
+        return $this;
+    }
+
+    /**
      * Use Geocoder to fetch the latitude and longitude from our providers.
      * This throws if none can find anything.
+     *
+     * fixme: add lat/long provider
      *
      * todo: refactor
      * This code should not be here, and locale and providers should be
@@ -372,6 +403,7 @@ class Item implements \JsonSerializable
     public function geolocate() {
 
         $locale = 'fr_FR';
+        $region = 'France';
 
         $adapter  = new \Geocoder\HttpAdapter\BuzzHttpAdapter();
         $geocoder = new \Geocoder\Geocoder();
@@ -379,7 +411,7 @@ class Item implements \JsonSerializable
             new \Geocoder\Provider\FreeGeoIpProvider($adapter),
             new \Geocoder\Provider\HostIpProvider($adapter),
             new \Geocoder\Provider\OpenStreetMapProvider($adapter, $locale),
-            new \Geocoder\Provider\GoogleMapsProvider($adapter, $locale, 'France', true),
+            new \Geocoder\Provider\GoogleMapsProvider($adapter, $locale, $region, true),
         ));
         $geocoder->registerProvider($chain);
 
