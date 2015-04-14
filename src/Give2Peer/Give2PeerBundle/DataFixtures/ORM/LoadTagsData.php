@@ -24,10 +24,13 @@ class LoadTagsData extends DataFixture
         $em = $this->get('doctrine.orm.entity_manager');
 
         $tags = "
+- lost
 - broken
 - iron
+- steel
 - book
 - wood
+- wet
         ";
 
         $tags = Yaml::parse($tags);

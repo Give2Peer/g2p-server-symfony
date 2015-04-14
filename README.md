@@ -7,6 +7,10 @@ the `composer` community ; we love you.
 
 This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org).
 
+It is not unit-tested, as are most APIs, but [behavior-tested](/features).
+Features written in Gherkin are a breeze to write and review, they provide an
+easy entry point to new contributors and they also provide documentation.
+
 A Work in Progress
 ==================
 
@@ -18,6 +22,7 @@ These are the features we're working on :
 - [X] list tags
 - [X] geolocation through third-party services
 - [X] registration
+- [ ] create and serve 200x200 thumbnails
 - [ ] https support
 - [ ] proper documentation
 

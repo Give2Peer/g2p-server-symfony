@@ -5,6 +5,7 @@ namespace Give2Peer\Give2PeerBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Geocoder\Result\Geocoded;
+use Give2Peer\Give2PeerBundle\Provider\LatitudeLongitudeProvider;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 use Give2Peer\Give2PeerBundle\Entity\User;
 
@@ -89,7 +90,7 @@ class Item implements \JsonSerializable
      * When we serialize Items in JSON, we usually want to provide the distance
      * at which the item is. This property is obviously highly dynamic.
      * We (may) enrich the Item with this property right before sending it in
-     * the response.
+     * the response, but this is not stored in the database for obvious reasons.
      * @var float
      */
     private $distance;
@@ -392,8 +393,6 @@ class Item implements \JsonSerializable
      * Use Geocoder to fetch the latitude and longitude from our providers.
      * This throws if none can find anything.
      *
-     * fixme: add lat/long provider
-     *
      * todo: refactor
      * This code should not be here, and locale and providers should be
      * easily configurable, as well as API keys.
@@ -408,6 +407,7 @@ class Item implements \JsonSerializable
         $adapter  = new \Geocoder\HttpAdapter\BuzzHttpAdapter();
         $geocoder = new \Geocoder\Geocoder();
         $chain    = new \Geocoder\Provider\ChainProvider(array(
+            new LatitudeLongitudeProvider($adapter),
             new \Geocoder\Provider\FreeGeoIpProvider($adapter),
             new \Geocoder\Provider\HostIpProvider($adapter),
             new \Geocoder\Provider\OpenStreetMapProvider($adapter, $locale),

@@ -36,6 +36,35 @@ location: The ass-end of nowhere !
    And there should be 0 items in the database
 
 
+Scenario: Give an item with only a latitude/longitude location
+  When I POST to /give the following :
+"""
+location: -1.441/43.601
+"""
+  Then the request should be accepted
+   And the response should include :
+"""
+location: -1.441/43.601
+latitude: -1.441
+longitude: 43.601
+"""
+   And there should be 1 item in the database
+
+
+Scenario: Give an item with weird latitude/longitude location
+  When I POST to /give the following :
+"""
+location: 2/.12
+"""
+  Then the request should be accepted
+   And the response should include :
+"""
+location: 2/.12
+latitude: 2
+longitude: .12
+"""
+   And there should be 1 item in the database
+
 
 Scenario: Give an item with only a postal address location
   When I POST to /give the following :

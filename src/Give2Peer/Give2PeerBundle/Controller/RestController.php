@@ -145,7 +145,7 @@ class RestController extends Controller
         $item = $repo->find($itemId);
 
         if (null == $item) {
-            return new ErrorJsonResponse("Not authorized: no item", 004);
+            return new ErrorJsonResponse("Not authorized: no item.", 004);
         }
 
         if ($item->getGiver() != $user && $item->getSpotter() != $user) {

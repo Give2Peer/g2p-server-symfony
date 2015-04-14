@@ -9,6 +9,10 @@ use Give2Peer\Give2PeerBundle\Entity\Item;
 /**
  * Fake it 'til you make it.
  *
+ * Here's a fortune cookie :
+ * When in panic, fear and doubt,
+ * Drink in barrels, eat, and shout.
+ *
  * app/console doctrine:fixtures:load --env=test
  */
 class LoadFakeData extends DataFixture
@@ -25,7 +29,7 @@ class LoadFakeData extends DataFixture
         /** @var EntityManager $em */
         $em = $this->get('doctrine.orm.entity_manager');
 
-        $users = [
+        $userNames = [
             "Goutte",
             "Shibby",
             "Gizko",
@@ -33,18 +37,22 @@ class LoadFakeData extends DataFixture
             "Georges",
         ];
 
+        print(sprintf("Creating a bunch of users : %s.\n", join(', ', $userNames)));
 
-        print(sprintf("Creating a bunch of users : %s.\n", join(', ', $users)));
-
-        foreach ($users as $username) {
+        $users = [];
+        foreach ($userNames as $username) {
             $user = $um->createUser();
             $user->setEmail(strtolower($username).'@give2peer.org');
             $user->setUsername($username);
+            // Hello, you... You found the passwords ! I have only one thing to
+            // say : with great power comes great responsibility. :3
             $user->setPlainPassword($username);
             $user->setEnabled(true);
 
             // Canonicalize, encode, persist and flush
             $um->updateUser($user);
+
+            $users[] = $user;
         }
 
         print("(their password is their username, don't tell anyone)\n");
@@ -60,7 +68,7 @@ class LoadFakeData extends DataFixture
         $maxLatitudeDiff  = 4.0;
         $maxLongitudeDiff = 3.3;
 
-        $total = 1000;
+        $total = 10101;
         // Let's create a bunch of items scattered through france
         for ($i=1; $i<=$total; $i++) {
             // Pick a location
@@ -78,10 +86,21 @@ class LoadFakeData extends DataFixture
             $item->setLatitude($latitude);
             $item->setLongitude($longitude);
 
+            switch (rand(0, 2)) {
+                case 0:
+                    $item->setGiver($users[array_rand($users)]);
+                    break;
+                case 1:
+                    $item->setSpotter($users[array_rand($users)]);
+                    break;
+                case 2:
+                default:
+            }
+
             // Add the item to database
             $em->persist($item);
 
-            // Flush batches of 111 items
+            // Flush batches of 111 items (a totally arbitrary number)
             if ($i % 111 == 1) $em->flush();
 
             print("${i} / ${total} items created.\r");
