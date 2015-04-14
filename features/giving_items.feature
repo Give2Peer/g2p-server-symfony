@@ -11,9 +11,9 @@ Background:
 
 
 # see https://github.com/Behat/Behat/issues/726
-  Scenario: Dummy scenario to skip behat's buggy behavior with first scenario
-    When I do nothing
-    Then nothing happens
+Scenario: Dummy scenario to skip behat's buggy behavior with first scenario
+  When I do nothing
+  Then nothing happens
 
 
 
@@ -36,6 +36,7 @@ location: The ass-end of nowhere !
    And there should be 0 items in the database
 
 
+
 Scenario: Give an item with only a latitude/longitude location
   When I POST to /give the following :
 """
@@ -49,6 +50,7 @@ latitude: -1.441
 longitude: 43.601
 """
    And there should be 1 item in the database
+
 
 
 Scenario: Give an item with only a latitude, longitude location
@@ -66,6 +68,7 @@ longitude: 43.601
    And there should be 1 item in the database
 
 
+
 Scenario: Give an item with weird latitude/longitude location
   When I POST to /give the following :
 """
@@ -79,6 +82,7 @@ latitude: 2
 longitude: .12
 """
    And there should be 1 item in the database
+
 
 
 Scenario: Give an item with only a postal address location
