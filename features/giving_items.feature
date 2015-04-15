@@ -10,12 +10,6 @@ Background:
   Given I am the registered user named "Goutte"
 
 
-# see https://github.com/Behat/Behat/issues/726
-Scenario: Dummy scenario to skip behat's buggy behavior with first scenario
-  When I do nothing
-  Then nothing happens
-
-
 
 Scenario: Give an item without a location
   When I POST to /give the following :

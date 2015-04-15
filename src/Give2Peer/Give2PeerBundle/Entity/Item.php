@@ -38,6 +38,7 @@ class Item implements \JsonSerializable
             'longitude'   => $this->getLongitude(),
             'distance'    => $this->getDistance(),
             'description' => $this->getDescription(),
+            'thumbnail'   => $this->getThumbnail(),
             'tags'        => $this->getTagnames(),
             'created_at'  => $this->getCreatedAt(),
             'updated_at'  => $this->getUpdatedAt(),
@@ -108,6 +109,16 @@ class Item implements \JsonSerializable
      * @ORM\Column(name="description", type="string", length=1024, nullable=true)
      */
     private $description;
+
+    /**
+     * The full URL to the thumbnail image file.
+     * It should be 200px x 200px.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="thumbnail", type="string", length=2048, nullable=true)
+     */
+    private $thumbnail;
 
     /**
      * Tags are easy to select, and allow for nice hunting filters.
@@ -420,5 +431,21 @@ class Item implements \JsonSerializable
 
         $this->latitude = $geocode->getLatitude();
         $this->longitude = $geocode->getLongitude();
+    }
+
+    /**
+     * @return string
+     */
+    public function getThumbnail()
+    {
+        return $this->thumbnail;
+    }
+
+    /**
+     * @param string $thumbnail
+     */
+    public function setThumbnail($thumbnail)
+    {
+        $this->thumbnail = $thumbnail;
     }
 }

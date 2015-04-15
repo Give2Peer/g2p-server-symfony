@@ -9,12 +9,6 @@ Background:
   Given I am the registered user named "Goutte"
 
 
-# see https://github.com/Behat/Behat/issues/726
-Scenario: Skip behat's buggy behavior with first scenario
-   When I do nothing
-   Then nothing happens
-
-
 Scenario: List all tags when there's none
    When I GET /tags
    Then the request should be accepted

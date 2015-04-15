@@ -23,12 +23,6 @@ Background:
     And there is an item at 43.566591, 1.474969
 
 
-# see https://github.com/Behat/Behat/issues/726
-Scenario: Dummy scenario to skip behat's buggy behavior with first scenario
-   When I do nothing
-   Then nothing happens
-
-
 Scenario: List 2 of 2 items around coordinates
    When I GET /find/43.579909/1.467469
    Then the request should be accepted

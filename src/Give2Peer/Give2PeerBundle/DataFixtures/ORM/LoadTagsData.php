@@ -36,6 +36,7 @@ class LoadTagsData extends DataFixture
         $tags = Yaml::parse($tags);
 
         $i = 0;
+        print("Creating tags:");
         foreach ($tags as $tagName) {
             // Create a Tag
             $tag = new Tag();
@@ -44,7 +45,7 @@ class LoadTagsData extends DataFixture
             // Add the item to database
             $em->persist($tag);
 
-            print("Creating tag: ${tagName}       \r");
+            print(" ${tagName}");
 
             // Flush batches of 11 tags
             if ($i % 11 == 1) $em->flush();

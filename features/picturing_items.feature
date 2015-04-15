@@ -4,10 +4,11 @@ Feature: Picturing items
   As a spotter or a giver
   I need to attach pictures to items
 
+# /!\ WARNING
 # The feature creates files in web/pictures that our suite does not delete.
 # The test kernel needs to use test configuration and upload into pictures_test
 # or something before we can safely automatize deletion of the uploaded files,
-# because the danger is too great if my mishap the test suite is ran on in prod.
+# because the danger is too great if by mishap the test suite is ran in prod.
 # Right now it will REPLACE production files, so there is danger, but a lesser
 # one as we only play around with the first item.
 
@@ -17,16 +18,12 @@ Background:
     And there is an item at 43.566591, 1.474969
 
 
-# see https://github.com/Behat/Behat/issues/726
-Scenario: Dummy scenario to skip behat's buggy behavior with first scenario
-   When I do nothing
-   Then nothing happens
-
-
+@wip
 Scenario: Attach a JPG picture
    When I POST to /picture/1 the file features/assets/1.jpg
    Then the request should be accepted
     And there should be a file at web/pictures/1/1.jpg
+    And there should be a file at web/pictures/1/thumb.jpg
 
 
 Scenario: Do not attach a PNG picture (for now)

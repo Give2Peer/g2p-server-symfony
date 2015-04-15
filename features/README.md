@@ -14,10 +14,6 @@ They cover :
 - picturing items, as the picture upload is done in a separate request
 - many more things in the future, hopefully
 
-The `test_bug` feature is to expose [an inconsistency](https://github.com/Behat/Behat/issues/726)
-in our feature runner. This is not related directly to _give2peer_, yet the test
-will be kept until a fix is pulled.
-
 
 Tips
 ----

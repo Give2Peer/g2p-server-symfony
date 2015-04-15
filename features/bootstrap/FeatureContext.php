@@ -101,7 +101,7 @@ class FeatureContext
             'Item',
             'Tag',
         ];
-        // Try to get the above list procedurally to avoid maintaining it
+        // wip: Try to get the above list procedurally to avoid maintaining it
         // 1. Nope, TMI
         //$tables = $doc->query('SELECT * FROM pg_catalog.pg_tables')->fetchAll();
 

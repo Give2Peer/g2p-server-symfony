@@ -7,9 +7,19 @@ the `composer` community ; we love you.
 
 This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org).
 
+It will provide a server for [Give2Peer](http://www.give2peer.org)'s bêta Android application.
+
 It is not unit-tested, as are most APIs, but [behavior-tested](/features).
 Features written in Gherkin are a breeze to write and review, they provide an
 easy entry point to new contributors and they also provide documentation.
+
+
+Vision
+======
+
+Bring the power of the internet of things to the sharing of things.
+
+
 
 A Work in Progress
 ==================
@@ -165,9 +175,12 @@ Pictures
 Error Codes
 -----------
 
-Still not sure about this. Maybe start at 700 ? Maybe use strings ?
+Still not sure about this.
 
+```
 001 UNAVAILABLE_USERNAME Username already taken
 002 BANNED_FOR_ABUSE     Too many registrations
 003 UNSUPPORTED_FILE     Wrong or missing picture file uploaded
 004 NOT_AUTHORIZED       Not authorized
+005 SYSTEM_ERROR         System error, usually a bad setup
+```

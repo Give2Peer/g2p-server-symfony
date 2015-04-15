@@ -152,6 +152,7 @@ class RestController extends Controller
             return new ErrorJsonResponse("Not authorized.", 004);
         }
 
+        // todo: move `web/pictures` to configuration
         $publicPath = $this->get('kernel')->getRootDir() . '/../web/pictures';
         $publicPath .= DIRECTORY_SEPARATOR . (string) $itemId;
 
@@ -167,7 +168,8 @@ class RestController extends Controller
         }
 
         // Check extension
-        // This may be improved later -- hi, you, future self ! Remember me ?
+        // This should be improved later -- hi, you, future self ! Remember me ?
+        // Remember to update the `makeSquareThumb` method, too !
         $allowedExtensions = [ 'jpg', 'jpeg' ];
         if (!in_array($file->getExtension(), $allowedExtensions)) {
             return new ErrorJsonResponse(sprintf(
@@ -176,16 +178,70 @@ class RestController extends Controller
             ), 003);
         }
 
+        // Move the picture to a publicly available path
         try {
-            // Move the file to a publicly available path
             $file->move($publicPath, '1.jpg');
-
         } catch (\Exception $e) {
             return new ErrorJsonResponse(sprintf(
                 "Picture unrecognized : %s", $e->getMessage()), 003);
         }
 
-        return new JsonResponse('ok'); // todo: return something meaningful
+        // Create a square thumbnail
+        try {
+            $this->makeSquareThumb(
+                $publicPath . DIRECTORY_SEPARATOR . '1.jpg',
+                $publicPath . DIRECTORY_SEPARATOR . 'thumb.jpg',
+                200 // todo: move thumb size in pixels to configuration
+            );
+        } catch (\Exception $e) {
+            return new ErrorJsonResponse(sprintf(
+                "Thumbnail creation failed : %s", $e->getMessage()), 003);
+        }
+
+        $thumbUrl = join(DIRECTORY_SEPARATOR, [
+            $request->getSchemeAndHttpHost(),
+            'pictures',
+            $itemId,
+            'thumb.jpg',
+        ]);
+        $item->setThumbnail($thumbUrl);
+//        $em->persist($item);
+        $em->flush();
+
+        return new JsonResponse($item);
+    }
+
+    function makeSquareThumb($source, $destination, $sideLength)
+    {
+        // Read the source image
+        $sourceImage = imagecreatefromjpeg($source);
+        $width = imagesx($sourceImage);
+        $height = imagesy($sourceImage);
+
+        $smallestSide = min($width, $height);
+
+        $x = 0;
+        $y = 0;
+        if ($width < $height) {
+            $y = floor(($height - $smallestSide) / 2);
+        }
+        else if ($width > $height) {
+            $x = floor(($width - $smallestSide) / 2);
+        }
+
+        // Create a new, "virtual" image
+        $virtualImage = imagecreatetruecolor($sideLength, $sideLength);
+
+        // Then magic happens
+        imagecopyresampled(
+            $virtualImage, $sourceImage,
+            0, 0, $x, $y,
+            $sideLength, $sideLength,
+            $smallestSide, $smallestSide
+        );
+
+        // Create the physical thumbnail image to its destination
+        imagejpeg($virtualImage, $destination);
     }
 
 
@@ -206,58 +262,8 @@ class RestController extends Controller
      * the center of the circle.
      * You can skip the first `$skip` items if you already have them.
      *
-     * The resulting JSON when finding 2 items looks like this :
-     *
-     * ```
-     * [
-          {
-            "0": {
-              "id": 100,
-              "title": "Test item",
-              "location": "Toulouse",
-              "latitude": 43.578658,
-              "longitude": 1.468091,
-              "description": null,
-              "created_at": {
-                "date": "2015-04-06 01:16:22",
-                "timezone_type": 3,
-                "timezone": "Europe\/Paris"
-              },
-              "updated_at": {
-                "date": "2015-04-06 01:16:22",
-                "timezone_type": 3,
-                "timezone": "Europe\/Paris"
-              },
-              "giver": null,
-              "spotter": null
-            },
-            "distance": "148.019325545116"
-          },
-          {
-            "0": {
-              "id": 101,
-              "title": "Test item",
-              "location": "Toulouse",
-              "latitude": 43.566591,
-              "longitude": 1.474969,
-              "description": null,
-              "created_at": {
-                "date": "2015-04-06 01:16:22",
-                "timezone_type": 3,
-                "timezone": "Europe\/Paris"
-              },
-              "updated_at": {
-                "date": "2015-04-06 01:16:22",
-                "timezone_type": 3,
-                "timezone": "Europe\/Paris"
-              },
-              "giver": null,
-              "spotter": null
-            },
-            "distance": "1601.20720473937"
-          }
-        ]
-     * ```
+     * The resulting JSON is an array of items that have the additional
+     * `distance` property set up.
      *
      * @param float $latitude  Latitude of the center of the circle.
      * @param float $longitude Longitude of the center of the circle.
@@ -285,16 +291,13 @@ class RestController extends Controller
                 'Give2Peer\Give2PeerBundle\Query\AST\Functions\DistanceFunction'
             );
         } else {
-            return new JsonResponse(['error' => 'DB *must* be pgSQL.'], 500);
+            return new ErrorJsonResponse('Db *must* be pgSQL.', 005, 500);
         }
 
         // Ask the repository to do the pgSQL-optimized query for us
         /** @var ItemRepository $repo */
         $repo = $em->getRepository('Give2PeerBundle:Item');
         $results = $repo->findAround($latitude, $longitude, $skip, $maxResults);
-
-//        print_r(json_encode($results));
-//        print_r($results);
 
         return new JsonResponse($results);
     }
