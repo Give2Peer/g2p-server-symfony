@@ -131,6 +131,8 @@ class RestController extends Controller
         $sc = $this->get('security.context');
         /** @var EntityManager $em */
         $em = $this->get('doctrine.orm.entity_manager');
+        /** @var ItemRepository $repo */
+        $repo = $em->getRepository('Give2PeerBundle:Item');
 
         // Sanitize (this is *mandatory* !)
         $itemId = intval($itemId);
@@ -139,8 +141,6 @@ class RestController extends Controller
         // Later on we'll add authorization through spending NRG points.
         $user = $sc->getToken()->getUser();
 
-        /** @var ItemRepository $repo */
-        $repo = $em->getRepository('Give2PeerBundle:Item');
         /** @var Item $item */
         $item = $repo->find($itemId);
 
@@ -167,14 +167,21 @@ class RestController extends Controller
             return new ErrorJsonResponse("No `picture` file provided.", 003);
         }
 
+        if (! $file->isValid()) {
+            return new ErrorJsonResponse("Upload failed: ".$file->getErrorMessage(), 003);
+        }
+
         // Check extension
         // This should be improved later -- hi, you, future self ! Remember me ?
         // Remember to update the `makeSquareThumb` method, too !
         $allowedExtensions = [ 'jpg', 'jpeg' ];
-        if (!in_array($file->getExtension(), $allowedExtensions)) {
+
+        //$actualExtension = $file->getExtension(); // NO, tmp files have no extension
+        $actualExtension = $file->getClientOriginalExtension();
+        if (!in_array($actualExtension, $allowedExtensions)) {
             return new ErrorJsonResponse(sprintf(
-                "Extension '%s' unsupported. Supported : %s",
-                $file->getExtension(), join(', ', $allowedExtensions)
+                "Extension '%s' unsupported. Supported extensions : %s",
+                $actualExtension, join(', ', $allowedExtensions)
             ), 003);
         }
 
@@ -214,7 +221,7 @@ class RestController extends Controller
     function makeSquareThumb($source, $destination, $sideLength)
     {
         // Read the source image
-        $sourceImage = imagecreatefromjpeg($source);
+        $sourceImage = imagecreatefromjpeg($source); // jpg only !
         $width = imagesx($sourceImage);
         $height = imagesy($sourceImage);
 
@@ -348,8 +355,8 @@ class RestController extends Controller
         try {
             $item->geolocate();
         } catch (\Exception $e) {
-            $msg = sprintf("Cannot geolocate: %s", $e->getMessage());
-            return new JsonResponse(["error"=>$msg], 400);
+            $msg = sprintf("Cannot resolve geolocation: %s", $e->getMessage());
+            return new ErrorJsonResponse($msg, 006);
         }
         $item->setTitle($title);
         $item->setDescription($description);

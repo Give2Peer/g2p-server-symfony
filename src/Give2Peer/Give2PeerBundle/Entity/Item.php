@@ -228,6 +228,7 @@ class Item implements \JsonSerializable
      */
     public function getTitle()
     {
+        if (null == $this->title) return "";
         return $this->title;
     }
 
@@ -251,6 +252,7 @@ class Item implements \JsonSerializable
      */
     public function getDescription()
     {
+        if (null == $this->description) return "";
         return $this->description;
     }
 
@@ -438,6 +440,7 @@ class Item implements \JsonSerializable
      */
     public function getThumbnail()
     {
+        if (null == $this->thumbnail) return "";
         return $this->thumbnail;
     }
 
