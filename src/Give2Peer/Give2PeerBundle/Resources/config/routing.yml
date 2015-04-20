@@ -2,6 +2,11 @@ give2_peer_home:
     path:     /
     defaults: { _controller: Give2PeerBundle:Rest:index }
 
+give2_peer_ping:
+    path:     /ping
+    defaults: { _controller: Give2PeerBundle:Rest:ping, _format: json }
+    methods:  [GET]
+
 give2_peer_register:
     path:     /register
     defaults: { _controller: Give2PeerBundle:Rest:register, _format: json }

@@ -33,6 +33,11 @@ class RestController extends Controller
         return $this->render('Give2PeerBundle:Default:index.html.twig');
     }
 
+    public function pingAction(Request $request)
+    {
+        return new JsonResponse("pong");
+    }
+
     /**
      * @param Request $request
      * @return JsonResponse
