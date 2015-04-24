@@ -340,7 +340,7 @@ class RestController extends Controller
         // Recover the item data
         $location = $request->get('location');
         if (null == $location) {
-            return new JsonResponse(["error"=>"No location provided."], 400);
+            return new ErrorJsonResponse("No location provided.", 006);
         }
         $title = $request->get('title', '');
         $description = $request->get('description', '');
