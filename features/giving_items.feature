@@ -1,5 +1,4 @@
 @rest
-@geocode
 Feature: Giving items
   In order to bring joy
   As a nice being
@@ -10,7 +9,7 @@ Background:
   Given I am the registered user named "Goutte"
 
 
-
+@geocode
 Scenario: Give an item without a location
   When I POST to /give the following :
 """
@@ -20,7 +19,7 @@ nope: I'm not going to tell you where it is !
    And there should be 0 items in the database
 
 
-
+@geocode
 Scenario: Give an item with an ungeolocalizable location
   When I POST to /give the following :
 """
@@ -79,6 +78,7 @@ longitude: .12
 
 
 
+@geocode
 Scenario: Give an item with only a postal address location
   When I POST to /give the following :
 """
@@ -95,6 +95,7 @@ longitude: 2.3053611
 
 
 
+@geocode
 Scenario: Give an item with only an IP address location
   When I POST to /give the following :
 """
@@ -111,6 +112,7 @@ longitude: 1.444
 
 
 
+@geocode
 Scenario: Give an item with a location, a title, a description, and tags
   Given there is a tag named "book"
     And there is a tag named "pristine"
@@ -145,6 +147,32 @@ tags:
 
 
 
+@wip
+Scenario: Give an item with a location and a title with special characters
+   When I POST to /give the following :
+"""
+location: 48.8708484, 2.3053611
+title: Planche de chêne
+description: |
+  %~#éàç_-*+
+"""
+   Then the request should be accepted
+    And the response should include :
+"""
+giver:
+  username: goutte
+location: 48.8708484, 2.3053611
+latitude: 48.8708484
+longitude: 2.3053611
+title: Planche de chêne
+description: |
+  %~#éàç_-*+
+"""
+    And there should be 1 item in the database
+
+
+
+@geocode
 Scenario: Give an item with a location and ignore non-existing tags
   Given there is a tag named "wood"
    When I POST to /give the following :

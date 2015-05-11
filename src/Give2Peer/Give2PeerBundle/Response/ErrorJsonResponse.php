@@ -16,7 +16,7 @@ class ErrorJsonResponse extends JsonResponse
     {
         $data = [
             'error' => [
-                'code' => $code,
+                'code'    => $code,
                 'message' => $message,
             ]
         ];

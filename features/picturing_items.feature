@@ -5,7 +5,7 @@ Feature: Picturing items
   I need to attach pictures to items
 
 # /!\ WARNING
-# The feature creates files in web/pictures that our suite does not delete.
+# This feature creates files in web/pictures that our suite does not delete.
 # The test kernel needs to use test configuration and upload into pictures_test
 # or something before we can safely automatize deletion of the uploaded files,
 # because the danger is too great if by mishap the test suite is ran in prod.
@@ -18,7 +18,7 @@ Background:
     And there is an item at 43.566591, 1.474969
 
 
-@wip
+
 Scenario: Attach a JPG picture
    When I POST to /picture/1 the file features/assets/1.jpg
    Then the request should be accepted

@@ -32,7 +32,7 @@ These are the features we're working on :
 - [X] list tags
 - [X] geolocation through third-party services
 - [X] registration
-- [ ] create and serve 200x200 thumbnails
+- [X] create and serve 200x200 thumbnails
 - [ ] https support
 - [ ] proper documentation
 
@@ -106,10 +106,9 @@ Find
 `GET /find/{latitude}/{longitude}`
   - fetches at most 32 items present around the provided coordinates,
     sorted by increasing distance.
-  - returns an array of `[ 0 => <item>, 'distance' => <distance> ]`.
-    Yes, each result is a weird mixed array. If you can fix that, be my guest.
+  - returns an array of items, each with the additional `distance` property.
   - each item is a full JSONed instance with as much data as we need.
-  - (todo) provides the pictures URI (get them with a separate request)
+  - provides the pictures URI (get them with a separate request)
 
 Here is an example of `JSON` sent back with two items found :
 
