@@ -29,16 +29,16 @@ Scenario: List 2 of 2 items around coordinates
     And there should be 2 items in the response
 
 
-Scenario: List the first 32 of 33 items around coordinates
-  Given there are 31 items at 43.578658, 1.468091
+Scenario: List the first 128 of 129 items around coordinates
+  Given there are 127 items at 43.578658, 1.468091
    When I GET /find/43.579909/1.467469
    Then the request should be accepted
-    And there should be 32 items in the response
+    And there should be 128 items in the response
 
 
-Scenario: List after the first 32 of 33 items around coordinates
-  Given there are 31 items at 43.578658, 1.468091
-   When I GET /find/43.579909/1.467469/32
+Scenario: List after the first 128 of 129 items around coordinates
+  Given there are 127 items at 43.578658, 1.468091
+   When I GET /find/43.579909/1.467469/128
    Then the request should be accepted
     And there should be 1 item in the response
 

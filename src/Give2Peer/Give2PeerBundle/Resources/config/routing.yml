@@ -35,13 +35,15 @@ give2_peer_tags:
     methods:  [GET]
 
 give2_peer_find_around:
-    path:     /find/{latitude}/{longitude}/{skip}
+    path:     /find/{latitude}/{longitude}/{skip}/{radius}
     defaults:
         _controller: Give2PeerBundle:Rest:findAroundCoordinates
         _format: json
         skip: 0
+        radius: 0 # will be handled as infinity (no filter)
     methods:  [GET]
     requirements:
         latitude:   -?\d+(?:\.\d*)?
         longitude:  -?\d+(?:\.\d*)?
         skip:         \d+
+        radius:       \d+(?:\.\d*)?

@@ -270,22 +270,24 @@ class RestController extends Controller
     }
 
     /**
-     * Returns a list of at most 32 Items, sorted by increasing distance to
+     * Returns a list of at most 128 Items, sorted by increasing distance to
      * the center of the circle.
      * You can skip the first `$skip` items if you already have them.
      *
      * The resulting JSON is an array of items that have the additional
      * `distance` property set up.
      *
-     * @param float $latitude  Latitude of the center of the circle.
+     * @param float $latitude Latitude of the center of the circle.
      * @param float $longitude Longitude of the center of the circle.
-     * @param int   $skip      How many items to skip in the db query.
+     * @param int $skip How many items to skip in the db query.
+     * @param int|float $radius In meters, the max distance
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function findAroundCoordinatesAction($latitude, $longitude, $skip)
+    public function findAroundCoordinatesAction($latitude, $longitude, $skip,
+                                                $radius)
     {
-        $maxResults = 32; // move this outta here
+        $maxResults = 128; // move this outta here
 
         // This sanitization may not be necessary anymore. Still.
         $latitude = floatval($latitude);
@@ -309,7 +311,7 @@ class RestController extends Controller
         // Ask the repository to do the pgSQL-optimized query for us
         /** @var ItemRepository $repo */
         $repo = $em->getRepository('Give2PeerBundle:Item');
-        $results = $repo->findAround($latitude, $longitude, $skip, $maxResults);
+        $results = $repo->findAround($latitude, $longitude, $skip, $radius, $maxResults);
 
         return new JsonResponse($results);
     }

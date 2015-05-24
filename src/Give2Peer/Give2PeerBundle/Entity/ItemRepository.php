@@ -19,22 +19,21 @@ class ItemRepository extends EntityRepository
      * You can paginate by skipping results and setting a max limit to the
      * number of results you want.
      *
-     * Returns an array of :
-     * [
-     *   'item'     => <item properties>,
-     *   'distance' => <distance in meters>
-     * ]
+     * Returns an array of Items, including the additional `distance` property.
      *
      * @param $latitude
      * @param $longitude
-     * @param $skipTheFirstN
-     * @param $maxResults
+     * @param int $skipTheFirstN
+     * @param int $maxDistance
+     * @param int $maxResults
      * @return mixed
      */
-    public function findAround($latitude, $longitude, $skipTheFirstN=0, $maxResults=32)
+    public function findAround($latitude, $longitude, $skipTheFirstN=0,
+                               $maxDistance=0, $maxResults=128)
     {
         $items = [];
-        $rows = $this->findAroundQB($latitude, $longitude, $skipTheFirstN, $maxResults)
+        $rows = $this->findAroundQB($latitude, $longitude, $skipTheFirstN,
+            $maxDistance, $maxResults)
             ->getQuery()
             ->execute()
             ;
@@ -44,9 +43,10 @@ class ItemRepository extends EntityRepository
         return $items;
     }
 
-    public function findAroundQB($latitude, $longitude, $skipTheFirstN, $maxResults)
+    public function findAroundQB($latitude, $longitude, $skipTheFirstN,
+                                 $maxDistance, $maxResults)
     {
-        return $this->createQueryBuilder('e')
+        $qb = $this->createQueryBuilder('e')
             ->addSelect('DISTANCE(e.latitude, e.longitude, :latitude, :longitude) AS distance')
             ->addOrderBy('distance')
             ->setFirstResult($skipTheFirstN)
@@ -54,6 +54,10 @@ class ItemRepository extends EntityRepository
             ->setParameter('latitude', $latitude)
             ->setParameter('longitude', $longitude)
             ;
+        if ($maxDistance > 0)
+            $qb->andWhere('distance <= :maxDistance')
+               ->setParameter('maxDistance', $maxDistance);
+        return $qb;
     }
 
     public function findByDistanceQB($latitude, $longitude, $distanceMax)

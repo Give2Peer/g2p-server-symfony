@@ -52,8 +52,8 @@ REST
 Expect `JSON` responses.
 
 
-Authentication
---------------
+Authenticate
+------------
 
 Use HTTP basic auth.
 
@@ -63,8 +63,8 @@ Authentication will still probably be subject to upgrades, like using perishable
 authentication tokens instead of the user password each time.
 
 
-Registration
-------------
+Register
+--------
 
 Clients can register users using the following API :
 
@@ -100,15 +100,17 @@ Find
 
 `GET /tags`
   - returns an array of tags, with no guaranteed sorting.
-  - each tag is string of maximum 16 characters.
+  - each tag is a string of maximum 16 characters.
 
 
-`GET /find/{latitude}/{longitude}`
-  - fetches at most 32 items present around the provided coordinates,
-    sorted by increasing distance.
+`GET /find/{latitude}/{longitude}/{skip}/{radius}`
+  - fetches at most `128` items present around the provided coordinates,
+    sorted by increasing distance, at most `radius`, and `skip` the first ones.
+  - the `radius` is expected in meters, and by default is infinite.
+  - the number of items to `skip` is 0 by default.
   - returns an array of items, each with the additional `distance` property.
   - each item is a full JSONed instance with as much data as we need.
-  - provides the pictures URI (get them with a separate request)
+  - each item provides its picture URI (get the file with a separate request)
 
 Here is an example of `JSON` sent back with two items found :
 
