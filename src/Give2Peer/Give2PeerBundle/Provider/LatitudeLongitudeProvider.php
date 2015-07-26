@@ -24,7 +24,7 @@ class LatitudeLongitudeProvider extends AbstractProvider
     public function getGeocodedData($address)
     {
         $m = [];
-        $regex = '!^\s*(-?[0-9]*\.?[0-9]*)\s*[/,|]\s*(-?[0-9]*\.?[0-9]*)\s*$!';
+        $regex = '!^\s*(-?[0-9]*[.,]?[0-9]*)\s*[/,|]\s*(-?[0-9]*[.,]?[0-9]*)\s*$!';
         if (! preg_match($regex, $address, $m)) {
             throw new NoResultException();
         }
