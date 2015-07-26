@@ -2,6 +2,7 @@
 
 namespace Give2Peer\Give2PeerBundle\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Geocoder\Result\Geocoded;
@@ -40,8 +41,8 @@ class Item implements \JsonSerializable
             'description' => $this->getDescription(),
             'thumbnail'   => $this->getThumbnail(),
             'tags'        => $this->getTagnames(),
-            'created_at'  => $this->getCreatedAt(),
-            'updated_at'  => $this->getUpdatedAt(),
+            'created_at'  => $this->getCreatedAt()->format(DateTime::ISO8601),
+            'updated_at'  => $this->getUpdatedAt()->format(DateTime::ISO8601),
             'giver'       => $this->getGiver(),
             'spotter'     => $this->getSpotter(),
         );
