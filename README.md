@@ -185,4 +185,5 @@ Still not sure about this.
 004 NOT_AUTHORIZED       Not authorized
 005 SYSTEM_ERROR         System error, usually a bad setup
 006 BAD_LOCATION         Provided location could not be resolved to coordinates
+007 UNAVAILABLE_EMAIL    Email already taken
 ```

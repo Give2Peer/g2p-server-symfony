@@ -54,6 +54,7 @@ class RestController extends Controller
         // Recover the user data
         $username = $request->get('username');
         $password = $request->get('password');
+        $email    = $request->get('email');
         $clientIp = $request->getClientIp();
 
         if (null == $username) {
@@ -69,6 +70,12 @@ class RestController extends Controller
             return new ErrorJsonResponse("Username already taken", 001);
         }
 
+        // Rebuke if email is taken
+        $user = $um->findUserByEmail($email);
+        if (null != $user) {
+            return new ErrorJsonResponse("Email already taken", 007);
+        }
+
         // Rebuke if too many Users created in 2 days from this IP
         // See http://php.net/manual/fr/dateinterval.construct.php
         $allowed = 42;
@@ -82,7 +89,7 @@ class RestController extends Controller
         // Create a new User
         /** @var User $user */
         $user = $um->createUser();
-        $user->setEmail('peer@give2peer.org');
+        $user->setEmail($email);
         $user->setUsername($username);
         $user->setPlainPassword($password);
         $user->setCreatedBy($clientIp);
