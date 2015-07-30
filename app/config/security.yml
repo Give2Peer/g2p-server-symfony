@@ -13,12 +13,13 @@ security:
 
     # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
-        in_memory:
-            memory:
-                users:
-                    test:  { password: testpass, roles: [ 'ROLE_USER' ] }
-                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
-                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
+        # If testing fails, try restoring those ?
+#        in_memory:
+#            memory:
+#                users:
+#                    test:  { password: testpass, roles: [ 'ROLE_USER' ] }
+#                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
+#                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
         fos_userbundle:
             id: fos_user.user_provider.username
 
@@ -29,21 +30,21 @@ security:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        # the login page has to be accessible for everybody
-#        demo_login:
-#            pattern:  ^/demo/secured/login$
-#            security: false
-
-        # the API
+        # the public API
         rest_register:
             pattern:  ^/register$
             security: false
+        # the private API
         rest_api:
             pattern:    ^/
             stateless: true
             http_basic:
                 provider: fos_userbundle
 
+        # the login page has to be accessible for everybody
+#        demo_login:
+#            pattern:  ^/demo/secured/login$
+#            security: false
         # secures part of the application
 #        demo_secured_area:
 #            pattern:    ^/demo/secured/
