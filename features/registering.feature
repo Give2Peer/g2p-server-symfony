@@ -5,8 +5,9 @@ Feature: Registration
   I need to automatically register a new user account
 
 
+
 Scenario: Register and recover credentials
-   When I POST to /register the following :
+   When I register the following :
 """
 username: Goutte
 password: hO5vP=
@@ -23,7 +24,7 @@ username: goutte
 
 Scenario: Try to register with an already taken username
   Given there is a user named "Goutte"
-   When I POST to /register the following :
+   When I register the following :
 """
 username: Goutte
 password: hO5vP=
@@ -37,11 +38,12 @@ error:
     And there should be 1 user in the database
 
 
+
 Scenario: Try to register with an already taken username (lowercase matters)
   Given there is a user named "Goutte"
-   When I POST to /register the following :
+   When I register the following :
 """
-username: GouTTe
+username: GouTTE
 password: hO5vP=
 """
    Then the request should not be accepted

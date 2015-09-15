@@ -97,7 +97,7 @@ class FeatureContext
         // Empty the database by TRUNCATING the tables and RESETTING the indices
         // This is more complicated than it should, because of pgSQL
         $tables = [
-            'Peer', // yes, User is named Peer in the database
+            'Peer', // yes, User is named Peer in the database, as User is reserved
             'Item',
             'Tag',
         ];
@@ -144,7 +144,7 @@ class FeatureContext
     // TRANSFORMERS ////////////////////////////////////////////////////////////
 
     /**
-     * A very handy transformer, registered to Behat.
+     * A very handy transformer for integers, registered to Behat.
      * @Transform /^(-?\d+)$/
      */
     public function castStringToInt($string)
@@ -153,7 +153,7 @@ class FeatureContext
     }
 
     /**
-     * A very handy transformer, registered to Behat.
+     * A very handy transformer for floats, registered to Behat.
      * @Transform /^(-?\d+\.\d*)$/
      */
     public function castStringToFloat($string)
@@ -163,7 +163,6 @@ class FeatureContext
 
 
     // DUMMY STEPS /////////////////////////////////////////////////////////////
-
 
     /**
      * @Given I do nothing
@@ -184,6 +183,7 @@ class FeatureContext
     }
 
     /**
+     * Useful for quick'n dirty debugging.
      * @Then /^I (?:print|dump) the response$/
      */
     public function iDumpTheResponse()
@@ -292,11 +292,29 @@ class FeatureContext
     }
 
 
-    // REQUEST STEPS ///////////////////////////////////////////////////////////
-
+    // ROUTES STEPS ////////////////////////////////////////////////////////////
 
     /**
-     * @When /^I GET ([^ ]+)$/
+     * @When /^I give the following ?:$/
+     */
+    public function iGive($pystring='')
+    {
+        $this->iPost('give', $pystring);
+    }
+
+    /**
+     * @When /^I register the following ?:$/
+     */
+    public function iRegister($pystring='')
+    {
+        $this->iPost('register', $pystring);
+    }
+
+
+    // REQUEST STEPS ///////////////////////////////////////////////////////////
+
+    /**
+     * @When /^I GET ([^ ]+)$/i
      */
     public function iGet($route)
     {
@@ -342,7 +360,6 @@ class FeatureContext
 
 
     // RESPONSE STEPS //////////////////////////////////////////////////////////
-
 
     /**
      * @Then /^the request should (not )?be accepted$/
@@ -440,7 +457,6 @@ class FeatureContext
 
     // CHECKS STEPS ////////////////////////////////////////////////////////////
 
-
     /**
      * @Then /^there should be (\d+) (item|tag|user)s? in the database$/
      */
@@ -484,7 +500,6 @@ class FeatureContext
 
 
     // UTILS ///////////////////////////////////////////////////////////////////
-
 
     /**
      * Create a dummy user named $name with password $name

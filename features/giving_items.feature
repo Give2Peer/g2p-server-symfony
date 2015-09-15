@@ -11,7 +11,7 @@ Background:
 
 @geocode
 Scenario: Give an item without a location
-  When I POST to /give the following :
+  When I give the following :
 """
 nope: I'm not going to tell you where it is !
 """
@@ -21,7 +21,7 @@ nope: I'm not going to tell you where it is !
 
 @geocode
 Scenario: Give an item with an ungeolocalizable location
-  When I POST to /give the following :
+  When I give the following :
 """
 location: The ass-end of nowhere !
 """
@@ -31,7 +31,7 @@ location: The ass-end of nowhere !
 
 
 Scenario: Give an item with only a latitude/longitude location
-  When I POST to /give the following :
+  When I give the following :
 """
 location: -1.441/43.601
 """
@@ -47,7 +47,7 @@ longitude: 43.601
 
 
 Scenario: Give an item with only a latitude, longitude location
-  When I POST to /give the following :
+  When I give the following :
 """
 location: -1.441, 43.601
 """
@@ -62,8 +62,8 @@ longitude: 43.601
 
 
 
-Scenario: Give an item with weird latitude/longitude location
-  When I POST to /give the following :
+Scenario: Give an item with a weird latitude/longitude location
+  When I give the following :
 """
 location: 2/.12
 """
@@ -80,7 +80,7 @@ longitude: .12
 
 @geocode
 Scenario: Give an item with only a postal address location
-  When I POST to /give the following :
+  When I give the following :
 """
 location: 66 Avenue des Champs-Élysées, 75008 Paris
 """
@@ -97,7 +97,7 @@ longitude: 2.3053611
 
 @geocode
 Scenario: Give an item with only an IP address location
-  When I POST to /give the following :
+  When I give the following :
 """
 location: 82.241.251.185
 """
@@ -116,7 +116,7 @@ longitude: 1.444
 Scenario: Give an item with a location, a title, a description, and tags
   Given there is a tag named "book"
     And there is a tag named "pristine"
-   When I POST to /give the following :
+   When I give the following :
 """
 location: 66 Avenue des Champs-Élysées, 75008 Paris
 title: Alice in Wonderland
@@ -147,9 +147,8 @@ tags:
 
 
 
-@wip
 Scenario: Give an item with a location and a title with special characters
-   When I POST to /give the following :
+   When I give the following :
 """
 location: 48.8708484, 2.3053611
 title: Planche de chêne
@@ -172,12 +171,11 @@ description: |
 
 
 
-@geocode
-Scenario: Give an item with a location and ignore non-existing tags
+Scenario: Give an item with a location, tags, and ignore non-existing tags
   Given there is a tag named "wood"
-   When I POST to /give the following :
+   When I give the following :
 """
-location: 66 Avenue des Champs-Élysées, 75008 Paris
+location: 48.8708484, 2.3053611
 tags:
   - wood
   - nope
@@ -194,3 +192,19 @@ tags:
   - nope
 """
     And there should be 1 item in the database
+
+
+
+@wip
+Scenario: Give an item and earn experience points
+  When I give the following :
+"""
+location: 48.8708484, 2.3053611
+"""
+  Then the request should be accepted
+   And the response should include :
+"""
+experience_gain: 1
+"""
+   And there should be 1 item in the database
+   And the user Goutte should have 1 experience point
