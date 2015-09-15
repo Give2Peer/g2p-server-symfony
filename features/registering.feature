@@ -10,7 +10,8 @@ Scenario: Register and recover credentials
    When I register the following :
 """
 username: Goutte
-password: hO5vP=
+password: hO5viH4XkkPbRtuPlop=
+email:    goutte@give2peer.org
 """
    Then the request should be accepted
     And the response should include :
@@ -22,12 +23,13 @@ username: goutte
 
 
 
-Scenario: Try to register with an already taken username
+Scenario: Fail to register with an already taken username
   Given there is a user named "Goutte"
    When I register the following :
 """
 username: Goutte
-password: hO5vP=
+password: hO5viH4XDkPbRtuPlop=
+email:    goutte@give2peer.org
 """
    Then the request should not be accepted
     And the response should include :
@@ -39,17 +41,36 @@ error:
 
 
 
-Scenario: Try to register with an already taken username (lowercase matters)
+Scenario: Fail to register with an already taken username (lowercase matters)
   Given there is a user named "Goutte"
    When I register the following :
 """
 username: GouTTE
-password: hO5vP=
+password: hO5viHXDkkPbRtuPlop=
+email:    goutte@give2peer.org
 """
    Then the request should not be accepted
     And the response should include :
 """
 error:
     code: 1
+"""
+    And there should be 1 user in the database
+
+
+
+Scenario: Fail to register with an already taken email
+  Given there is a user with email "goutte@give2peer.org"
+   When I register the following :
+"""
+username: Goutte
+password: hO5viH4XDkPbRtuPlop=
+email:    goutte@give2peer.org
+"""
+   Then the request should not be accepted
+    And the response should include :
+"""
+error:
+    code: 7
 """
     And there should be 1 user in the database

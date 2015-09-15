@@ -361,6 +361,7 @@ class RestController extends Controller
         $tags = $tagsRepo->findTags($tagnames);
 
         // Recover the user data
+        /** @var User $user */
         $user = $sc->getToken()->getUser();
 
         // Create the item
@@ -385,10 +386,21 @@ class RestController extends Controller
 
         // Add the item to database
         $em->persist($item);
+
+        // Compute how much experience the user gains
+        $experience = 3;
+        if (! empty($item->getTitle()))  { $experience++; }
+        if (0 < count($item->getTags())) { $experience++; }
+        $user->addExperience($experience);
+
+        // Flush the entity manager to save our changes
         $em->flush();
 
-        // Send the item as response
-        return new JsonResponse($item);
+        // Send the item and other action data as response
+        return new JsonResponse([
+            'item'       => $item,
+            'experience' => $experience,
+        ]);
     }
 
 

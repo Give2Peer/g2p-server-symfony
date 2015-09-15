@@ -14,7 +14,8 @@ use Give2Peer\Give2PeerBundle\Entity\Item;
  * Users can later ascribe a proper username and password to save their account,
  * and be able to retrieve it from a different device.
  *
- * We use FOS User : https://github.com/FriendsOfSymfony/FOSUserBundle/blob/master/Resources/doc/index.md
+ * We use FOS User :
+ * https://github.com/FriendsOfSymfony/FOSUserBundle/blob/master/Resources/doc/index.md
  *
  * User is a reserved word in SQL, so we use "peer" instead.
  * @ORM\Table(name="Peer")
@@ -25,6 +26,18 @@ class User extends BaseUser implements \JsonSerializable
     // Means that the user has meaningful password, email and username,
     // and has gone through the registration process.
 //    const ROLE_REGISTERED = 'ROLE_REGISTERED'; // fixme: use property instead?
+
+    /**
+     * Acceleration of Experience cost per level
+     * Used as a constant in the formulas for levelling up.
+     */
+    const ACC_EXP_COST = 10;
+
+    /**
+     * Required Experience to be level 2.
+     * Used as a constant in the formulas for levelling up.
+     */
+    const EXP_LVL_2 = 10;
 
     use ORMBehaviors\Timestampable\Timestampable;
 
@@ -38,10 +51,11 @@ class User extends BaseUser implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->getId(),
-            'username' => $this->getUsernameCanonical(),
-            'email' => $this->getEmailCanonical(),
+            'id'         => $this->getId(),
+            'username'   => $this->getUsernameCanonical(),
+            'email'      => $this->getEmailCanonical(),
             'created_at' => $this->getCreatedAt(),
+            'experience' => $this->getExperience(),
         ];
     }
 
@@ -56,7 +70,7 @@ class User extends BaseUser implements \JsonSerializable
 
     /**
      * A token for REST auth.
-     * Right now it is NOT USED.
+     * Right now it is NOT USED, as we use brutal HttpAuth.
      * It should be refreshed, here's some ways to do it :
      * - CRON tasks (we'll need those eventually)
      *
@@ -66,12 +80,21 @@ class User extends BaseUser implements \JsonSerializable
 
     /**
      * IP of the client that registered.
-     * This is used to banish abusive IPs.
+     * This is used to banish abusive Users.
      * Note that this contains the proxy IP if one was used.
      *
      * @ORM\Column(name="created_by", type="string", nullable=true)
      */
     protected $createdBy;
+
+    /**
+     * The total sum of experience points this user has.
+     * Experience points are gained automatically by using the service,
+     * and are the building blocks of user levelling (up).
+     *
+     * @ORM\Column(name="experience", type="integer")
+     */
+    protected $experience = 0;
 
     /**
      * @ORM\OneToMany(targetEntity="Item", mappedBy="giver")
@@ -84,6 +107,8 @@ class User extends BaseUser implements \JsonSerializable
     protected $itemsSpotten;
 
 
+    // CONSTRUCTOR /////////////////////////////////////////////////////////////
+
     /**
      * Override of parent constructor to make sure we have a WS token ready.
      */
@@ -92,6 +117,9 @@ class User extends BaseUser implements \JsonSerializable
         parent::__construct();
         $this->refreshRestToken();
     }
+
+
+    // ITEMS ///////////////////////////////////////////////////////////////////
 
     /**
      * @return Item[]
@@ -108,6 +136,10 @@ class User extends BaseUser implements \JsonSerializable
     {
         return $this->itemsSpotten;
     }
+
+
+    // REST AUTHENTICATION TOKEN ///////////////////////////////////////////////
+    // We don't use this, as we're using basic HTTP Authentication right now.
 
     /**
      * @return String
@@ -131,8 +163,100 @@ class User extends BaseUser implements \JsonSerializable
         return $this->restToken;
     }
 
+
+    // EXPERIENCE //////////////////////////////////////////////////////////////
+
     /**
-     * @return mixed
+     * @param int $experience to give to this user.
+     */
+    public function addExperience($experience)
+    {
+        $this->experience += max(0, (int) $experience);
+    }
+
+    /**
+     * @param int $experience
+     */
+    public function setExperience($experience)
+    {
+        $this->experience = max(0, (int) $experience);
+    }
+
+    /**
+     * @return int the total amount of experience points this user has.
+     */
+    public function getExperience()
+    {
+        return $this->experience;
+    }
+
+    /**
+     * Experience points acquired towards next level.
+     * This is the total of experience points minus the experience points
+     * required to attain the current level of the user.
+     *
+     * @return int
+     */
+    public function getExperienceProgress()
+    {
+        return $this->experience - self::experienceOf($this->getLevel());
+    }
+
+    /**
+     * @return int the amount of experience points missing to gain next level.
+     */
+    public function getExperienceMissing()
+    {
+        return self::experienceOf($this->getLevel()+1) - $this->experience;
+    }
+
+    /**
+     * @return int the current level of this User.
+     */
+    public function getLevel()
+    {
+        return self::levelOf($this->experience);
+    }
+
+    /**
+     * @thanks Aurel Page for the formula.
+     *
+     * @param  int $experience
+     * @return int the level attained with $experience points.
+     */
+    static function levelOf($experience)
+    {
+        $a = self::ACC_EXP_COST;
+        $d = self::EXP_LVL_2;
+        $n = floor(
+            (3 * $a - 2 * $d + sqrt(pow(2 * $d - $a, 2) + 8 * $a * $experience))
+            /
+            (2 * $a)
+        );
+
+        return max($n, 1);
+    }
+
+    /**
+     * @thanks Aurel Page for the formula.
+     *
+     * @param  int $level
+     * @return int the experience required to be $level.
+     */
+    static function experienceOf($level)
+    {
+        $a = self::ACC_EXP_COST;
+        $d = self::EXP_LVL_2;
+        $n = $level;
+
+        return ($d - $a) * ($n - 1) + $a * ($n * $n - $n) / 2;
+    }
+
+
+    // BORING STUFF ////////////////////////////////////////////////////////////
+
+    /**
+     * @return String|null
      */
     public function getCreatedBy()
     {
@@ -140,10 +264,11 @@ class User extends BaseUser implements \JsonSerializable
     }
 
     /**
-     * @param mixed $createdBy
+     * @param String|null $createdBy
      */
     public function setCreatedBy($createdBy)
     {
         $this->createdBy = $createdBy;
     }
+
 }

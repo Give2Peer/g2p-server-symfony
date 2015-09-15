@@ -19,6 +19,13 @@ Vision
 
 Bring the power of the internet of things to the sharing of things.
 
+That is so cheesy, yes. But it's also true !
+We can leverage this awesome new communication tool that internet is
+to find people that need the stuff we have but don't need.
+
+Want not, waste not.
+
+Finally, and this is quite important, money should not be involved.
 
 
 A Work in Progress
@@ -33,6 +40,7 @@ These are the features we're working on :
 - [X] geolocation through third-party services
 - [X] registration
 - [X] create and serve 200x200 thumbnails
+- [x] user experience points and levels
 - [ ] https support
 - [ ] proper documentation
 
@@ -112,7 +120,7 @@ Find
   - each item is a full JSONed instance with as much data as we need.
   - each item provides its picture URI (get the file with a separate request)
 
-Here is an example of `JSON` sent back with two items found :
+Here is an (old) example of `JSON` sent back with two items found :
 
 ```
 [

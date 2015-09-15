@@ -231,11 +231,19 @@ class FeatureContext
     }
 
     /**
-     * @Given /^there is a user named "(.*)" *$/
+     * @Given /^there is a user named "(.+)" *$/
      */
     public function thereIsAUserNamed($name)
     {
         $this->createUser($name);
+    }
+
+    /**
+     * @Given /^there is a user with email "(.+)" *$/
+     */
+    public function thereIsAUserWithEmail($email)
+    {
+        $this->createUser($email, $email);
     }
 
     /**
@@ -261,13 +269,13 @@ class FeatureContext
         $giver   = ($action == 'I give') ? true : false;
         $spotter = ($action == 'I spot') ? true : false;
         if (($giver||$spotter) && empty($this->user)) {
-            $this->fail("There is no I. You are no-one. You cannot give.");
+            $this->fail("There is no I. You are no-one ; you cannot give.");
         }
 
         // Create the item
+        $title = sprintf("%s %s", $this->faker->colorName, $this->faker->word);
         $item = new Item();
-        $item->setTitle(sprintf("%s %s",
-            $this->faker->colorName, $this->faker->word));
+        $item->setTitle(substr($title, 0, 32));
         $item->setLocation("$latitude, $longitude");
         $item->setLatitude($latitude);
         $item->setLongitude($longitude);
@@ -322,7 +330,7 @@ class FeatureContext
     }
 
     /**
-     * @When /^I POST to ([^ ]+) the following ?:$/
+     * @When /^I POST to ([^ ]+) the following ?:$/i
      */
     public function iPost($route, $pystring='')
     {
@@ -331,11 +339,12 @@ class FeatureContext
     }
 
     /**
-     * @When /^I POST to ([^ ]+) the file (.+)?$/
+     * @When /^I POST to ([^ ]+) the file (.+)?$/i
      */
     public function iPostTheFile($route, $filePath)
     {
         // We need to make a copy of the file, 'cause it will be *moved*
+        // Unless the test suite fails, it seems ? Something is fishy here...
         $sInfo = new \SplFileInfo($filePath);
         $extension = $sInfo->getExtension();
         $tmpFilePath = $sInfo->getBasename('.'.$extension).'_copy.'.$extension;
@@ -460,7 +469,7 @@ class FeatureContext
     /**
      * @Then /^there should be (\d+) (item|tag|user)s? in the database$/
      */
-    public function thereShouldBeItemInTheDatabase($thatMuch, $what)
+    public function thereShouldBeSomethingInTheDatabase($thatMuch, $what)
     {
         $em = $this->getEntityManager();
         $count = $em->createQueryBuilder()
@@ -473,6 +482,20 @@ class FeatureContext
 
         $this->assertEquals($thatMuch, $count);
     }
+
+    /**
+     * @Then /^the user (.+) should have (\d+) experience points?$/
+     */
+    public function theUserShouldHaveExperiencePoints($username, $experience)
+    {
+        $usr = $this->getEntityManager()
+                    ->getRepository("Give2PeerBundle:User")
+                    ->findOneBy(['username'=>$username])
+                    ;
+
+        $this->assertEquals($experience, $usr->getExperience());
+    }
+
 
 
     /**
@@ -505,14 +528,17 @@ class FeatureContext
      * Create a dummy user named $name with password $name
      *
      * @param $name
+     * @param string $email
      * @return User
      */
-    protected function createUser($name)
+    protected function createUser($name, $email='')
     {
         $um = $this->getUserManager();
 
+        if (empty($email)) $email = $name.'@give2peer.org';
+
         $user = $um->createUser();
-        $user->setEmail('peer@give2peer.org');
+        $user->setEmail($email);
         $user->setUsername($name);
         $user->setPlainPassword($name);
         $user->setEnabled(true);

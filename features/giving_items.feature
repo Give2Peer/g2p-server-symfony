@@ -9,7 +9,7 @@ Background:
   Given I am the registered user named "Goutte"
 
 
-@geocode
+
 Scenario: Give an item without a location
   When I give the following :
 """
@@ -38,9 +38,10 @@ location: -1.441/43.601
   Then the request should be accepted
    And the response should include :
 """
-location: -1.441/43.601
-latitude: -1.441
-longitude: 43.601
+item:
+  location: -1.441/43.601
+  latitude: -1.441
+  longitude: 43.601
 """
    And there should be 1 item in the database
 
@@ -54,9 +55,10 @@ location: -1.441, 43.601
   Then the request should be accepted
    And the response should include :
 """
-location: -1.441, 43.601
-latitude: -1.441
-longitude: 43.601
+item:
+  location: -1.441, 43.601
+  latitude: -1.441
+  longitude: 43.601
 """
    And there should be 1 item in the database
 
@@ -70,9 +72,10 @@ location: 2/.12
   Then the request should be accepted
    And the response should include :
 """
-location: 2/.12
-latitude: 2
-longitude: .12
+item:
+  location: 2/.12
+  latitude: 2
+  longitude: .12
 """
    And there should be 1 item in the database
 
@@ -87,9 +90,10 @@ location: 66 Avenue des Champs-Élysées, 75008 Paris
   Then the request should be accepted
    And the response should include :
 """
-location: 66 Avenue des Champs-Élysées, 75008 Paris
-latitude: 48.8708484
-longitude: 2.3053611
+item:
+  location: 66 Avenue des Champs-Élysées, 75008 Paris
+  latitude: 48.8708484
+  longitude: 2.3053611
 """
    And there should be 1 item in the database
 
@@ -104,24 +108,24 @@ location: 82.241.251.185
   Then the request should be accepted
    And the response should include :
 """
-location: 82.241.251.185
-latitude: 43.604
-longitude: 1.444
+item:
+  location: 82.241.251.185
+  latitude: 43.604
+  longitude: 1.444
 """
    And there should be 1 item in the database
 
 
 
-@geocode
 Scenario: Give an item with a location, a title, a description, and tags
   Given there is a tag named "book"
     And there is a tag named "pristine"
    When I give the following :
 """
-location: 66 Avenue des Champs-Élysées, 75008 Paris
+location: 48.8708484/2.3053611
 title: Alice in Wonderland
 description: |
-  Slightly foxed, good story.
+  Slightly foxed, good book.
   Lots of madness, and hats.
 tags:
   - book
@@ -130,18 +134,16 @@ tags:
    Then the request should be accepted
     And the response should include :
 """
-giver:
-  username: goutte
-location: 66 Avenue des Champs-Élysées, 75008 Paris
-latitude: 48.8708484
-longitude: 2.3053611
-title: Alice in Wonderland
-description: |
-  Slightly foxed, good story.
-  Lots of madness, and hats.
-tags:
-  - book
-  - pristine
+item:
+  giver:
+    username: goutte
+  title: Alice in Wonderland
+  description: |
+    Slightly foxed, good book.
+    Lots of madness, and hats.
+  tags:
+    - book
+    - pristine
 """
     And there should be 1 item in the database
 
@@ -158,14 +160,10 @@ description: |
    Then the request should be accepted
     And the response should include :
 """
-giver:
-  username: goutte
-location: 48.8708484, 2.3053611
-latitude: 48.8708484
-longitude: 2.3053611
-title: Planche de chêne
-description: |
-  %~#éàç_-*+
+item:
+  title: Planche de chêne
+  description: |
+    %~#éàç_-*+
 """
     And there should be 1 item in the database
 
@@ -183,20 +181,22 @@ tags:
    Then the request should be accepted
     And the response should include :
 """
-tags:
-  - wood
+item:
+  tags:
+    - wood
 """
     And the response should not include :
 """
-tags:
-  - nope
+item:
+  tags:
+    - nope
 """
     And there should be 1 item in the database
 
 
 
 @wip
-Scenario: Give an item and earn experience points
+Scenario: Give an item and earn some experience points
   When I give the following :
 """
 location: 48.8708484, 2.3053611
@@ -204,7 +204,7 @@ location: 48.8708484, 2.3053611
   Then the request should be accepted
    And the response should include :
 """
-experience_gain: 1
+experience: 3
 """
    And there should be 1 item in the database
-   And the user Goutte should have 1 experience point
+   And the user Goutte should have 3 experience points
