@@ -73,9 +73,9 @@ class LoadFakeData extends DataFixture
         for ($i=1; $i<=$total; $i++) {
             // Pick a location
             $latitude  = $centerLatitude  - $maxLatitudeDiff
-                       + rand()/getrandmax() * $maxLatitudeDiff;
+                       + rand()/getrandmax() * $maxLatitudeDiff * 2;
             $longitude = $centerLongitude - $maxLongitudeDiff
-                       + rand()/getrandmax() * $maxLongitudeDiff;
+                       + rand()/getrandmax() * $maxLongitudeDiff * 2;
 
             // Create the item
             $item = new Item();
