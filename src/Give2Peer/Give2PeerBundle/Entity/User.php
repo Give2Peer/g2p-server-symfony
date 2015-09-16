@@ -31,7 +31,7 @@ class User extends BaseUser implements \JsonSerializable
      * Acceleration of Experience cost per level
      * Used as a constant in the formulas for levelling up.
      */
-    const ACC_EXP_COST = 10;
+    const ACC_EXP_COST = 15;
 
     /**
      * Required Experience to be level 2.
