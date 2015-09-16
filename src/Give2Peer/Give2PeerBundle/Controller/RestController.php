@@ -4,12 +4,14 @@ namespace Give2Peer\Give2PeerBundle\Controller;
 
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\EntityManager;
+use Give2Peer\Give2PeerBundle\Controller\ErrorCode as Error;
 use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
 use Give2Peer\Give2PeerBundle\Entity\TagRepository;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Give2Peer\Give2PeerBundle\Entity\UserManager;
 use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
+use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +26,11 @@ use Symfony\Component\Security\Core\SecurityContext;
  */
 class RestController extends Controller
 {
+    /** Number of items per level and per day a user may add */
+    const ADD_ITEMS_PER_LEVEL = 2;
+    /** Number of item queries per level and per day a user may make */
+    const ITEM_QUERIES_PER_LEVEL = 20;
+
     /**
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -39,6 +46,8 @@ class RestController extends Controller
     }
 
     /**
+     * Basic boring registration.
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -67,13 +76,17 @@ class RestController extends Controller
         // Rebuke if username is taken
         $user = $um->findUserByUsername($username);
         if (null != $user) {
-            return new ErrorJsonResponse("Username already taken", 001);
+            return new ErrorJsonResponse(
+                "Username already taken.", Error::UNAVAILABLE_USERNAME
+            );
         }
 
         // Rebuke if email is taken
         $user = $um->findUserByEmail($email);
         if (null != $user) {
-            return new ErrorJsonResponse("Email already taken", 007);
+            return new ErrorJsonResponse(
+                "Email already taken.", Error::UNAVAILABLE_EMAIL
+            );
         }
 
         // Rebuke if too many Users created in 2 days from this IP
@@ -83,7 +96,7 @@ class RestController extends Controller
         $since = (new \DateTime())->sub($duration);
         $count = $um->countUsersCreatedBy($clientIp, $since);
         if ($count > $allowed) {
-            return new ErrorJsonResponse("Too many registrations", 002, 429);
+            return new ExceededQuotaJsonResponse("Too many registrations.");
         }
 
         // Create a new User
@@ -115,7 +128,8 @@ class RestController extends Controller
      */
     public function giveAction(Request $request)
     {
-        return $this->giveOrSpotAction($request, true);
+        $request->attributes->set('gift', 'true');
+        return $this->itemAdd($request);
     }
 
     /**
@@ -129,7 +143,85 @@ class RestController extends Controller
      */
     public function spotAction(Request $request)
     {
-        return $this->giveOrSpotAction($request, false);
+        $request->attributes->set('gift', 'false');
+        return $this->itemAdd($request);
+    }
+
+    /**
+     * Give an item whose properties are provided as POST variables.
+     * Only the location property is mandatory.
+     *
+     * This creates an Item with the appropriate attributes, stores it and
+     * sends it back as JSON, along with the experience gained.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    protected function itemAdd(Request $request)
+    {
+        /** @var SecurityContext $sc */
+        $sc = $this->get('security.context');
+        /** @var EntityManager $em */
+        $em = $this->get('doctrine.orm.entity_manager');
+
+        // Recover the item data
+        $location = $request->get('location');
+        if (null == $location) {
+            return new ErrorJsonResponse(
+                "No location provided.", Error::BAD_LOCATION
+            );
+        }
+        $title = $request->get('title', '');
+        $description = $request->get('description', '');
+        $tagnames = $request->get('tags', []);
+        $gift = $request->get('gift', 'false') == 'true';
+
+        // Fetch the Tags -- Ignore tags not found, for now.
+        /** @var TagRepository $tagsRepo */
+        $tagsRepo = $em->getRepository('Give2PeerBundle:Tag');
+        $tags = $tagsRepo->findTags($tagnames);
+
+        // Recover the user data
+        /** @var User $user */
+        $user = $sc->getToken()->getUser();
+
+        // Create the item
+        $item = new Item();
+        $item->setLocation($location);
+        try {
+            $item->geolocate();
+        } catch (\Exception $e) {
+            $msg = sprintf("Cannot resolve geolocation: %s", $e->getMessage());
+            return new ErrorJsonResponse($msg, Error::BAD_LOCATION);
+        }
+        $item->setTitle($title);
+        $item->setDescription($description);
+        foreach ($tags as $tag) {
+            $item->addTag($tag);
+        }
+        if ($gift) {
+            $item->setGiver($user);
+        } else {
+            $item->setSpotter($user);
+        }
+
+        // Add the item to database
+        $em->persist($item);
+
+        // Compute how much experience the user gains
+        $experience = 3;
+        if (! empty($item->getTitle()))  { $experience++; }
+        if (0 < count($item->getTags())) { $experience++; }
+        $user->addExperience($experience);
+
+        // Flush the entity manager to save our changes
+        $em->flush();
+
+        // Send the item and other action data as response
+        return new JsonResponse([
+            'item'       => $item,
+            'experience' => $experience,
+        ]);
     }
 
     /**
@@ -137,7 +229,7 @@ class RestController extends Controller
      * @param Request $request
      * @return JsonResponse|ErrorJsonResponse
      */
-    public function pictureUploadAction($itemId, Request $request)
+    public function itemPictureUploadAction($itemId, Request $request)
     {
         /** @var SecurityContext $sc */
         $sc = $this->get('security.context');
@@ -157,11 +249,15 @@ class RestController extends Controller
         $item = $repo->find($itemId);
 
         if (null == $item) {
-            return new ErrorJsonResponse("Not authorized: no item.", 004);
+            return new ErrorJsonResponse(
+                "Not authorized: no item.", Error::NOT_AUTHORIZED
+            );
         }
 
         if ($item->getGiver() != $user && $item->getSpotter() != $user) {
-            return new ErrorJsonResponse("Not authorized.", 004);
+            return new ErrorJsonResponse(
+                "Not authorized: not owner.", Error::NOT_AUTHORIZED
+            );
         }
 
         // todo: move `web/pictures` to configuration
@@ -169,18 +265,25 @@ class RestController extends Controller
         $publicPath .= DIRECTORY_SEPARATOR . (string) $itemId;
 
         if (empty($request->files)) {
-            return new ErrorJsonResponse("No `picture` file provided.", 003);
+            return new ErrorJsonResponse(
+                "No `picture` file provided.", Error::UNSUPPORTED_FILE
+            );
         }
 
         /** @var UploadedFile $file */
         $file = $request->files->get('picture');
 
         if (null == $file) {
-            return new ErrorJsonResponse("No `picture` file provided.", 003);
+            return new ErrorJsonResponse(
+                "No `picture` file provided.", Error::UNSUPPORTED_FILE
+            );
         }
 
         if (! $file->isValid()) {
-            return new ErrorJsonResponse("Upload failed: ".$file->getErrorMessage(), 003);
+            return new ErrorJsonResponse(
+                "Upload failed: ".$file->getErrorMessage(),
+                Error::UNSUPPORTED_FILE
+            );
         }
 
         // Check extension
@@ -194,27 +297,34 @@ class RestController extends Controller
             return new ErrorJsonResponse(sprintf(
                 "Extension '%s' unsupported. Supported extensions : %s",
                 $actualExtension, join(', ', $allowedExtensions)
-            ), 003);
+            ), Error::UNSUPPORTED_FILE);
         }
+
+        // Temp filename definition, since we only support one picture right now
+        $filename = '1.jpg';
 
         // Move the picture to a publicly available path
         try {
-            $file->move($publicPath, '1.jpg');
+            $file->move($publicPath, $filename);
         } catch (\Exception $e) {
-            return new ErrorJsonResponse(sprintf(
-                "Picture unrecognized : %s", $e->getMessage()), 003);
+            return new ErrorJsonResponse(
+                sprintf("Picture unrecognized : %s", $e->getMessage()),
+                Error::UNSUPPORTED_FILE
+            );
         }
 
         // Create a square thumbnail
         try {
-            $this->makeSquareThumb(
-                $publicPath . DIRECTORY_SEPARATOR . '1.jpg',
+            $this->generateSquareThumb(
+                $publicPath . DIRECTORY_SEPARATOR . $filename,
                 $publicPath . DIRECTORY_SEPARATOR . 'thumb.jpg',
                 200 // todo: move thumb size in pixels to configuration
             );
         } catch (\Exception $e) {
-            return new ErrorJsonResponse(sprintf(
-                "Thumbnail creation failed : %s", $e->getMessage()), 003);
+            return new ErrorJsonResponse(
+                sprintf("Thumbnail creation failed : %s", $e->getMessage()),
+                Error::UNSUPPORTED_FILE
+            );
         }
 
         $thumbUrl = join(DIRECTORY_SEPARATOR, [
@@ -224,13 +334,13 @@ class RestController extends Controller
             'thumb.jpg',
         ]);
         $item->setThumbnail($thumbUrl);
-//        $em->persist($item);
+//        $em->persist($item); // unsure whether and why we'd need that
         $em->flush();
 
         return new JsonResponse($item);
     }
 
-    function makeSquareThumb($source, $destination, $sideLength)
+    function generateSquareThumb($source, $destination, $sideLength)
     {
         // Read the source image
         $sourceImage = imagecreatefromjpeg($source); // jpg only !
@@ -263,12 +373,17 @@ class RestController extends Controller
         imagejpeg($virtualImage, $destination);
     }
 
-
+    /**
+     * Returns all available tags, as a JSONed array.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function tagsAction(Request $request)
     {
         /** @var EntityManager $em */
         $em = $this->get('doctrine.orm.entity_manager');
-
+        /** @var TagRepository $repo */
         $repo = $em->getRepository('Give2PeerBundle:Tag');
 
         $tags = $repo->getTagNames();
@@ -294,10 +409,10 @@ class RestController extends Controller
     public function findAroundCoordinatesAction($latitude, $longitude, $skip,
                                                 $radius)
     {
-        $maxResults = 128; // move this outta here
+        $maxResults = 128; // todo: move this to configuration
 
         // This sanitization may not be necessary anymore. Still.
-        $latitude = floatval($latitude);
+        $latitude  = floatval($latitude);
         $longitude = floatval($longitude);
 
         /** @var EntityManager $em */
@@ -312,97 +427,19 @@ class RestController extends Controller
                 'Give2Peer\Give2PeerBundle\Query\AST\Functions\DistanceFunction'
             );
         } else {
-            return new ErrorJsonResponse('Db *must* be pgSQL.', 005, 500);
+            return new ErrorJsonResponse(
+                'Database *must* be pgSQL.', Error::SYSTEM_ERROR, 500
+            );
         }
 
         // Ask the repository to do the pgSQL-optimized query for us
         /** @var ItemRepository $repo */
         $repo = $em->getRepository('Give2PeerBundle:Item');
-        $results = $repo->findAround($latitude, $longitude, $skip, $radius, $maxResults);
+        $results = $repo->findAround(
+            $latitude, $longitude, $skip, $radius, $maxResults
+        );
 
         return new JsonResponse($results);
     }
-
-
-
-    //// UTILS /////////////////////////////////////////////////////////////////
-
-    /**
-     * Give an item whose properties are provided as POST variables.
-     * Only the location property is mandatory.
-     * There is no route acting on this directly, this is a helper.
-     *
-     * This creates an Item with the appropriate attributes, stores it and
-     * sends it back as JSON.
-     *
-     * @param Request $request
-     * @param bool $mine Is the item mine ?
-     * @return JsonResponse
-     */
-    protected function giveOrSpotAction(Request $request, $mine)
-    {
-        /** @var SecurityContext $sc */
-        $sc = $this->get('security.context');
-        /** @var EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
-
-        // Recover the item data
-        $location = $request->get('location');
-        if (null == $location) {
-            return new ErrorJsonResponse("No location provided.", 006);
-        }
-        $title = $request->get('title', '');
-        $description = $request->get('description', '');
-        $tagnames = $request->get('tags', []);
-
-        // Fetch the Tags -- Ignore tags not found, for now.
-        /** @var TagRepository $tagsRepo */
-        $tagsRepo = $em->getRepository('Give2PeerBundle:Tag');
-        $tags = $tagsRepo->findTags($tagnames);
-
-        // Recover the user data
-        /** @var User $user */
-        $user = $sc->getToken()->getUser();
-
-        // Create the item
-        $item = new Item();
-        $item->setLocation($location);
-        try {
-            $item->geolocate();
-        } catch (\Exception $e) {
-            $msg = sprintf("Cannot resolve geolocation: %s", $e->getMessage());
-            return new ErrorJsonResponse($msg, 006);
-        }
-        $item->setTitle($title);
-        $item->setDescription($description);
-        foreach ($tags as $tag) {
-            $item->addTag($tag);
-        }
-        if ($mine) {
-            $item->setGiver($user);
-        } else {
-            $item->setSpotter($user);
-        }
-
-        // Add the item to database
-        $em->persist($item);
-
-        // Compute how much experience the user gains
-        $experience = 3;
-        if (! empty($item->getTitle()))  { $experience++; }
-        if (0 < count($item->getTags())) { $experience++; }
-        $user->addExperience($experience);
-
-        // Flush the entity manager to save our changes
-        $em->flush();
-
-        // Send the item and other action data as response
-        return new JsonResponse([
-            'item'       => $item,
-            'experience' => $experience,
-        ]);
-    }
-
-
 
 }

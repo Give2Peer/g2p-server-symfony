@@ -20,6 +20,6 @@ class ErrorJsonResponse extends JsonResponse
                 'message' => $message,
             ]
         ];
-        parent::__construct($data, 400, $headers);
+        parent::__construct($data, $status, $headers);
     }
 } 

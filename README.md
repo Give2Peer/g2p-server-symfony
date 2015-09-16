@@ -87,10 +87,10 @@ already taken.
 This API is throttled to a fixed number of queries per day and per IP.
 
 
-Give
-----
+Give or Spot
+------------
 
-`POST /give`
+`POST /item/add`
   - *location* (mandatory)
     Multiple formats are accepted :
       - "43.578658, 1.468091"
@@ -98,9 +98,8 @@ Give
       - "91.121.148.102"
   - *title*
   - *description*
+  - *gift* 'true' or 'false', whether the user is the legal owner or not
 
-`POST /spot`
-  - alias of give, when we're not the legal owner
 
 
 Find
@@ -184,7 +183,7 @@ Pictures
 Error Codes
 -----------
 
-Still not sure about this.
+
 
 ```
 001 UNAVAILABLE_USERNAME Username already taken
@@ -194,4 +193,5 @@ Still not sure about this.
 005 SYSTEM_ERROR         System error, usually a bad setup
 006 BAD_LOCATION         Provided location could not be resolved to coordinates
 007 UNAVAILABLE_EMAIL    Email already taken
+008 EXCEEDED_QUOTA       User daily quota for that action was exceeded
 ```

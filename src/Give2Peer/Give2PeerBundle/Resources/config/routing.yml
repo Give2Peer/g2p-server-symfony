@@ -12,19 +12,26 @@ give2_peer_register:
     defaults: { _controller: Give2PeerBundle:Rest:register, _format: json }
     methods:  [POST]
 
+# Deprecated alias for /item/add
 give2_peer_give:
     path:     /give
     defaults: { _controller: Give2PeerBundle:Rest:give, _format: json }
     methods:  [POST]
 
+# Deprecated alias for /item/add
 give2_peer_spot:
     path:     /spot
     defaults: { _controller: Give2PeerBundle:Rest:spot, _format: json }
     methods:  [POST]
 
+give2_peer_item_add:
+    path:     /item/add
+    defaults: { _controller: Give2PeerBundle:Rest:itemAdd, _format: json }
+    methods:  [POST]
+
 give2_peer_picture_upload:
     path:     /picture/{itemId}
-    defaults: { _controller: Give2PeerBundle:Rest:pictureUpload, _format: json }
+    defaults: { _controller: Give2PeerBundle:Rest:itemPictureUpload, _format: json }
     methods:  [POST]
     requirements:
         itemId: \d+
