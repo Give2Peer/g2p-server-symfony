@@ -111,7 +111,7 @@ Find
 
 
 `GET /find/{latitude}/{longitude}/{skip}/{radius}`
-  - fetches at most `128` items present around the provided coordinates,
+  - fetches at most `64` items present around the provided coordinates,
     sorted by increasing distance, at most `radius`, and `skip` the first ones.
   - the `radius` is expected in meters, and by default is infinite.
   - the number of items to `skip` is 0 by default.
@@ -176,6 +176,8 @@ Pictures
 
 `POST /pictures/{itemId}`
   - Send a JPG file in a input named 'picture'.
+  - That picture will be renamed `1.jpg`.
+  - This is terrible and subject to future changes.
 
 `GET /pictures/{itemId}/1.jpg`
 
@@ -183,7 +185,7 @@ Pictures
 Error Codes
 -----------
 
-
+The error codes are available as constants in the class `Controller\ErrorCode`.
 
 ```
 001 UNAVAILABLE_USERNAME Username already taken

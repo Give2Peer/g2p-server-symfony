@@ -29,7 +29,7 @@ class ItemRepository extends EntityRepository
      * @return mixed
      */
     public function findAround($latitude, $longitude, $skipTheFirstN=0,
-                               $maxDistance=0, $maxResults=128)
+                               $maxDistance=0, $maxResults=64)
     {
         $items = [];
         $rows = $this->findAroundQB($latitude, $longitude, $skipTheFirstN,

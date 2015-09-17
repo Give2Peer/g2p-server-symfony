@@ -19,6 +19,7 @@ nope: I'm not going to tell you where it is !
    And there should be 0 items in the database
 
 
+
 @geocode
 Scenario: Give an item with an ungeolocalizable location
   When I give the following :
@@ -195,8 +196,7 @@ item:
 
 
 
-@wip
-Scenario: Give an item and earn some experience points
+Scenario: Give items and earn some experience points
   When I give the following :
 """
 location: 48.8708484, 2.3053611
@@ -208,3 +208,14 @@ experience: 3
 """
    And there should be 1 item in the database
    And the user Goutte should have 3 experience points
+  Then I give the following :
+"""
+location: 48.8708484, 2.3053611
+title: This thing
+"""
+  Then the request should be accepted
+   And the response should include :
+"""
+experience: 4
+"""
+   And the user Goutte should have 7 experience points

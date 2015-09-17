@@ -392,7 +392,7 @@ class RestController extends Controller
     }
 
     /**
-     * Returns a list of at most 128 Items, sorted by increasing distance to
+     * Returns a list of at most 64 Items, sorted by increasing distance to
      * the center of the circle.
      * You can skip the first `$skip` items if you already have them.
      *
@@ -409,7 +409,7 @@ class RestController extends Controller
     public function findAroundCoordinatesAction($latitude, $longitude, $skip,
                                                 $radius)
     {
-        $maxResults = 128; // todo: move this to configuration
+        $maxResults = 64; // todo: move this to configuration
 
         // This sanitization may not be necessary anymore. Still.
         $latitude  = floatval($latitude);
