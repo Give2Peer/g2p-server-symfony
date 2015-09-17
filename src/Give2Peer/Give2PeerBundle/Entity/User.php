@@ -219,6 +219,17 @@ class User extends BaseUser implements \JsonSerializable
     }
 
     /**
+     * Should only be used when testing, as leveling up for users is
+     * automatically done when adding experience with `addExperience`.
+     *
+     * @param int $level at which we want this user to be.
+     */
+    public function setLevel($level)
+    {
+        $this->setExperience(self::experienceOf($level));
+    }
+
+    /**
      * @thanks Aurel Page for the formula.
      *
      * @param  int $experience

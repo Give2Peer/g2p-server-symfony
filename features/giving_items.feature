@@ -219,3 +219,25 @@ title: This thing
 experience: 4
 """
    And the user Goutte should have 7 experience points
+
+
+
+@wip
+Scenario: Fail to exceed daily quota in giving items (level 1)
+ Given I am level 1
+  When I give the following :
+"""
+location: 48.8708484, 2.3053611
+"""
+  Then the request should be accepted
+   And there should be 1 item in the database
+  When I give the following :
+"""
+location: 48.8708484, 2.3053611
+"""
+  Then the request should be accepted
+  When I give the following :
+"""
+location: 48.8708484, 2.3053611
+"""
+  Then the request should not be accepted

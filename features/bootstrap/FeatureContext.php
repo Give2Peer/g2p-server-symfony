@@ -231,6 +231,18 @@ class FeatureContext
     }
 
     /**
+     * @Given /^I am level (\d+) *$/
+     */
+    public function iAmLevel($level)
+    {
+        if (empty($this->user)) {
+            $this->fail("There's no `I` to level up. You don't exist !");
+        }
+
+        $this->user->setLevel(max(1, $level));
+    }
+
+    /**
      * @Given /^there is a user named "(.+)" *$/
      */
     public function thereIsAUserNamed($name)
