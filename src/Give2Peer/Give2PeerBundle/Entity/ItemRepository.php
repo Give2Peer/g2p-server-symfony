@@ -3,6 +3,7 @@
 namespace Give2Peer\Give2PeerBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Give2Peer\Give2PeerBundle\Entity\User;
 
 /**
  * ItemRepository
@@ -15,17 +16,40 @@ use Doctrine\ORM\EntityRepository;
 class ItemRepository extends EntityRepository
 {
     /**
+     * Counts all items that were created by $user, $since that time.
+     *
+     * @param  User      $user
+     * @param  \Datetime $since
+     * @return int
+     */
+    public function countItemsCreatedBy(User $user, $since)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        return $qb
+            ->select('COUNT(i)')
+            ->from($this->getEntityName(), 'i')
+            ->where('i.giver = :user OR i.spotter = :user')
+            ->andWhere('i.createdAt >= :since')
+            ->setParameter('user', $user)
+            ->setParameter('since', $since)
+            ->getQuery()
+            ->execute()
+            [0][1] // first column of first row holds the COUNT
+            ;
+    }
+
+    /**
      * List items by increasing distance to provided `$latitude`/`$longitude`.
      * You can paginate by skipping results and setting a max limit to the
      * number of results you want.
      *
      * Returns an array of Items, including the additional `distance` property.
      *
-     * @param $latitude
-     * @param $longitude
-     * @param int $skipTheFirstN
-     * @param int $maxDistance
-     * @param int $maxResults
+     * @param  float $latitude
+     * @param  float $longitude
+     * @param  int   $skipTheFirstN
+     * @param  int   $maxDistance
+     * @param  int   $maxResults
      * @return mixed
      */
     public function findAround($latitude, $longitude, $skipTheFirstN=0,

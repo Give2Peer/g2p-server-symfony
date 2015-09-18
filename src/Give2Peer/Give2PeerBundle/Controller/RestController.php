@@ -163,6 +163,8 @@ class RestController extends Controller
         $sc = $this->get('security.context');
         /** @var EntityManager $em */
         $em = $this->get('doctrine.orm.entity_manager');
+        /** @var ItemRepository $itemRepo */
+        $itemRepo = $em->getRepository('Give2PeerBundle:Item');
 
         // Recover the item data
         $location = $request->get('location');
@@ -181,9 +183,20 @@ class RestController extends Controller
         $tagsRepo = $em->getRepository('Give2PeerBundle:Tag');
         $tags = $tagsRepo->findTags($tagnames);
 
-        // Recover the user data
+        // Access the user data
         /** @var User $user */
         $user = $sc->getToken()->getUser();
+
+        // Check whether the user exceeds his quotas or not
+        $quota = self::ADD_ITEMS_PER_LEVEL * $user->getLevel();
+        $duration = new \DateInterval("P1D"); // 24h
+        $since = (new \DateTime())->sub($duration);
+        $spent = $itemRepo->countItemsCreatedBy($user, $since);
+        if ($spent >= $quota) {
+            return new ExceededQuotaJsonResponse(
+                "Created too many items today. Please wait and try again."
+            );
+        }
 
         // Create the item
         $item = new Item();
@@ -208,7 +221,7 @@ class RestController extends Controller
         // Add the item to database
         $em->persist($item);
 
-        // Compute how much experience the user gains
+        // Compute how much experience the user gains and then give it
         $experience = 3;
         if (! empty($item->getTitle()))  { $experience++; }
         if (0 < count($item->getTags())) { $experience++; }
