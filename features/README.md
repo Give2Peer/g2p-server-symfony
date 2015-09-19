@@ -10,7 +10,10 @@ They cover :
   - latitude / longitude (preferred)
   - postal addresses
   - IPs
+  - pagination
 - giving items
+  - gaining experience
+  - daily quotas
 - picturing items, as the picture upload is done in a separate request
 - many more things in the future, hopefully
 

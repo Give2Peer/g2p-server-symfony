@@ -6,7 +6,7 @@ Feature: Registration
 
 
 
-Scenario: Register and recover credentials
+Scenario: Register and receive confirmation
    When I register the following :
 """
 username: Goutte
