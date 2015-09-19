@@ -158,14 +158,14 @@ item:
     And there should be 1 item in the database
 
 
-
-Scenario: Give an item with a location and a title with special characters
+@wip
+Scenario: Give an item with a title with special characters
    When I give the following item :
 """
 location: 48.8708484, 2.3053611
 title: Planche de chêne
 description: |
-  %~#éàç_-*+
+  %~#éàç_-*+✇
 """
    Then the request should be accepted
     And the response should include :
@@ -173,13 +173,29 @@ description: |
 item:
   title: Planche de chêne
   description: |
-    %~#éàç_-*+
+    %~#éàç_-*+✇
 """
     And there should be 1 item in the database
 
 
 
-Scenario: Give an item with a location, tags, and ignore non-existing tags
+Scenario: Give an item with a very long title that gets truncated
+   When I give the following item :
+"""
+location: 48.8708484, 2.3053611
+title: ❤123456789❀123456789☻123456789♻123456789
+"""
+   Then the request should be accepted
+    And the response should include :
+"""
+item:
+  title: ❤123456789❀123456789☻123456789♻1
+"""
+    And there should be 1 item in the database
+
+
+
+Scenario: Give an item with tags, and ignore non-existing tags
   Given there is a tag named "wood"
    When I give the following item :
 """

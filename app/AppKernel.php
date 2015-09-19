@@ -7,6 +7,8 @@ class AppKernel extends Kernel
 {
     public function registerBundles()
     {
+        mb_internal_encoding("UTF-8");
+
         $bundles = array(
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),

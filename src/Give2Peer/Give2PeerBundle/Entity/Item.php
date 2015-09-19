@@ -217,7 +217,7 @@ class Item implements \JsonSerializable
      */
     public function setTitle($title)
     {
-        $this->title = $title;
+        $this->title = mb_substr($title, 0, 32);
 
         return $this;
     }
