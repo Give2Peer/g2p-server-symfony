@@ -15,7 +15,8 @@ They cover :
   - gaining experience
   - daily quotas
 - picturing items, as the picture upload is done in a separate request
-- many more things in the future, hopefully
+
+That's pretty much everything this API offers right now.
 
 
 What
@@ -33,12 +34,12 @@ Background:
   Given I am the registered user named "V14GrA"
 
 Scenario: Fail to exceed level 1 daily quota of 2
- Given I am level 1
-   And I gave 2 items 1 minute ago
-  Then there should be 2 items in the database
-  When I try to give an item
-  Then the request should not be accepted
-   And there should be 2 items in the database
+  Given I am level 1
+    And I gave 2 items 1 minute ago
+   Then there should be 2 items in the database
+   When I try to give an item
+   Then the request should not be accepted
+    And there should be 2 items in the database
 ```
 
 You don't need to know how to code to read them, or even (gasp!) edit them !
@@ -63,3 +64,11 @@ Because scenarios tagged with `geocode` use third-party geocoding services with
 quotas you might exceed, and subsequently get banned.
 
 You *can* of course run the whole suite, but don't do it too often.
+
+
+Hey
+---
+
+Q: It's unusual to test an API using Gherkin ! Why ?
+A: _For some, I would not recommend it. But for that one, 5/5 would do again._
+
