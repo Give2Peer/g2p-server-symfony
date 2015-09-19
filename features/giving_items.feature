@@ -237,7 +237,7 @@ experience: 4
 ## QUOTAS ######################################################################
 
 
-Scenario: Fail to exceed level 1 daily quota
+Scenario: Fail to exceed level 1 daily quota of 2
  Given I am level 1
    And I gave 2 items 1 minute ago
   Then there should be 2 items in the database
@@ -248,7 +248,7 @@ Scenario: Fail to exceed level 1 daily quota
 
 
 
-Scenario: Fail to exceed level 10 daily quota
+Scenario: Fail to exceed level 10 daily quota of 20
  Given I am level 10
    And I gave 19 items 12 hours ago
   Then there should be 19 items in the database

@@ -18,6 +18,38 @@ They cover :
 - many more things in the future, hopefully
 
 
+What
+----
+
+The `.feature` files contain _scenarios_ such as :
+
+``` gherkin
+Feature: Giving items
+  In order to own your brain
+  As a spammer
+  I want to try to abuse the system
+
+Background:
+  Given I am the registered user named "V14GrA"
+
+Scenario: Fail to exceed level 1 daily quota of 2
+ Given I am level 1
+   And I gave 2 items 1 minute ago
+  Then there should be 2 items in the database
+  When I try to give an item
+  Then the request should not be accepted
+   And there should be 2 items in the database
+```
+
+You don't need to know how to code to read them, or even (gasp!) edit them !
+
+The best part is that each line is automagically ran as code that either
+succeeds or fails, so that the developers know if they broke something
+or if the newly added feature is done yet.
+
+We write first the specifications in those files, and then code until all's green !
+
+
 How
 ---
 
