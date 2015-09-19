@@ -10,8 +10,11 @@ Background:
 
 
 
+## WRONG LOCATIONS #############################################################
+
+
 Scenario: Give an item without a location
-  When I give the following :
+  When I give the following item :
 """
 nope: I'm not going to tell you where it is !
 """
@@ -22,7 +25,7 @@ nope: I'm not going to tell you where it is !
 
 @geocode
 Scenario: Give an item with an ungeolocalizable location
-  When I give the following :
+  When I give the following item :
 """
 location: The ass-end of nowhere !
 """
@@ -31,8 +34,11 @@ location: The ass-end of nowhere !
 
 
 
+## GOOD LOCATIONS ##############################################################
+
+
 Scenario: Give an item with only a latitude/longitude location
-  When I give the following :
+  When I give the following item :
 """
 location: -1.441/43.601
 """
@@ -49,7 +55,7 @@ item:
 
 
 Scenario: Give an item with only a latitude, longitude location
-  When I give the following :
+  When I give the following item :
 """
 location: -1.441, 43.601
 """
@@ -66,7 +72,7 @@ item:
 
 
 Scenario: Give an item with a weird latitude/longitude location
-  When I give the following :
+  When I give the following item :
 """
 location: 2/.12
 """
@@ -84,7 +90,7 @@ item:
 
 @geocode
 Scenario: Give an item with only a postal address location
-  When I give the following :
+  When I give the following item :
 """
 location: 66 Avenue des Champs-Élysées, 75008 Paris
 """
@@ -102,7 +108,7 @@ item:
 
 @geocode
 Scenario: Give an item with only an IP address location
-  When I give the following :
+  When I give the following item :
 """
 location: 82.241.251.185
 """
@@ -118,10 +124,13 @@ item:
 
 
 
+## TITLE AND TAGS ##############################################################
+
+
 Scenario: Give an item with a location, a title, a description, and tags
   Given there is a tag named "book"
     And there is a tag named "pristine"
-   When I give the following :
+   When I give the following item :
 """
 location: 48.8708484/2.3053611
 title: Alice in Wonderland
@@ -151,7 +160,7 @@ item:
 
 
 Scenario: Give an item with a location and a title with special characters
-   When I give the following :
+   When I give the following item :
 """
 location: 48.8708484, 2.3053611
 title: Planche de chêne
@@ -172,7 +181,7 @@ item:
 
 Scenario: Give an item with a location, tags, and ignore non-existing tags
   Given there is a tag named "wood"
-   When I give the following :
+   When I give the following item :
 """
 location: 48.8708484, 2.3053611
 tags:
@@ -196,8 +205,11 @@ item:
 
 
 
+## EXPERIENCE ##################################################################
+
+
 Scenario: Give items and earn some experience points
-  When I give the following :
+  When I give the following item :
 """
 location: 48.8708484, 2.3053611
 """
@@ -208,7 +220,7 @@ experience: 3
 """
    And there should be 1 item in the database
    And the user Goutte should have 3 experience points
-  Then I give the following :
+  Then I give the following item :
 """
 location: 48.8708484, 2.3053611
 title: This thing
@@ -222,22 +234,38 @@ experience: 4
 
 
 
-@wip
-Scenario: Fail to exceed daily quota in giving items (level 1)
+## QUOTAS ######################################################################
+
+
+Scenario: Fail to exceed level 1 daily quota
  Given I am level 1
-  When I give the following :
-"""
-location: 48.8708484, 2.3053611
-"""
-  Then the request should be accepted
-   And there should be 1 item in the database
-  When I give the following :
-"""
-location: 48.8708484, 2.3053611
-"""
-  Then the request should be accepted
-  When I give the following :
-"""
-location: 48.8708484, 2.3053611
-"""
+   And I gave 2 items 1 minute ago
+  Then there should be 2 items in the database
+  When I try to give an item
   Then the request should not be accepted
+   And there should be 2 items in the database
+
+
+
+
+Scenario: Fail to exceed level 10 daily quota
+ Given I am level 10
+   And I gave 19 items 12 hours ago
+  Then there should be 19 items in the database
+  When I try to give an item
+  Then the request should be accepted
+   And there should be 20 items in the database
+  When I try to give an item
+  Then the request should not be accepted
+   And there should be 20 items in the database
+
+
+
+
+Scenario: Quotas are daily
+ Given I am level 1
+   And I gave 2 items 25 hours ago
+  Then there should be 2 items in the database
+  When I try to give an item
+  Then the request should be accepted
+   And there should be 3 items in the database

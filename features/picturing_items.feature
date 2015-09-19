@@ -1,6 +1,6 @@
 @rest
 Feature: Picturing items
-  In order to describe better than with a thousand words
+  In order to describe faster than with a thousand words
   As a spotter or a giver
   I need to attach pictures to items
 

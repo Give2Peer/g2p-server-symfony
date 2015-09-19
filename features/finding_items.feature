@@ -17,30 +17,34 @@ Feature: Find items
 # 43.566591, 1.474969
 # Distance : 1601
 
+
 Background:
   Given I am the registered user named "Goutte"
-    And there is an item at 43.578658, 1.468091
-    And there is an item at 43.566591, 1.474969
+
 
 
 Scenario: List 2 of 2 items around coordinates
+  Given there is an item at 43.578658, 1.468091
+    And there is an item at 43.566591, 1.474969
    When I get /find/43.579909/1.467469
    Then the request should be accepted
     And there should be 2 items in the response
 
 
-Scenario: List the first 128 of 129 items around coordinates
-  Given there are 127 items at 43.578658, 1.468091
+
+Scenario: List the first 64 of 70 items around coordinates
+  Given there are 70 items at 43.578658, 1.468091
    When I get /find/43.579909/1.467469
    Then the request should be accepted
-    And there should be 128 items in the response
+    And there should be 64 items in the response
 
 
-Scenario: List after the first 128 of 129 items around coordinates
-  Given there are 127 items at 43.578658, 1.468091
-   When I get /find/43.579909/1.467469/128
+
+Scenario: List after the first 64 of 70 items around coordinates
+  Given there are 70 items at 43.578658, 1.468091
+   When I get /find/43.579909/1.467469/64
    Then the request should be accepted
-    And there should be 1 item in the response
+    And there should be 6 items in the response
 
 
 # Handy dumper for creating mock JSON

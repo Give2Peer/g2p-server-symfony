@@ -54,14 +54,29 @@ function array_diff_assoc_recursive($array1, $array2) {
 }
 
 /**
+ * Fakes latitude and longitude, to provide to the Faker\Generator.
+ */
+class GeolocationFaker extends \Faker\Provider\Base
+{
+    public function latitude()
+    {
+        return rand(-90000, 90000) / 1000;
+    }
+    public function longitude()
+    {
+        return rand(-180000, 180000) / 1000;
+    }
+}
+
+/**
  * “You will not censor me through bug terrorism.”
  *     -- James Troup
  *
- * Class FeatureContext
+ * This prints a fortune cookie when it passes ; sugar for the mind.
  */
-class FeatureContext
-    extends BaseContext
-    implements BehatContext, SnippetAcceptingContext {
+class FeatureContext extends BaseContext
+                     implements BehatContext, SnippetAcceptingContext
+{
 
     /** @var Client $client */
     protected $client;
@@ -78,6 +93,7 @@ class FeatureContext
     public function __construct()
     {
         $this->faker = FakerFactory::create();
+        $this->faker->addProvider(new GeolocationFaker($this->faker));
     }
 
     /**
@@ -278,27 +294,13 @@ class FeatureContext
      */
     public function thereIsAnItemAt($action, $latitude, $longitude)
     {
-        $giver   = ($action == 'I give') ? true : false;
-        $spotter = ($action == 'I spot') ? true : false;
-        if (($giver||$spotter) && empty($this->user)) {
+        $giver   = ($action == 'I give') ? $this->user : null;
+        $spotter = ($action == 'I spot') ? $this->user : null;
+        if (!empty($action) && empty($this->user)) {
             $this->fail("There is no I. You are no-one ; you cannot give.");
         }
 
-        // Create the item
-        $title = sprintf("%s %s", $this->faker->colorName, $this->faker->word);
-        $item = new Item();
-        $item->setTitle(substr($title, 0, 32));
-        $item->setLocation("$latitude, $longitude");
-        $item->setLatitude($latitude);
-        $item->setLongitude($longitude);
-        if ($giver)   $item->setGiver($this->user);
-        if ($spotter) $item->setSpotter($this->user);
-
-        // Add the item to database
-        /** @var EntityManager $em */
-        $em = $this->getEntityManager();
-        $em->persist($item);
-        $em->flush();
+        $this->createItem($latitude, $longitude, null, $giver, $spotter);
     }
 
     /**
@@ -311,14 +313,41 @@ class FeatureContext
         }
     }
 
+    /**
+     * @Given /^I gave (\d+) items? *(?:(.+) ago)? *$/
+     */
+    public function iGaveItems($howMany, $when=null)
+    {
+        if (!empty($when)) {
+            $when = new \DateTime("@".strtotime("-".$when));
+        }
+
+        for ($i=0; $i<$howMany; $i++) {
+            $this->createItem(null, null, null, $this->user, null, $when);
+        }
+    }
+
+
+
 
     // ROUTES STEPS ////////////////////////////////////////////////////////////
 
     /**
-     * @When /^I give the following ?:$/
+     * @When /^I (?:try to )?give the following(?: item)? ?:$/
      */
-    public function iGive($pystring='')
+    public function iGiveThatItem($pystring='')
     {
+        $this->iPost('give', $pystring);
+    }
+
+    /**
+     * @When /^I (?:try to )give an item *$/
+     */
+    public function iGiveAnItem()
+    {
+        $lat = $this->faker->latitude;
+        $lon = $this->faker->longitude;
+        $pystring = "location: $lat, $lon";
         $this->iPost('give', $pystring);
     }
 
@@ -559,6 +588,49 @@ class FeatureContext
         $um->updateUser($user);
 
         return $user;
+    }
+
+    /**
+     * Create a dummy item.
+     *
+     * @param null $latitude
+     * @param null $longitude
+     * @param null $title
+     * @param null $giver
+     * @param null $spotter
+     * @param null $when
+     */
+    protected function createItem($latitude=null, $longitude=null, $title=null,
+                                  $giver=null, $spotter=null, $when=null)
+    {
+        // Fill up attributes with default values, random ones
+        if (null == $latitude)
+            $latitude = $this->faker->latitude;
+        if (null == $longitude)
+            $longitude = $this->faker->longitude;
+        if (null == $title)
+            $title = sprintf("%s %s", $this->faker->colorName, $this->faker->word);
+
+        // Create the item
+        $item = new Item();
+        $item->setTitle(substr($title, 0, 32));
+        $item->setLocation("$latitude, $longitude");
+        $item->setLatitude($latitude);
+        $item->setLongitude($longitude);
+        if ($giver)   $item->setGiver($giver);
+        if ($spotter) $item->setSpotter($spotter);
+
+        // Add the item to database
+        /** @var EntityManager $em */
+        $em = $this->getEntityManager();
+        $em->persist($item);
+        $em->flush();
+
+        // Edit the creation timestamp
+        if (null != $when) {
+            $item->setCreatedAt($when);
+            $em->flush();
+        }
     }
 
     /**
