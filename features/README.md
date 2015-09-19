@@ -1,8 +1,8 @@
 Welcome to the Features
 =======================
 
-These describe how the server should respond to HTTP requests from a client,
-as a mobile phone for example.
+These describe how the server should respond to HTTP REST requests from a client,
+say a mobile app.
 
 They cover :
 - registering
@@ -18,8 +18,8 @@ They cover :
 - many more things in the future, hopefully
 
 
-Tips
-----
+How
+---
 
 To run the features while coding, I suggest you use :
 
