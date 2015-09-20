@@ -178,18 +178,18 @@ item:
     And there should be 1 item in the database
 
 
-
+@wip
 Scenario: Give an item with a very long title that gets truncated
    When I give the following item :
 """
 location: 48.8708484, 2.3053611
-title: ❤123456789❀123456789☻123456789♻123456789
+title: I am longer than 32 characters ❤ Just because. Yep.
 """
    Then the request should be accepted
     And the response should include :
 """
 item:
-  title: ❤123456789❀123456789☻123456789♻1
+  title: I am longer than 32 characters ❤
 """
     And there should be 1 item in the database
 
