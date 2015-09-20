@@ -17,6 +17,11 @@ What makes you gain experience points :
   - with title (1 point)
   - with tags (1 point)
 
+Experience points allow you to *level up*, and some *daily* action quotas
+increase with your level, such as :
+
+- Query items (20 queries per level)
+- Publish items (2 publications per level)
 
 
 Reputation

@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 
 /**
- * Routes are configured in YAML, in `Resources/config.routing.yml`.
+ * Routes are configured in YAML, in `Resources/config/routing.yml`.
  *
  * Class RestController
  * @package Give2Peer\Give2PeerBundle\Controller
