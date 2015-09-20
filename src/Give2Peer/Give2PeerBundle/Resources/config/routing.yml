@@ -7,10 +7,24 @@ give2_peer_ping:
     defaults: { _controller: Give2PeerBundle:Rest:ping, _format: json }
     methods:  [GET]
 
+## USERS #######################################################################
+
 give2_peer_register:
     path:     /register
     defaults: { _controller: Give2PeerBundle:Rest:register, _format: json }
     methods:  [POST]
+
+give2_peer_profile:
+    path:     /profile
+    defaults: { _controller: Give2PeerBundle:Rest:profile, _format: json }
+    methods:  [GET]
+
+give2_peer_public_profile:
+    path:     /profile/{username}
+    defaults: { _controller: Give2PeerBundle:Rest:publicProfile, _format: json }
+    methods:  [GET]
+
+## ITEMS #######################################################################
 
 # Deprecated alias for /item/add
 give2_peer_give:
@@ -36,11 +50,6 @@ give2_peer_picture_upload:
     requirements:
         itemId: \d+
 
-give2_peer_tags:
-    path:     /tags
-    defaults: { _controller: Give2PeerBundle:Rest:tags, _format: json }
-    methods:  [GET]
-
 give2_peer_find_around:
     path:     /find/{latitude}/{longitude}/{skip}/{radius}
     defaults:
@@ -54,3 +63,10 @@ give2_peer_find_around:
         longitude:  -?\d+(?:\.\d*)?
         skip:         \d+
         radius:       \d+(?:\.\d*)?
+
+## GENERAL DATA COLLECTION #####################################################
+
+give2_peer_tags:
+    path:     /tags
+    defaults: { _controller: Give2PeerBundle:Rest:tags, _format: json }
+    methods:  [GET]

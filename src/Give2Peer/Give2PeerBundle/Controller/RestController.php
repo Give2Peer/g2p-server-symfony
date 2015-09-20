@@ -24,7 +24,7 @@ use Symfony\Component\Security\Core\SecurityContext;
  * Class RestController
  * @package Give2Peer\Give2PeerBundle\Controller
  */
-class RestController extends Controller
+class RestController extends BaseController
 {
     /** Number of items per level and per day a user may add */
     const ADD_ITEMS_PER_LEVEL = 2;
@@ -40,7 +40,7 @@ class RestController extends Controller
         return $this->render('Give2PeerBundle:Default:index.html.twig');
     }
 
-    public function pingAction(Request $request)
+    public function pingAction()
     {
         return new JsonResponse("pong");
     }
@@ -53,13 +53,6 @@ class RestController extends Controller
      */
     public function registerAction(Request $request)
     {
-        /** @var SecurityContext $sc */
-        //$sc = $this->get('security.context');
-        /** @var EntityManager $em */
-        //$em = $this->get('doctrine.orm.entity_manager');
-        /** @var UserManager $um */
-        $um = $this->get('fos_user.user_manager');
-
         // Recover the user data
         $username = $request->get('username');
         $password = $request->get('password');
@@ -72,6 +65,8 @@ class RestController extends Controller
         if (null == $password) {
             return new JsonResponse(["error"=>"No password provided."], 400);
         }
+
+        $um = $this->getUserManager();
 
         // Rebuke if username is taken
         $user = $um->findUserByUsername($username);
@@ -108,11 +103,50 @@ class RestController extends Controller
         $user->setCreatedBy($clientIp);
         $user->setEnabled(true);
 
-        // This will canonicalize, encode, persist and flush
+        // This canonicalizes, encodes, persists and flushes
         $um->updateUser($user);
 
         // Send the user as response
         return new JsonResponse($user);
+    }
+
+    /**
+     * Get (private) profile information of the current user.
+     *
+     * @return ErrorJsonResponse|JsonResponse
+     */
+    public function profileAction ()
+    {
+        $user = $this->getUser();
+        if (empty($user)) {
+            return new ErrorJsonResponse("What ?", Error::NOT_AUTHORIZED);
+        }
+
+        return new JsonResponse([
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * Get (public) profile information of the given user.
+     *
+     * @param  Request $request
+     * @param  String $username
+     * @return ErrorJsonResponse|JsonResponse
+     */
+    public function publicProfileAction (Request $request, $username)
+    {
+        $um = $this->getUserManager();
+        /** @var User $user */
+        $user = $um->findUserByUsername($username);
+
+        if (empty($user)) {
+            return new ErrorJsonResponse("Bad username.", Error::BAD_USERNAME);
+        }
+
+        return new JsonResponse([
+            'user' => $user->publicJsonSerialize(),
+        ]);
     }
 
     /**
@@ -159,12 +193,9 @@ class RestController extends Controller
      */
     protected function itemAdd(Request $request)
     {
-        /** @var SecurityContext $sc */
-        $sc = $this->get('security.context');
-        /** @var EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
-        /** @var ItemRepository $itemRepo */
-        $itemRepo = $em->getRepository('Give2PeerBundle:Item');
+        $em = $this->getEntityManager();
+        $itemRepo = $this->getItemRepository();
+        $tagsRepo = $this->getTagRepository();
 
         // Recover the item data
         $location = $request->get('location');
@@ -179,13 +210,11 @@ class RestController extends Controller
         $gift = $request->get('gift', 'false') == 'true';
 
         // Fetch the Tags -- Ignore tags not found, for now.
-        /** @var TagRepository $tagsRepo */
-        $tagsRepo = $em->getRepository('Give2PeerBundle:Tag');
         $tags = $tagsRepo->findTags($tagnames);
 
         // Access the user data
         /** @var User $user */
-        $user = $sc->getToken()->getUser();
+        $user = $this->getUser();
 
         // Check whether the user exceeds his quotas or not
         $quota = self::ADD_ITEMS_PER_LEVEL * $user->getLevel();
@@ -222,12 +251,13 @@ class RestController extends Controller
         $em->persist($item);
 
         // Compute how much experience the user gains and then give it
+        // 3 points for giving, plus one point for a title, and one for tags.
         $experience = 3;
         if (! empty($item->getTitle()))  { $experience++; }
         if (0 < count($item->getTags())) { $experience++; }
         $user->addExperience($experience);
 
-        // Flush the entity manager to save our changes
+        // Flush the entity manager to commit our changes to database
         $em->flush();
 
         // Send the item and other action data as response
@@ -244,19 +274,15 @@ class RestController extends Controller
      */
     public function itemPictureUploadAction($itemId, Request $request)
     {
-        /** @var SecurityContext $sc */
-        $sc = $this->get('security.context');
-        /** @var EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
-        /** @var ItemRepository $repo */
-        $repo = $em->getRepository('Give2PeerBundle:Item');
+        $em = $this->getEntityManager();
+        $repo = $this->getItemRepository();
 
         // Sanitize (this is *mandatory* !)
         $itemId = intval($itemId);
 
         // Recover the user data and check if we're the giver or the spotter
         // Later on we'll add authorization through spending NRG points.
-        $user = $sc->getToken()->getUser();
+        $user = $this->getUser();
 
         /** @var Item $item */
         $item = $repo->find($itemId);
@@ -353,6 +379,13 @@ class RestController extends Controller
         return new JsonResponse($item);
     }
 
+    /**
+     * Should probably be moved to a thumb generation service.
+     *
+     * @param $source
+     * @param $destination
+     * @param $sideLength
+     */
     function generateSquareThumb($source, $destination, $sideLength)
     {
         // Read the source image
@@ -387,24 +420,6 @@ class RestController extends Controller
     }
 
     /**
-     * Returns all available tags, as a JSONed array.
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function tagsAction(Request $request)
-    {
-        /** @var EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
-        /** @var TagRepository $repo */
-        $repo = $em->getRepository('Give2PeerBundle:Tag');
-
-        $tags = $repo->getTagNames();
-
-        return new JsonResponse($tags);
-    }
-
-    /**
      * Returns a list of at most 64 Items, sorted by increasing distance to
      * the center of the circle.
      * You can skip the first `$skip` items if you already have them.
@@ -429,7 +444,7 @@ class RestController extends Controller
         $longitude = floatval($longitude);
 
         /** @var EntityManager $em */
-        $em = $this->get('doctrine.orm.entity_manager');
+        $em = $this->getEntityManager();
         $con = $em->getConnection();
 
         // Register our DISTANCE function, that only pgSQL can understand
@@ -446,13 +461,24 @@ class RestController extends Controller
         }
 
         // Ask the repository to do the pgSQL-optimized query for us
-        /** @var ItemRepository $repo */
-        $repo = $em->getRepository('Give2PeerBundle:Item');
+        $repo = $this->getItemRepository();
         $results = $repo->findAround(
             $latitude, $longitude, $skip, $radius, $maxResults
         );
 
         return new JsonResponse($results);
+    }
+
+    /**
+     * Returns all available tags, as a JSONed array.
+     *
+     * @return JsonResponse
+     */
+    public function tagsAction()
+    {
+        $tags = $this->getTagRepository()->getTagNames();
+
+        return new JsonResponse($tags);
     }
 
 }

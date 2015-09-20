@@ -158,7 +158,7 @@ item:
     And there should be 1 item in the database
 
 
-@wip
+
 Scenario: Give an item with a title with special characters
    When I give the following item :
 """

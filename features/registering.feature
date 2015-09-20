@@ -1,5 +1,5 @@
 @rest
-Feature: Registration
+Feature: Registering
   In order to use the REST API behind HTTP authentication
   As a client
   I need to automatically register a new user account

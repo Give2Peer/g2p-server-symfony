@@ -54,21 +54,6 @@ function array_diff_assoc_recursive($array1, $array2) {
 }
 
 /**
- * Fakes latitude and longitude, to provide to the Faker\Generator.
- */
-class GeolocationFaker extends \Faker\Provider\Base
-{
-    public function latitude()
-    {
-        return rand(-90000, 90000) / 1000;
-    }
-    public function longitude()
-    {
-        return rand(-180000, 180000) / 1000;
-    }
-}
-
-/**
  * “You will not censor me through bug terrorism.”
  *     -- James Troup
  *
@@ -232,7 +217,7 @@ class FeatureContext extends BaseContext
     }
 
     /**
-     * @Given /^I am the registered user named "(.*)" *$/
+     * @Given /^I am the(?: registered)? user named "(.*)" *$/
      */
     public function iAmTheRegisteredUserNamed($name)
     {

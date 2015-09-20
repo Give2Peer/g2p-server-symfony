@@ -56,7 +56,21 @@ class User extends BaseUser implements \JsonSerializable
             'email'      => $this->getEmailCanonical(),
             'created_at' => $this->getCreatedAt(),
             'experience' => $this->getExperience(),
+            'level'      => $this->getLevel(),
         ];
+    }
+
+    /**
+     * Specify public data which should be serialized to JSON.
+     */
+    public function publicJsonSerialize()
+    {
+        $publicData = [
+            'username'   => $this->getUsernameCanonical(),
+            'level'      => $this->getLevel(),
+        ];
+
+        return $publicData;
     }
 
     /**
