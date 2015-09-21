@@ -4,22 +4,20 @@ namespace Give2Peer\Give2PeerBundle\Controller;
 
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\EntityManager;
-use Give2Peer\Give2PeerBundle\Controller\ErrorCode as Error;
-use Give2Peer\Give2PeerBundle\Entity\Item;
-use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
-use Give2Peer\Give2PeerBundle\Entity\TagRepository;
-use Give2Peer\Give2PeerBundle\Entity\User;
-use Give2Peer\Give2PeerBundle\Entity\UserManager;
-use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
-use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\SecurityContext;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Give2Peer\Give2PeerBundle\Controller\ErrorCode as Error;
+use Give2Peer\Give2PeerBundle\Entity\Item;
+use Give2Peer\Give2PeerBundle\Entity\User;
+use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
+use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
 
 /**
  * Routes are configured in YAML, in `Resources/config/routing.yml`.
+ * ApiDoc's documentation can be found at :
+ * https://github.com/nelmio/NelmioApiDocBundle/blob/master/Resources/doc/index.md
  *
  * Class RestController
  * @package Give2Peer\Give2PeerBundle\Controller
@@ -32,12 +30,11 @@ class RestController extends BaseController
     const ITEM_QUERIES_PER_LEVEL = 20;
 
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
+     * Provide some generated documentation about this REST API.
      */
     public function indexAction()
     {
-        // todo: why not provide some documentation here ?
-        return $this->render('Give2PeerBundle:Default:index.html.twig');
+        return $this->forward('NelmioApiDocBundle:ApiDoc:index');
     }
 
     public function pingAction()
@@ -48,6 +45,13 @@ class RestController extends BaseController
     /**
      * Basic boring registration.
      *
+     * @ApiDoc(
+     *   parameters = {
+     *     { "name"="username", "dataType"="string", "required"=true },
+     *     { "name"="password", "dataType"="string", "required"=true },
+     *     { "name"="email",    "dataType"="string", "required"=true },
+     *   }
+     * )
      * @param Request $request
      * @return JsonResponse
      */
@@ -111,8 +115,9 @@ class RestController extends BaseController
     }
 
     /**
-     * Get (private) profile information of the current user.
+     * Get the (private) profile information of the current user.
      *
+     * @ApiDoc()
      * @return ErrorJsonResponse|JsonResponse
      */
     public function profileAction ()
@@ -128,8 +133,9 @@ class RestController extends BaseController
     }
 
     /**
-     * Get (public) profile information of the given user.
+     * Get the (public) profile information of the given user.
      *
+     * @ApiDoc()
      * @param  Request $request
      * @param  String $username
      * @return ErrorJsonResponse|JsonResponse
@@ -157,13 +163,14 @@ class RestController extends BaseController
      *   - title
      *   - description
      *
+     * @deprecated
      * @param Request $request
      * @return JsonResponse
      */
     public function giveAction(Request $request)
     {
         $request->attributes->set('gift', 'true');
-        return $this->itemAdd($request);
+        return $this->itemAddAction($request);
     }
 
     /**
@@ -172,26 +179,41 @@ class RestController extends BaseController
      *
      * See `give`.
      *
+     * @deprecated
      * @param Request $request
      * @return JsonResponse
      */
     public function spotAction(Request $request)
     {
         $request->attributes->set('gift', 'false');
-        return $this->itemAdd($request);
+        return $this->itemAddAction($request);
     }
 
     /**
-     * Give an item whose properties are provided as POST variables.
-     * Only the location property is mandatory.
+     * Publish a new item.
+     *
+     * Only the `location` of the item is mandatory.
      *
      * This creates an Item with the appropriate attributes, stores it and
      * sends it back as JSON, along with the experience gained.
      *
-     * @param Request $request
+     * @ApiDoc(
+     *   parameters = {
+     *     {
+     *       "name"="location", "dataType"="string", "required"=true,
+     *       "format"="{latitude}, {longitude}",
+     *       "description"="Example: -2.4213, 43.1235"
+     *     },
+     *     {
+     *       "name"="title", "dataType"="string", "required"=false,
+     *       "description"="UTF-8 truncated to 32 characters."
+     *     },
+     *   }
+     * )
+     * @param  Request $request
      * @return JsonResponse
      */
-    protected function itemAdd(Request $request)
+    protected function itemAddAction(Request $request)
     {
         $em = $this->getEntityManager();
         $itemRepo = $this->getItemRepository();
@@ -268,24 +290,27 @@ class RestController extends BaseController
     }
 
     /**
-     * @param $itemId
+     * Upload a picture for the item `id`.
+     *
+     * @ApiDoc()
      * @param Request $request
+     * @param int     $id      Id of the item to upload the picture for.
      * @return JsonResponse|ErrorJsonResponse
      */
-    public function itemPictureUploadAction($itemId, Request $request)
+    public function itemPictureUploadAction(Request $request, $id)
     {
         $em = $this->getEntityManager();
         $repo = $this->getItemRepository();
 
         // Sanitize (this is *mandatory* !)
-        $itemId = intval($itemId);
+        $id = intval($id);
 
         // Recover the user data and check if we're the giver or the spotter
         // Later on we'll add authorization through spending NRG points.
         $user = $this->getUser();
 
         /** @var Item $item */
-        $item = $repo->find($itemId);
+        $item = $repo->find($id);
 
         if (null == $item) {
             return new ErrorJsonResponse(
@@ -301,7 +326,7 @@ class RestController extends BaseController
 
         // todo: move `web/pictures` to configuration
         $publicPath = $this->get('kernel')->getRootDir() . '/../web/pictures';
-        $publicPath .= DIRECTORY_SEPARATOR . (string) $itemId;
+        $publicPath .= DIRECTORY_SEPARATOR . (string) $id;
 
         if (empty($request->files)) {
             return new ErrorJsonResponse(
@@ -369,7 +394,7 @@ class RestController extends BaseController
         $thumbUrl = join(DIRECTORY_SEPARATOR, [
             $request->getSchemeAndHttpHost(),
             'pictures',
-            $itemId,
+            $id,
             'thumb.jpg',
         ]);
         $item->setThumbnail($thumbUrl);
@@ -420,17 +445,23 @@ class RestController extends BaseController
     }
 
     /**
-     * Returns a list of at most 64 Items, sorted by increasing distance to
-     * the center of the circle.
-     * You can skip the first `$skip` items if you already have them.
+     * Find items by increasing distance to the specified coordinates.
+     *
+     * Return a list of at most 64 Items, sorted by increasing distance to the
+     * center of the circle described by `latitude`, `longitude`, and `radius`.
+     * Note that the `radius` is curved along the great circles of Earth.
+     *
+     * You can skip the first `skip` items if you already have them.
      *
      * The resulting JSON is an array of items that have the additional
-     * `distance` property set up.
+     * `distance` property, which is their distance in meters to the center of
+     * the circle, for convenience.
      *
-     * @param float $latitude Latitude of the center of the circle.
-     * @param float $longitude Longitude of the center of the circle.
-     * @param int $skip How many items to skip in the db query.
-     * @param int|float $radius In meters, the max distance
+     * @ApiDoc()
+     * @param float $latitude  Latitude of the center of the circle, between -90 and 90.
+     * @param float $longitude Longitude of the center of the circle, between -180 and 180.
+     * @param int   $skip      How many items to skip in the query.
+     * @param float $radius    In meters, the max distance.
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
@@ -470,8 +501,9 @@ class RestController extends BaseController
     }
 
     /**
-     * Returns all available tags, as a JSONed array.
+     * Return all available tags, as a JSONed array.
      *
+     * @ApiDoc()
      * @return JsonResponse
      */
     public function tagsAction()

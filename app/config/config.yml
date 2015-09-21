@@ -82,3 +82,17 @@ fos_user:
     user_class: Give2Peer\Give2PeerBundle\Entity\User
     service:
         user_manager: g2p.user_manager
+
+# API Doc Generator
+nelmio_api_doc:
+    name: Give2Peer API
+    motd: # Message Of The Day (in the masthead)
+        template: Give2PeerBundle::Doc/motd.html.twig
+    # Probably a good idea
+#    cache:
+#        enabled: true
+    # Hmm, this does not work on localhost ? Maybe I'm doing it wrong ?
+    sandbox:
+        authentication:
+            delivery: http
+            type:     basic # or bearer

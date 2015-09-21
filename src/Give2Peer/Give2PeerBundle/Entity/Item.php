@@ -157,6 +157,8 @@ class Item implements \JsonSerializable
     protected $spotter;
 
     /**
+     * We don't use this right now. In the future, maybe ?
+     *
      * This is the current legal owner of this Item. May be nobody.
      * This property will change through time, as an Item's ownership is
      * transferred :
@@ -169,7 +171,7 @@ class Item implements \JsonSerializable
      * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsOwned")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
      */
-    protected $owner;
+//    protected $owner;
 
 
     public function __construct() {
@@ -333,24 +335,24 @@ class Item implements \JsonSerializable
         return $this->spotter;
     }
 
-    /**
-     * @param User $owner
-     * @return Item
-     */
-    public function setOwner($owner)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * @return User
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
+//    /**
+//     * @param User $owner
+//     * @return Item
+//     */
+//    public function setOwner($owner)
+//    {
+//        $this->owner = $owner;
+//
+//        return $this;
+//    }
+//
+//    /**
+//     * @return User
+//     */
+//    public function getOwner()
+//    {
+//        return $this->owner;
+//    }
 
     /**
      * @return float

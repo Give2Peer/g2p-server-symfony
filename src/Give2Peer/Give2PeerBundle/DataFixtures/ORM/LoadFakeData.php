@@ -100,8 +100,8 @@ class LoadFakeData extends DataFixture
             // Add the item to database
             $em->persist($item);
 
-            // Flush batches of 111 items (a totally arbitrary number)
-            if ($i % 111 == 1) $em->flush();
+            // Flush batches of 1111 items (a totally arbitrary number)
+            if ($i % 1111 == 1) $em->flush();
 
             print("${i} / ${total} items created.\r");
         }

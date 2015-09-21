@@ -20,25 +20,25 @@ Background:
 
 
 Scenario: Attach a JPG picture
-   When I POST to /picture/1 the file features/assets/1.jpg
+   When I POST to /item/1/picture the file features/assets/1.jpg
    Then the request should be accepted
     And there should be a file at web/pictures/1/1.jpg
     And there should be a file at web/pictures/1/thumb.jpg
 
 
 Scenario: Do not attach a PNG picture (for now)
-   When I POST to /picture/1 the file features/assets/trollface.png
+   When I POST to /item/1/picture the file features/assets/trollface.png
    Then the request should not be accepted
     And there should not be a file at web/pictures/1/1.png
     And there should not be a file at web/pictures/1/trollface.png
 
 
 Scenario: Fail to attach a picture to a non-existent item
-   When I POST to /picture/42 the file features/assets/1.jpg
+   When I POST to /item/42/picture the file features/assets/1.jpg
    Then the request should not be accepted
 
 
 Scenario: Fail to attach a picture to a non-authorized item
-   When I POST to /picture/2 the file features/assets/2.jpg
+   When I POST to /item/2/picture the file features/assets/2.jpg
    Then the request should not be accepted
 

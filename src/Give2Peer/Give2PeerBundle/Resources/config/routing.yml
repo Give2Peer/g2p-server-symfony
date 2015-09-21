@@ -26,36 +26,37 @@ give2_peer_public_profile:
 
 ## ITEMS #######################################################################
 
-# Deprecated alias for /item/add
+# Deprecated alias for POST /item
 give2_peer_give:
     path:     /give
-    defaults: { _controller: Give2PeerBundle:Rest:give, _format: json }
-    methods:  [POST]
+    defaults: { _controller: give2peerbundle:rest:give, _format: json }
+    methods:  [post]
 
-# Deprecated alias for /item/add
+# Deprecated alias for POST /item
 give2_peer_spot:
     path:     /spot
     defaults: { _controller: Give2PeerBundle:Rest:spot, _format: json }
     methods:  [POST]
 
 give2_peer_item_add:
-    path:     /item/add
+    path:     /item
     defaults: { _controller: Give2PeerBundle:Rest:itemAdd, _format: json }
     methods:  [POST]
 
 give2_peer_picture_upload:
-    path:     /picture/{itemId}
+    path:     /item/{id}/picture
     defaults: { _controller: Give2PeerBundle:Rest:itemPictureUpload, _format: json }
     methods:  [POST]
     requirements:
-        itemId: \d+
+        id:   \d+
 
+# fixme: /items and then ?q= parameters
 give2_peer_find_around:
-    path:     /find/{latitude}/{longitude}/{skip}/{radius}
+    path:     /items/find/{latitude}/{longitude}/{skip}/{radius}
     defaults:
         _controller: Give2PeerBundle:Rest:findAroundCoordinates
         _format: json
-        skip: 0
+        skip:   0 # don't skip anything
         radius: 0 # will be handled as infinity (no filter)
     methods:  [GET]
     requirements:

@@ -30,13 +30,21 @@ security:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        # the public API
+        # the registration
         rest_register:
             pattern:  ^/register$
             security: false
+        # the index -> the doc
+        rest_index:
+            pattern:  ^/$
+            security: false
+        # the doc
+        rest_doc:
+            pattern:  ^/api/doc
+            security: false
         # the private API
         rest_api:
-            pattern:    ^/
+            pattern:   ^/
             stateless: true
             http_basic:
                 provider: fos_userbundle
