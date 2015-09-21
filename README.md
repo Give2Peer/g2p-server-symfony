@@ -1,108 +1,108 @@
-give2peer php server
+Give2Peer PHP server
 ====================
 
 
-why
+Why
 ===
 
-bring the power of the internet of things to the sharing of things.
+Bring the power of the internet of things to the sharing of things.
 
-that is so cheesy, yes. but it's also true !
-we can leverage this awesome new communication tool that internet is
+That is so cheesy, yes. But it's also true !
+We can leverage this awesome new communication tool that internet is
 to find people that need the stuff we have but don't need.
-likewise, artists, tinkerers, and creators will have a field day !
+Likewise, artists, tinkerers, and creators will have a field day !
 
-_someone's garbage is someone else's treasure._
+_Someone's garbage is someone else's treasure._
 
-_want not, waste not._
+_Want not, waste not._
 
-finally, and this is quite important, _money should not be involved_.
+Finally, and this is quite important, _money should not be involved_.
 
-how about sharing pictures and credits instead with the people that gave you
+How about sharing pictures and credits instead with the people that gave you
 the materials you needed for that awesome creation you just made ?
 
 
-what
+What
 ====
 
-a symfony project created on april 1, 2015, which makes use of only one small
-custom bundle, the `give2peerbundle`, and a lot of vendor bundles, blessed be
+A Symfony project created on April 1, 2015, which makes use of only one small
+custom bundle, the `Give2PeerBundle`, and a lot of vendor bundles, blessed be
 the community ; we love you.
 
-this is the rest service running at [g2p.give2peer.org](http://g2p.give2peer.org).
+This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org).
 
-it will provide a server for [give2peer](http://www.give2peer.org)'s bêta android application.
+It will provide a server for [Give2Peer](http://www.give2peer.org)'s bêta Android application.
 
-it is extensively [behavior-tested](/features).
+It is extensively [behavior-tested](/features).
 
 
-a work in progress
+A Work in Progress
 ==================
 
-these are the features we're working on :
+These are the features we're working on :
 
-- [x] item location, title, description, tags
-- [x] item finding around coordinates
-- [x] item images
-- [x] list tags
-- [x] geolocation through third-party services
-- [x] registration
-- [x] create and serve 200x200 thumbnails
+- [X] item location, title, description, tags
+- [X] item finding around coordinates
+- [X] item images
+- [X] list tags
+- [X] geolocation through third-party services
+- [X] registration
+- [X] create and serve 200x200 thumbnails
 - [x] user experience points and levels
-- [x] rest api documentation
+- [x] REST API documentation
 - [ ] https support
 
-right now, the database online is filled with fake/test data, so that we may
+Right now, the database online is filled with fake/test data, so that we may
 easily test the client while developing it.
 
 
-the bundle
+The Bundle
 ==========
 
-see [the bundle's readme](src/give2peer/give2peerbundle/readme.md).
+See [the bundle's README](src/Give2Peer/Give2PeerBundle/README.md).
 
 
-rest
+REST
 ====
 
-expect `json` responses.
+Expect `JSON` responses.
 
 
-authenticate
+Authenticate
 ------------
 
-use http basic auth.
+Use HTTP basic auth.
 
-yes, we'll need https.
+Yes, we'll need https.
 
-authentication will still probably be subject to upgrades, like using perishable
+Authentication will still probably be subject to upgrades, like using perishable
 authentication tokens instead of the user password each time.
 
 
-register
+Register
 --------
 
-clients can register users using the following api :
+Clients can register users using the following API :
 
-`post /register`
+`POST /register`
   - *username*
   - *password*
-  - returns the user.
+  - Returns the user.
 
-see the error codes below to see what the api sends back when the username is
+See the error codes below to see what the API sends back when the username is
 already taken.
 
-this api is throttled to a fixed number of queries per day and per ip.
+This API is throttled to a fixed number of queries per day and per IP.
 
 
-give or spot
+Give or Spot
 ------------
 
-`post /item/add`
+`POST /item/add`
   - *location* (mandatory)
-    multiple formats are accepted :
+    Multiple formats are accepted :
       - "43.578658, 1.468091"
-      - "10 rond-point jean lagasse, 31400 toulouse"
+      - "10 Rond-Point Jean Lagasse, 31400 Toulouse"
       - "91.121.148.102"
   - *title*
   - *description*
@@ -110,67 +110,67 @@ give or spot
 
 
 
-find
+Find
 ----
 
-`get /tags`
+`GET /tags`
   - returns an array of tags, with no guaranteed sorting.
   - each tag is a string of maximum 16 characters.
 
 
-`get /find/{latitude}/{longitude}/{skip}/{radius}`
+`GET /find/{latitude}/{longitude}/{skip}/{radius}`
   - fetches at most `64` items present around the provided coordinates,
     sorted by increasing distance, at most `radius`, and `skip` the first ones.
   - the `radius` is expected in meters, and by default is infinite.
   - the number of items to `skip` is 0 by default.
   - returns an array of items, each with the additional `distance` property.
-  - each item is a full jsoned instance with as much data as we need.
-  - each item provides its picture uri (get the file with a separate request)
+  - each item is a full JSONed instance with as much data as we need.
+  - each item provides its picture URI (get the file with a separate request)
 
-here is an (old) example of `json` sent back with two items found :
+Here is an (old) example of `JSON` sent back with two items found :
 
 ```
 [
   {
     "id": 529,
-    "title": "plum maiores",
+    "title": "Plum maiores",
     "location": "43.59528538094, 1.4899757103897",
     "latitude": 43.59528538094,
     "longitude": 1.4899757103897,
     "distance": "2494.63965368956",
-    "description": "consequuntur rem quod ab omnis aut aut nesciunt quaerat.",
+    "description": "Consequuntur rem quod ab omnis aut aut nesciunt quaerat.",
     "tags": [],
     "created_at": {
       "date": "2015-04-08 16:50:16",
       "timezone_type": 3,
-      "timezone": "europe\/paris"
+      "timezone": "Europe\/Paris"
     },
     "updated_at": {
       "date": "2015-04-08 16:50:16",
       "timezone_type": 3,
-      "timezone": "europe\/paris"
+      "timezone": "Europe\/Paris"
     },
     "giver": null,
     "spotter": null
   },
   {
     "id": 76,
-    "title": "limegreen libero",
+    "title": "LimeGreen libero",
     "location": "43.548083594727, 1.4953072156219",
     "latitude": 43.548083594727,
     "longitude": 1.4953072156219,
     "distance": "4194.49735510112",
-    "description": "eum dolore saepe repellendus autem accusantium inventore.",
+    "description": "Eum dolore saepe repellendus autem accusantium inventore.",
     "tags": [],
     "created_at": {
       "date": "2015-04-08 16:50:12",
       "timezone_type": 3,
-      "timezone": "europe\/paris"
+      "timezone": "Europe\/Paris"
     },
     "updated_at": {
       "date": "2015-04-08 16:50:12",
       "timezone_type": 3,
-      "timezone": "europe\/paris"
+      "timezone": "Europe\/Paris"
     },
     "giver": null,
     "spotter": null
@@ -179,39 +179,39 @@ here is an (old) example of `json` sent back with two items found :
 ```
 
 
-pictures
+Pictures
 --------
 
-`post /pictures/{itemid}`
-  - send a jpg file in a input named 'picture'.
-  - that picture will be renamed `1.jpg`.
-  - this is terrible and subject to future changes.
+`POST /pictures/{itemId}`
+  - Send a JPG file in a input named 'picture'.
+  - That picture will be renamed `1.jpg`.
+  - This is terrible and subject to future changes.
 
-`get /pictures/{itemid}/1.jpg`
+`GET /pictures/{itemId}/1.jpg`
 
 
-error codes
+Error Codes
 -----------
 
-the error codes are available as constants in the class `controller\Errorcode`.
+The error codes are available as constants in the class `Controller\ErrorCode`.
 
 ```
-001 unavailable_username username already taken
-002 banned_for_abuse     too many registrations
-003 unsupported_file     wrong or missing picture file uploaded
-004 not_authorized       not authorized
-005 system_error         system error, usually a bad setup
-006 bad_location         provided location could not be resolved to coordinates
-007 unavailable_email    email already taken
-008 exceeded_quota       user daily quota for that action was exceeded
+001 UNAVAILABLE_USERNAME Username already taken
+002 BANNED_FOR_ABUSE     Too many registrations
+003 UNSUPPORTED_FILE     Wrong or missing picture file uploaded
+004 NOT_AUTHORIZED       Not authorized
+005 SYSTEM_ERROR         System error, usually a bad setup
+006 BAD_LOCATION         Provided location could not be resolved to coordinates
+007 UNAVAILABLE_EMAIL    Email already taken
+008 EXCEEDED_QUOTA       User daily quota for that action was exceeded
 ```
 
 
-blackboard
+Blackboard
 ==========
 
-all the rest methods are done "by hand", and support only json.
-maybe move to a better way of doing apis, like using :
-https://github.com/dunglas/dunglasapibundle
+All the REST methods are done "by hand", and support only JSON.
+Maybe move to a better way of doing APIs, like using :
+https://github.com/dunglas/DunglasApiBundle
 
-also, the api should be versioned.
+Also, the API should be versioned.
