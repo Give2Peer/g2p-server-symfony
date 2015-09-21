@@ -62,132 +62,11 @@ The Bundle
 See [the bundle's README](src/Give2Peer/Give2PeerBundle/README.md).
 
 
-REST
-====
+REST API
+========
 
-Expect `JSON` responses.
+See the full and interactive [documentation](http://g2p.give2peer.org) online.
 
-
-Authenticate
-------------
-
-Use HTTP basic auth.
-
-Yes, we'll need https.
-
-Authentication will still probably be subject to upgrades, like using perishable
-authentication tokens instead of the user password each time.
-
-
-Register
---------
-
-Clients can register users using the following API :
-
-`POST /register`
-  - *username*
-  - *password*
-  - Returns the user.
-
-See the error codes below to see what the API sends back when the username is
-already taken.
-
-This API is throttled to a fixed number of queries per day and per IP.
-
-
-Give or Spot
-------------
-
-`POST /item/add`
-  - *location* (mandatory)
-    Multiple formats are accepted :
-      - "43.578658, 1.468091"
-      - "10 Rond-Point Jean Lagasse, 31400 Toulouse"
-      - "91.121.148.102"
-  - *title*
-  - *description*
-  - *gift* 'true' or 'false', whether the user is the legal owner or not
-
-
-
-Find
-----
-
-`GET /tags`
-  - returns an array of tags, with no guaranteed sorting.
-  - each tag is a string of maximum 16 characters.
-
-
-`GET /find/{latitude}/{longitude}/{skip}/{radius}`
-  - fetches at most `64` items present around the provided coordinates,
-    sorted by increasing distance, at most `radius`, and `skip` the first ones.
-  - the `radius` is expected in meters, and by default is infinite.
-  - the number of items to `skip` is 0 by default.
-  - returns an array of items, each with the additional `distance` property.
-  - each item is a full JSONed instance with as much data as we need.
-  - each item provides its picture URI (get the file with a separate request)
-
-Here is an (old) example of `JSON` sent back with two items found :
-
-```
-[
-  {
-    "id": 529,
-    "title": "Plum maiores",
-    "location": "43.59528538094, 1.4899757103897",
-    "latitude": 43.59528538094,
-    "longitude": 1.4899757103897,
-    "distance": "2494.63965368956",
-    "description": "Consequuntur rem quod ab omnis aut aut nesciunt quaerat.",
-    "tags": [],
-    "created_at": {
-      "date": "2015-04-08 16:50:16",
-      "timezone_type": 3,
-      "timezone": "Europe\/Paris"
-    },
-    "updated_at": {
-      "date": "2015-04-08 16:50:16",
-      "timezone_type": 3,
-      "timezone": "Europe\/Paris"
-    },
-    "giver": null,
-    "spotter": null
-  },
-  {
-    "id": 76,
-    "title": "LimeGreen libero",
-    "location": "43.548083594727, 1.4953072156219",
-    "latitude": 43.548083594727,
-    "longitude": 1.4953072156219,
-    "distance": "4194.49735510112",
-    "description": "Eum dolore saepe repellendus autem accusantium inventore.",
-    "tags": [],
-    "created_at": {
-      "date": "2015-04-08 16:50:12",
-      "timezone_type": 3,
-      "timezone": "Europe\/Paris"
-    },
-    "updated_at": {
-      "date": "2015-04-08 16:50:12",
-      "timezone_type": 3,
-      "timezone": "Europe\/Paris"
-    },
-    "giver": null,
-    "spotter": null
-  }
-]
-```
-
-
-Pictures
---------
-
-`POST /pictures/{itemId}`
-  - Send a JPG file in a input named 'picture'.
-  - That picture will be renamed `1.jpg`.
-  - This is terrible and subject to future changes.
-
-`GET /pictures/{itemId}/1.jpg`
 
 
 Error Codes
@@ -204,6 +83,7 @@ The error codes are available as constants in the class `Controller\ErrorCode`.
 006 BAD_LOCATION         Provided location could not be resolved to coordinates
 007 UNAVAILABLE_EMAIL    Email already taken
 008 EXCEEDED_QUOTA       User daily quota for that action was exceeded
+009 BAD_USERNAME         Provided username could not be found
 ```
 
 

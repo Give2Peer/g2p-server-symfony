@@ -9,7 +9,6 @@ Background:
   Given I am the registered user named "Goutte"
 
 
-
 ## WRONG LOCATIONS #############################################################
 
 
@@ -22,7 +21,6 @@ nope: I'm not going to tell you where it is !
    And there should be 0 items in the database
 
 
-
 @geocode
 Scenario: Give an item with an ungeolocalizable location
   When I give the following item :
@@ -31,7 +29,6 @@ location: The ass-end of nowhere !
 """
   Then the request should not be accepted
    And there should be 0 items in the database
-
 
 
 ## GOOD LOCATIONS ##############################################################
@@ -53,7 +50,6 @@ item:
    And there should be 1 item in the database
 
 
-
 Scenario: Give an item with only a latitude, longitude location
   When I give the following item :
 """
@@ -70,7 +66,6 @@ item:
    And there should be 1 item in the database
 
 
-
 Scenario: Give an item with a weird latitude/longitude location
   When I give the following item :
 """
@@ -85,7 +80,6 @@ item:
   longitude: .12
 """
    And there should be 1 item in the database
-
 
 
 @geocode
@@ -105,7 +99,6 @@ item:
    And there should be 1 item in the database
 
 
-
 @geocode
 Scenario: Give an item with only an IP address location
   When I give the following item :
@@ -121,7 +114,6 @@ item:
   longitude: 1.444
 """
    And there should be 1 item in the database
-
 
 
 ## TITLE AND TAGS ##############################################################
@@ -158,7 +150,6 @@ item:
     And there should be 1 item in the database
 
 
-
 Scenario: Give an item with a title with special characters
    When I give the following item :
 """
@@ -178,7 +169,6 @@ item:
     And there should be 1 item in the database
 
 
-@wip
 Scenario: Give an item with a very long title that gets truncated
    When I give the following item :
 """
@@ -192,7 +182,6 @@ item:
   title: I am longer than 32 characters ❤
 """
     And there should be 1 item in the database
-
 
 
 Scenario: Give an item with tags, and ignore non-existing tags
@@ -218,7 +207,6 @@ item:
     - nope
 """
     And there should be 1 item in the database
-
 
 
 ## EXPERIENCE ##################################################################
@@ -249,7 +237,6 @@ experience: 4
    And the user Goutte should have 7 experience points
 
 
-
 ## QUOTAS ######################################################################
 
 
@@ -262,8 +249,6 @@ Scenario: Fail to exceed level 1 daily quota of 2
    And there should be 2 items in the database
 
 
-
-
 Scenario: Fail to exceed level 10 daily quota of 20
  Given I am level 10
    And I gave 19 items 12 hours ago
@@ -274,8 +259,6 @@ Scenario: Fail to exceed level 10 daily quota of 20
   When I try to give an item
   Then the request should not be accepted
    And there should be 20 items in the database
-
-
 
 
 Scenario: Quotas are daily

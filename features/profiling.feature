@@ -1,16 +1,13 @@
 @rest
-@wip
 Feature: Profiling
   In order to display the user's profile
   As a client
   I need to get that information from the server
 
 
-
 Scenario: Fail to get my profile information when lot logged in
    When I get /profile
    Then the request should not be accepted
-
 
 
 Scenario: Get my own profile information
@@ -24,7 +21,6 @@ user:
     experience: 0
     level: 1
 """
-
 
 
 Scenario: Get another user's public profile information

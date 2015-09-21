@@ -26,18 +26,6 @@ give2_peer_public_profile:
 
 ## ITEMS #######################################################################
 
-# Deprecated alias for POST /item
-give2_peer_give:
-    path:     /give
-    defaults: { _controller: give2peerbundle:rest:give, _format: json }
-    methods:  [post]
-
-# Deprecated alias for POST /item
-give2_peer_spot:
-    path:     /spot
-    defaults: { _controller: Give2PeerBundle:Rest:spot, _format: json }
-    methods:  [POST]
-
 give2_peer_item_add:
     path:     /item
     defaults: { _controller: Give2PeerBundle:Rest:itemAdd, _format: json }
@@ -50,20 +38,13 @@ give2_peer_picture_upload:
     requirements:
         id:   \d+
 
-# fixme: /items and then ?q= parameters
-give2_peer_find_around:
-    path:     /items/find/{latitude}/{longitude}/{skip}/{radius}
-    defaults:
-        _controller: Give2PeerBundle:Rest:findAroundCoordinates
-        _format: json
-        skip:   0 # don't skip anything
-        radius: 0 # will be handled as infinity (no filter)
+give2_peer_items_around:
+    path:     /items/around/{latitude}/{longitude}
+    defaults: { _controller: Give2PeerBundle:Rest:itemsAround, _format: json }
     methods:  [GET]
     requirements:
-        latitude:   -?\d+(?:\.\d*)?
-        longitude:  -?\d+(?:\.\d*)?
-        skip:         \d+
-        radius:       \d+(?:\.\d*)?
+      latitude:   "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
+      longitude:  "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
 
 ## GENERAL DATA COLLECTION #####################################################
 

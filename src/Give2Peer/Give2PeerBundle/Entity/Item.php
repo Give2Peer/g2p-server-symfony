@@ -406,39 +406,6 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * Use Geocoder to fetch the latitude and longitude from our providers.
-     * This throws if none can find anything.
-     *
-     * todo: refactor
-     * This code should not be here, and locale and providers should be
-     * easily configurable, as well as API keys.
-     *
-     * See https://github.com/geocoder-php/Geocoder/blob/2.x/README.md#api
-     */
-    public function geolocate() {
-
-        $locale = 'fr_FR';
-        $region = 'France';
-
-        $adapter  = new \Geocoder\HttpAdapter\BuzzHttpAdapter();
-        $geocoder = new \Geocoder\Geocoder();
-        $chain    = new \Geocoder\Provider\ChainProvider(array(
-            new LatitudeLongitudeProvider($adapter),
-            new \Geocoder\Provider\FreeGeoIpProvider($adapter),
-            new \Geocoder\Provider\HostIpProvider($adapter),
-            new \Geocoder\Provider\OpenStreetMapProvider($adapter, $locale),
-            new \Geocoder\Provider\GoogleMapsProvider($adapter, $locale, $region, true),
-        ));
-        $geocoder->registerProvider($chain);
-
-        /** @var Geocoded $geocode */
-        $geocode = $geocoder->geocode($this->location);
-
-        $this->latitude = $geocode->getLatitude();
-        $this->longitude = $geocode->getLongitude();
-    }
-
-    /**
      * @return string
      */
     public function getThumbnail()

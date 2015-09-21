@@ -85,7 +85,7 @@ fos_user:
 
 # API Doc Generator
 nelmio_api_doc:
-    name: Give2Peer API
+    name: Give2Peer API Documentation
     motd: # Message Of The Day (in the masthead)
         template: Give2PeerBundle::Doc/motd.html.twig
     # Probably a good idea

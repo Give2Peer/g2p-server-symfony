@@ -28,9 +28,12 @@ class LatitudeLongitudeProvider extends AbstractProvider
         if (! preg_match($regex, $address, $m)) {
             throw new NoResultException();
         }
+        if ('' == $m[0] || '' == $m[1]) {
+            throw new NoResultException();
+        }
         $result = array_merge($this->getDefaults(), array(
-            'latitude'     => $m[1],
-            'longitude'    => $m[2],
+            'latitude'     => floatval($m[1]),
+            'longitude'    => floatval($m[2]),
         ));
 
         return [$result];

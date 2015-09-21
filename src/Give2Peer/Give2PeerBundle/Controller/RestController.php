@@ -167,11 +167,11 @@ class RestController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function giveAction(Request $request)
-    {
-        $request->attributes->set('gift', 'true');
-        return $this->itemAddAction($request);
-    }
+//    public function giveAction(Request $request)
+//    {
+//        $request->attributes->set('gift', 'true');
+//        return $this->itemAddAction($request);
+//    }
 
     /**
      * A Spotter does not own the Item, which is probably just lying around in
@@ -183,11 +183,11 @@ class RestController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function spotAction(Request $request)
-    {
-        $request->attributes->set('gift', 'false');
-        return $this->itemAddAction($request);
-    }
+//    public function spotAction(Request $request)
+//    {
+//        $request->attributes->set('gift', 'false');
+//        return $this->itemAddAction($request);
+//    }
 
     /**
      * Publish a new item.
@@ -213,7 +213,7 @@ class RestController extends BaseController
      * @param  Request $request
      * @return JsonResponse
      */
-    protected function itemAddAction(Request $request)
+    public function itemAddAction(Request $request)
     {
         $em = $this->getEntityManager();
         $itemRepo = $this->getItemRepository();
@@ -249,15 +249,20 @@ class RestController extends BaseController
             );
         }
 
+        // Check whether the location can be geocoded or not
+        $g = $this->getGeocoder();
+        try {
+            $coordinates = $g->getCoordinates($location);
+        } catch (\Exception $e) {
+            $msg = sprintf("Cannot resolve location: %s", $e->getMessage());
+            return new ErrorJsonResponse($msg, Error::BAD_LOCATION);
+        }
+
         // Create the item
         $item = new Item();
         $item->setLocation($location);
-        try {
-            $item->geolocate();
-        } catch (\Exception $e) {
-            $msg = sprintf("Cannot resolve geolocation: %s", $e->getMessage());
-            return new ErrorJsonResponse($msg, Error::BAD_LOCATION);
-        }
+        $item->setLatitude(floatval($coordinates[0]));
+        $item->setLongitude(floatval($coordinates[1]));
         $item->setTitle($title);
         $item->setDescription($description);
         foreach ($tags as $tag) {
@@ -292,7 +297,15 @@ class RestController extends BaseController
     /**
      * Upload a picture for the item `id`.
      *
-     * @ApiDoc()
+     * @ApiDoc(
+     *   parameters = {
+     *     {
+     *       "name"="picture", "dataType"="file",
+     *       "required"=true, "format"="jpg",
+     *       "description"="Picture file to attach to the item. JPG only for now."
+     *     }
+     *   }
+     * )
      * @param Request $request
      * @param int     $id      Id of the item to upload the picture for.
      * @return JsonResponse|ErrorJsonResponse
@@ -445,6 +458,75 @@ class RestController extends BaseController
     }
 
     /**
+     * Get items sorted by increasing distance from a location.
+     *
+     * The location is described by its `latitude` and `longitude`,
+     * which are simple floating point numbers. No fancy ISO 6709 for now.
+     *
+     * You can skip the first `skip` items if you already have them.
+     * You can also make sure that no items further than `maxDistance` meters
+     * away from the location are returned.
+     *
+     * The resulting JSON is an array of items that have the additional
+     * `distance` property, which is their distance in meters to the location,
+     * for convenience.
+     *
+     * Note that the distances are computed along the great circles of Earth.
+     *
+     * @ApiDoc(
+     *   parameters = {
+     *     {
+     *       "name"="maxDistance", "dataType"="float", "required"=false, "default"=0,
+     *       "description"="Ignore items further than `maxDistance` meters away from the location. A value of zero will be ignored."
+     *     },
+     *     {
+     *       "name"="skip", "dataType"="int", "required"=false, "default"=0,
+     *       "description"="Skip the first `skip` items in the query. Useful for pagination, as the query is limited to a maximum of 64 results."
+     *     },
+     *   }
+     * )
+     * @param Request $request
+     * @param float $latitude  The latitude between -90 and 90.
+     * @param float $longitude The longitude between -180 and 180.
+     * @return JsonResponse
+     */
+    public function itemsAroundAction(Request $request, $latitude, $longitude)
+    {
+        // Filter around a location
+//        $around = $request->get('location', null);
+//        $latitude = null; $longitude = null;
+//        if (null != $around) {
+//            $g = $this->getGeocoder();
+//            try {
+//                $coordinates = $g->getCoordinates($around);
+//            } catch (\Exception $e) {
+//                $msg = sprintf("Cannot resolve location: %s", $e->getMessage());
+//                return new ErrorJsonResponse($msg, Error::BAD_LOCATION);
+//            }
+//            $latitude  = $coordinates[0];
+//            $longitude = $coordinates[1];
+//        }
+
+        // Filter by maximum distance to location
+        $maxDistance = $request->get('maxDistance', null);
+        if (null != $maxDistance) {
+            $maxDistance = abs(floatval($maxDistance)); // lazy ☠
+        }
+
+        // Filter by skipping the fist results
+        $skip = $request->get('skip', null);
+        if (null != $skip) {
+            $skip = abs(intval($skip)); // lazy ☠
+        }
+
+        $items = $this->findAroundCoordinates(
+            $latitude, $longitude, $maxDistance, $skip
+        );
+
+        return new JsonResponse($items);
+    }
+
+    /**
      * Find items by increasing distance to the specified coordinates.
      *
      * Return a list of at most 64 Items, sorted by increasing distance to the
@@ -453,20 +535,18 @@ class RestController extends BaseController
      *
      * You can skip the first `skip` items if you already have them.
      *
-     * The resulting JSON is an array of items that have the additional
+     * The result is an array of items that have the additional
      * `distance` property, which is their distance in meters to the center of
      * the circle, for convenience.
      *
-     * @ApiDoc()
      * @param float $latitude  Latitude of the center of the circle, between -90 and 90.
      * @param float $longitude Longitude of the center of the circle, between -180 and 180.
      * @param int   $skip      How many items to skip in the query.
-     * @param float $radius    In meters, the max distance.
+     * @param float $radius    In meters, the max distance. Provide 0 to ignore.
      *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @return Item[] Items matching the query, enhanced with their `distance`.
      */
-    public function findAroundCoordinatesAction($latitude, $longitude, $skip,
-                                                $radius)
+    public function findAroundCoordinates($latitude, $longitude, $radius, $skip)
     {
         $maxResults = 64; // todo: move this to configuration
 
@@ -497,7 +577,7 @@ class RestController extends BaseController
             $latitude, $longitude, $skip, $radius, $maxResults
         );
 
-        return new JsonResponse($results);
+        return $results;
     }
 
     /**

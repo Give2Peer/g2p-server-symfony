@@ -98,11 +98,11 @@ class FeatureContext extends BaseContext
         // Empty the database by TRUNCATING the tables and RESETTING the indices
         // This is more complicated than it should, because of pgSQL
         $tables = [
-            'Peer', // yes, User is named Peer in the database, as User is reserved
+            'Peer', // User is named Peer in the database, as User is reserved
             'Item',
             'Tag',
         ];
-        // wip: Try to get the above list procedurally to avoid maintaining it
+        // wip: Try to get the above list procedurally to avoid maintaining it ?
         // 1. Nope, TMI
         //$tables = $doc->query('SELECT * FROM pg_catalog.pg_tables')->fetchAll();
 
@@ -313,8 +313,6 @@ class FeatureContext extends BaseContext
     }
 
 
-
-
     // ROUTES STEPS ////////////////////////////////////////////////////////////
 
     /**
@@ -322,7 +320,9 @@ class FeatureContext extends BaseContext
      */
     public function iGiveThatItem($pystring='')
     {
-        $this->iPost('give', $pystring);
+        $data = empty($pystring) ? [] : $this->fromYaml($pystring);
+        $data['gift'] = true;
+        $this->request('POST', 'item', $data);
     }
 
     /**
@@ -332,8 +332,9 @@ class FeatureContext extends BaseContext
     {
         $lat = $this->faker->latitude;
         $lon = $this->faker->longitude;
-        $pystring = "location: $lat, $lon";
-        $this->iPost('give', $pystring);
+        $pystring  = "location: $lat, $lon\n";
+        $pystring .= "gift: true";
+        $this->iPost('item', $pystring);
     }
 
     /**
@@ -348,11 +349,12 @@ class FeatureContext extends BaseContext
     // REQUEST STEPS ///////////////////////////////////////////////////////////
 
     /**
-     * @When /^I GET ([^ ]+)$/i
+     * @When /^I GET ([^ ]+)(?: with(?: the parameters) *:)?$/i
      */
-    public function iGet($route)
+    public function iGet($route, $pystring='')
     {
-        $this->request('GET', $route);
+        $data = empty($pystring) ? [] : $this->fromYaml($pystring);
+        $this->request('GET', $route, $data);
     }
 
     /**
@@ -360,7 +362,7 @@ class FeatureContext extends BaseContext
      */
     public function iPost($route, $pystring='')
     {
-        $data = $this->fromYaml($pystring);
+        $data = empty($pystring) ? [] : $this->fromYaml($pystring);
         $this->request('POST', $route, $data);
     }
 
