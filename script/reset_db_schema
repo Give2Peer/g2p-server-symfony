@@ -4,9 +4,9 @@
 
 app/console doctrine:schema:drop --force --env=test
 app/console doctrine:schema:create --env=test
-app/console doctrine:schema:drop --force --env=dev
-app/console doctrine:schema:create --env=dev
 
 # Much too dangerous, uncomment to use, and then comment again
+#app/console doctrine:schema:drop --force --env=dev
+#app/console doctrine:schema:create --env=dev
 #app/console doctrine:schema:drop --force --env=prod
 #app/console doctrine:schema:create --env=prod

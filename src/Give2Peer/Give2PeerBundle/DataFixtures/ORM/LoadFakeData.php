@@ -33,6 +33,7 @@ class LoadFakeData extends DataFixture
             "Goutte",
             "Shibby",
             "Gizko",
+            "Didi",
             "Karibou",
             "Georges",
         ];

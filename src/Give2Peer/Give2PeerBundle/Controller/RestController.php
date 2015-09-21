@@ -280,7 +280,7 @@ class RestController extends BaseController
         // Compute how much experience the user gains and then give it
         // 3 points for giving, plus one point for a title, and one for tags.
         $experience = 3;
-        if (! empty($item->getTitle()))  { $experience++; }
+        if ('' != $item->getTitle())     { $experience++; }
         if (0 < count($item->getTags())) { $experience++; }
         $user->addExperience($experience);
 
