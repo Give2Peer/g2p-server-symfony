@@ -580,17 +580,4 @@ class RestController extends BaseController
         return $results;
     }
 
-    /**
-     * Return all available tags, as a JSONed array.
-     *
-     * @ApiDoc()
-     * @return JsonResponse
-     */
-    public function tagsAction()
-    {
-        $tags = $this->getTagRepository()->getTagNames();
-
-        return new JsonResponse($tags);
-    }
-
 }

@@ -50,5 +50,10 @@ give2_peer_items_around:
 
 give2_peer_tags:
     path:     /tags
-    defaults: { _controller: Give2PeerBundle:Rest:tags, _format: json }
+    defaults: { _controller: Give2PeerBundle:RestData:tags, _format: json }
+    methods:  [GET]
+
+give2_peer_stats:
+    path:     /stats
+    defaults: { _controller: Give2PeerBundle:RestData:stats, _format: json }
     methods:  [GET]
