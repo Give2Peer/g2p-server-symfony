@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Installs postgresql
+
+echo "Installing required packages..."
+sudo apt-get install php5-pgsql postgresql postgresql-doc
+
+
+# We use a "here document" below, instead, as it is cleaner
+#sudo su postgres -c "psql -c \"CREATE USER give2peer WITH PASSWORD 'pass42peer';\""
+#sudo su postgres -c "psql -c \"CREATE DATABASE give2peer OWNER give2peer;\""
+#sudo su postgres -c "psql -c \"CREATE DATABASE give2peer_test OWNER give2peer;\""
+
+sudo su postgres <<EOSU
+
+echo "Creating databases..."
+psql -c "CREATE USER give2peer WITH PASSWORD 'pass42peer';"
+psql -c "CREATE DATABASE give2peer      OWNER give2peer;"
+psql -c "CREATE DATABASE give2peer_test OWNER give2peer;"
+
+echo "Setting up the pgSQL extensions we need..."
+psql -d give2peer      -c "CREATE EXTENSION cube;"
+psql -d give2peer_test -c "CREATE EXTENSION cube;"
+psql -d give2peer      -c "CREATE EXTENSION earthdistance;"
+psql -d give2peer_test -c "CREATE EXTENSION earthdistance;"
+
+EOSU
+
+sudo adduser give2peer --no-create-home --disabled-password
+
+echo "Done !"

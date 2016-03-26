@@ -13,12 +13,14 @@ http://stackoverflow.com/questions/10588646/how-to-change-a-database-to-postgres
 
 And don't forget (for each database!) :
 
-psql give2peer
-CREATE EXTENSION cube;
-CREATE EXTENSION earthdistance;
-psql give2peer_test
-CREATE EXTENSION cube;
-CREATE EXTENSION earthdistance;
+    psql give2peer
+    CREATE EXTENSION cube;
+    CREATE EXTENSION earthdistance;
+    psql give2peer_test
+    CREATE EXTENSION cube;
+    CREATE EXTENSION earthdistance;
+
+There's a script for that : `script/install_pgsql`.
 
 
 Fixtures
