@@ -59,7 +59,7 @@ function array_diff_assoc_recursive($array1, $array2) {
  *
  * This prints a fortune cookie when it passes ; sugar for the mind.
  */
-class FeatureContext extends BaseContext
+class FeatureContext extends    BaseContext
                      implements BehatContext, SnippetAcceptingContext
 {
 
@@ -79,6 +79,21 @@ class FeatureContext extends BaseContext
     {
         $this->faker = FakerFactory::create();
         $this->faker->addProvider(new GeolocationFaker($this->faker));
+    }
+
+    /**
+     * Finds the directory where the phpunit.xml(.dist) is stored.
+     *
+     * Motherfuckers bound the kernel creation to phpunit -_-
+     * In response, we're dirtying our code with this hax.
+     *
+     * See https://github.com/liip/LiipFunctionalTestBundle/pull/255 too
+     *
+     * @return string The directory where phpunit.xml(.dist) is stored
+     */
+    protected static function getPhpUnitXmlDir()
+    {
+        return 'app';
     }
 
     /**
@@ -108,15 +123,21 @@ class FeatureContext extends BaseContext
 
         /** @var Connection $dbal */
         $dbal = $this->get('doctrine.dbal.default_connection');
-        foreach ($tables as $table) {
-            $dbal->query("TRUNCATE TABLE ${table} RESTART IDENTITY CASCADE")
-                 ->execute()
-                 ;
-            // WOW !! RESTART IDENTITY does not work, don't know why ?!
-            // ... well, we reset the primary keys by hand, that works
-            $dbal->query("ALTER SEQUENCE ${table}_id_seq RESTART WITH 1")
-                 ->execute()
-                 ;
+        try {
+
+            foreach ($tables as $table) {
+                $dbal->query("TRUNCATE TABLE ${table} RESTART IDENTITY CASCADE")
+                     ->execute()
+                     ;
+                // WOW !! RESTART IDENTITY does not work, don't know why ?!
+                // ... well, we reset the primary keys by hand, that works
+                $dbal->query("ALTER SEQUENCE ${table}_id_seq RESTART WITH 1")
+                     ->execute()
+                     ;
+            }
+
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            echo "Database schema is probably not set up !";
         }
 
         // Loading an empty array still truncates all tables.

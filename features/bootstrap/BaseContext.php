@@ -7,6 +7,12 @@ use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * A base context class for our feature context classes.
+ *
+ * /!\
+ * We only have one child class of this (FeatureContext) for the moment.
+ */
 abstract class BaseContext extends WebTestCase
 {
 
@@ -73,7 +79,9 @@ abstract class BaseContext extends WebTestCase
      * @param $pystring
      * @return array
      */
-    protected function fromYaml($pystring) {
+    protected function fromYaml($pystring)
+    {
         return Yaml::parse($pystring, true, true);
     }
+
 }
