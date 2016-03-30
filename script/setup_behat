@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "RUN FROM PROJECT ROOT OR ELSE HEART.BREAK()"
+
+ln -s ../script/behat bin/behat
