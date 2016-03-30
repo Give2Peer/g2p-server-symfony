@@ -1,13 +1,18 @@
 
+Everything in this file is a DRAFT.
+It is absolutely open to discussion !
+
 About
 =====
 
-Game design's primary purpose here is to tackle abusive users.
+The game design's primary purpose here is to tackle abusive users.
 It also provides rewards and recognition for positive behavior.
 
 
 Experience
 ==========
+
+It is called "Karma".
 
 Experience points are gained automatically by using the service.
 
