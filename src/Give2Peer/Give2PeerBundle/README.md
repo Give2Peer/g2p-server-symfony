@@ -1,4 +1,4 @@
-postgreSQL
+PostGreSQL
 ==========
 
 We need the sweet, Ô so sweet sugar that the `earthdimensions` extension provides for pgSQL.
@@ -20,7 +20,7 @@ And don't forget (for each database!) :
     CREATE EXTENSION cube;
     CREATE EXTENSION earthdistance;
 
-There's a script for that : `script/install_pgsql`.
+There's a script for that : `script/setup_pgsql`.
 
 
 Fixtures

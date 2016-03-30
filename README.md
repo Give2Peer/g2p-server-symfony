@@ -31,7 +31,7 @@ the community ; we love you.
 
 This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org).
 
-It will provide a server for [Give2Peer](http://www.give2peer.org)'s bêta Android application.
+It will provide a server for [Karma](http://www.give2peer.org), the Android application.
 
 It is extensively [behavior-tested](/features).
 
@@ -48,9 +48,10 @@ These are the features we're working on :
 - [X] geolocation through third-party services
 - [X] registration
 - [X] create and serve 200x200 thumbnails
-- [x] user experience points and levels
+- [x] user karma points and levels
 - [x] REST API documentation
 - [ ] https support
+- [ ] version the API
 
 Right now, the database online is filled with fake/test data, so that we may
 easily test the client while developing it.
@@ -85,6 +86,18 @@ The error codes are available as constants in the class `Controller\ErrorCode`.
 008 EXCEEDED_QUOTA       User daily quota for that action was exceeded
 009 BAD_USERNAME         Provided username could not be found
 ```
+
+Install
+=======
+
+Get composer, install the dependencies.
+
+Then look at and run the setup scripts as-needed in `script/`.
+
+If behat complains about overriding `createKernel`,
+just hit it on the head once or twice !
+Alternatively, update the LiipFunctionalBundle vendor
+when our pull request makes it to release. :)
 
 
 Blackboard
