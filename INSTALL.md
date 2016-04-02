@@ -1,5 +1,5 @@
 
-        apt-get install php5 php5-curl composer
+        apt-get install php5 php5-curl php5-gd composer
         composer install
 
 There's a bunch of bash scripts in `script/` that you should try (from project root),

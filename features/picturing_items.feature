@@ -1,4 +1,5 @@
 @rest
+@pic
 Feature: Picturing items
   In order to describe faster than with a thousand words
   As a spotter or a giver

@@ -5,5 +5,4 @@ echo "RUN FROM PROJECT ROOT OR ELSE HEART.BREAK()"
 
 rm bin/behat
 
-
 ln -s ../script/behat bin/behat
