@@ -26,4 +26,8 @@ EOSU
 echo "Creating give2peer system user..."
 sudo adduser give2peer --no-create-home --disabled-password
 
+echo "Creating database schema..."
+./app/console doctrine:schema:create
+./app/console doctrine:schema:create --env=test
+
 echo "Done !"

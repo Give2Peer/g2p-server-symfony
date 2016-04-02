@@ -5,7 +5,7 @@ parameters:
     database_port:     ~
     database_name:     give2peer
     database_user:     give2peer
-    database_password: ~
+    database_password: pass42peer
     # You should uncomment this if you want use pdo_sqlite
     # database_path: "%kernel.root_dir%/data.db3"
 

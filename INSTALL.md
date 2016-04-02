@@ -1,4 +1,7 @@
 
+        apt-get install php5 php5-curl composer
+        composer install
+
 There's a bunch of bash scripts in `script/` that you should try (from project root),
 until running the feature suite with `script/behat` displays all green !
 

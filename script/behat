@@ -28,7 +28,7 @@ if ((!$loader = includeIfExists(__DIR__.'/../vendor/autoload.php'))) {
 }
 
 
-//$_SERVER['KERNEL_DIR'] = 'app'; // hotfix
+$_SERVER['KERNEL_DIR'] = 'app'; // hotfix
 
 // Doctrine and the documentation generator NEED annotations support
 AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
