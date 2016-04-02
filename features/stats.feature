@@ -1,5 +1,8 @@
 @rest
 Feature: Providing statistics
+  In order to brag about how kickass I am
+  As a service
+  I need to collect statistics
 
 
 Background:

@@ -1,6 +1,6 @@
 @rest
 Feature: Registering
-  In order to use the REST API behind HTTP authentication
+  In order to use the REST API behind the HTTP authentication
   As a client
   I need to automatically register a new user account
 
