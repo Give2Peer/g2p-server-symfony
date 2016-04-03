@@ -62,6 +62,8 @@ function array_diff_assoc_recursive($array1, $array2) {
 class FeatureContext extends    BaseContext
                      implements BehatContext, SnippetAcceptingContext
 {
+    /** @var string $version The version of the API to use */
+    static $version = '1';
 
     /** @var Client $client */
     protected $client;
@@ -86,15 +88,16 @@ class FeatureContext extends    BaseContext
      *
      * Motherfuckers bound the kernel creation to phpunit -_-
      * In response, we're dirtying our code with this hax.
+     * We can simply set $_SERVER['KERNEL_DIR'] = 'app'; instead of this.
      *
      * See https://github.com/liip/LiipFunctionalTestBundle/pull/255 too
      *
      * @return string The directory where phpunit.xml(.dist) is stored
      */
-    protected static function getPhpUnitXmlDir()
-    {
-        return 'app';
-    }
+//    protected static function getPhpUnitXmlDir()
+//    {
+//        return 'app';
+//    }
 
     /**
      * Prepare system for test suite before it runs,
@@ -670,6 +673,11 @@ class FeatureContext extends    BaseContext
                                array $files = array(), array $server = array(),
                                $content = null, $changeHistory = true)
     {
+        if (0 !== strpos($uri, '/')) {
+            $uri = '/' . $uri;
+        }
+        $uri = '/v' . self::$version . $uri;
+
         $client = $this->getOrCreateClient();
 
         if (!empty($this->user)) {

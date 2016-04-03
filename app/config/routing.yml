@@ -1,7 +1,16 @@
-give2_peer:
+# We keep that one for now, but should we ?
+# Don't advertise it, as it may disappear in the future.
+# Note : we cannot activate BOTH ? WTF ?
+#give2_peer:
+#    resource: "@Give2PeerBundle/Resources/config/routing.yml"
+#    prefix:   /
+
+# The released and publicized API, version 1.
+give2_peer_v1:
     resource: "@Give2PeerBundle/Resources/config/routing.yml"
-    prefix:   /
+    prefix:   /v1
 
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
-    prefix:   /api/doc
+    prefix:   /
+#    prefix:   /api/doc

@@ -1,4 +1,5 @@
 @rest
+@registering
 Feature: Registering
   In order to use the REST API behind the HTTP authentication
   As a client

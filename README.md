@@ -48,10 +48,10 @@ These are the features we're working on :
 - [X] geolocation through third-party services
 - [X] registration
 - [X] create and serve 200x200 thumbnails
-- [x] user karma points and levels
-- [x] REST API documentation
+- [X] user karma points and levels
+- [X] REST API documentation
+- [X] version the API
 - [ ] https support
-- [ ] version the API
 
 Right now, the database online is filled with fake/test data, so that we may
 easily test the client while developing it.

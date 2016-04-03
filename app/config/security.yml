@@ -32,16 +32,16 @@ security:
             security: false
         # the registration
         rest_register:
-            pattern:  ^/register$
+            pattern:  ^(/v[\d]+)?/register$
             security: false
         # the index -> the doc
         rest_index:
-            pattern:  ^/$
+            pattern:  ^/(v[\d]+)?$
             security: false
-        # the doc
-        rest_doc:
-            pattern:  ^/api/doc
-            security: false
+        # the doc (not sure this is and/or should be used ?)
+#        rest_doc:
+#            pattern:  ^(/v[\d]+)?/api/doc
+#            security: false
         # the private API
         rest_api:
             pattern:   ^/

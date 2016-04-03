@@ -2,7 +2,7 @@
 Feature: Providing statistics
   In order to brag about how kickass I am
   As a service
-  I need to collect statistics
+  I need to collect and provide statistics
 
 
 Background:
