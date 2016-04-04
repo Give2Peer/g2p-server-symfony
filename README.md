@@ -2,26 +2,6 @@ Give2Peer PHP server
 ====================
 
 
-Why
-===
-
-Bring the power of the internet of things to the sharing of things.
-
-That is so cheesy, yes. But it's also true !
-We can leverage this awesome new communication tool that internet is
-to find people that need the stuff we have but don't need.
-Likewise, artists, tinkerers, and creators will have a field day !
-
-_Someone's garbage is someone else's treasure._
-
-_Want not, waste not._
-
-Finally, and this is quite important, _money should not be involved_.
-
-How about sharing pictures and credits instead with the people that gave you
-the materials you needed for that awesome creation you just made ?
-
-
 What
 ====
 
@@ -34,6 +14,27 @@ This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org
 It will provide a server for [Karma](http://www.give2peer.org), the Android application.
 
 It is extensively [behavior-tested](/features).
+
+
+Why
+===
+
+To bring the power of the internet of things to the sharing of things !
+
+That is cheesy, yes. But it's also true !
+We can leverage this awesome new communication tool that internet is
+to find people that need the stuff we have but don't need.
+Artists, tinkerers, and makers will have a field day !
+
+_Someone's garbage is someone else's treasure._
+
+_Want not, waste not._
+
+Finally, and this is quite important, _money should not be involved_.
+
+How about sharing pictures and credits instead with the people that gave you
+the materials you needed for that awesome creation you just made ?
+
 
 
 A Work in Progress
@@ -87,10 +88,26 @@ The error codes are available as constants in the class `Controller\ErrorCode`.
 009 BAD_USERNAME         Provided username could not be found
 ```
 
+
+
 Install
 =======
 
-Get composer, install the dependencies.
+You'll need `php >= 5.4`.
+
+The vendor setup is pretty straightforward if you already have [Composer] :
+
+    composer install
+
+Otherwise, here's how to get [Composer] and install :
+
+    curl -s https://getcomposer.org/installer | php
+    php composer.phar install
+
+Alternatively, [Composer] is available as a Debian package too :
+
+    apt-get install composer
+
 
 Then look at and run the setup scripts as-needed in `script/`.
 
@@ -106,5 +123,3 @@ Blackboard
 All the REST methods are done "by hand", and support only JSON.
 Maybe move to a better way of doing APIs, like using :
 https://github.com/dunglas/DunglasApiBundle
-
-Also, the API should be versioned.
