@@ -5,7 +5,7 @@ Feature: Profiling
   I need to get that information from the server
 
 
-Scenario: Fail to get my profile information when lot logged in
+Scenario: Fail to get my profile information when not logged in
    When I get /profile
    Then the request should not be accepted
 
