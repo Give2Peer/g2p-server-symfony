@@ -395,19 +395,32 @@ class FeatureContext extends    BaseContext
      */
     public function iPostTheFile($route, $filePath)
     {
-        // We need to make a copy of the file, 'cause it will be *moved*
+        
+        // 1. We need to make a copy of the file, 'cause it will be *moved*
         // Unless the test suite fails, it seems ? Something is fishy here...
+        // 2. (months later) Errrr... Trying to unlink() now, as copies stay ?
+        // It is a failure, we need to unlink later on. Can't do that here.
+        // 3. (seconds later) We'll make copies in the cache directory, whatever
+        // We probably don't need copies anymore ; ... ... ... ... ..... meh.
+
         $sInfo = new \SplFileInfo($filePath);
         $extension = $sInfo->getExtension();
-        $tmpFilePath = $sInfo->getBasename('.'.$extension).'_copy.'.$extension;
+
+        $tmpPath = join(DIRECTORY_SEPARATOR, ['app', 'cache', 'test', 'pics']);
+        if (!is_dir($tmpPath)) {
+            mkdir($tmpPath, 0777, true);
+        }
+
+        $tmpPath .= DIRECTORY_SEPARATOR;
+        $tmpPath .= $sInfo->getBasename('.'.$extension).'_copy.'.$extension;
 
         $fInfo = new finfo;
         $mime = $fInfo->file($sInfo->getRealPath(), FILEINFO_MIME);
 
-        copy($filePath, $tmpFilePath);
+        copy($filePath, $tmpPath);
 
         $picture = new UploadedFile(
-            $tmpFilePath,
+            $tmpPath,
             $sInfo->getFilename(),
             $mime,
             filesize($filePath),
@@ -417,6 +430,8 @@ class FeatureContext extends    BaseContext
         $files = ['picture' => $picture];
 
         $this->request('POST', $route, [], $files);
+        
+        //unlink($tmpPath); // nope
     }
 
 
