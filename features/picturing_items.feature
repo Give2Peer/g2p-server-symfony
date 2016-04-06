@@ -2,7 +2,7 @@
 @pic
 Feature: Picturing items
   In order to describe faster than with a thousand words
-  As a spotter or a giver
+  As a tagger
   I need to attach pictures to items
 
 # /!\ WARNING

@@ -82,6 +82,23 @@ item:
    And there should be 1 item in the database
 
 
+# Why not, in the future ? Easy enough to add a custom provider for this.
+#Scenario: US-style coordinates
+#  When I give the following item :
+#"""
+#location: 41°41'39.0"N 0°09'24.0"W
+#"""
+#  Then the request should be accepted
+#   And the response should include :
+#"""
+#item:
+#  location: 2/.12
+#  latitude: 2
+#  longitude: .12
+#"""
+#   And there should be 1 item in the database
+
+
 @geocode
 Scenario: Give an item with only a postal address location
   When I give the following item :
