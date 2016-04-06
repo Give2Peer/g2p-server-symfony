@@ -16,6 +16,20 @@ use Give2Peer\Give2PeerBundle\Entity\User;
  * This is a first-class citizen in the give2peer app.
  * It is the thing that is given, or spotted, and gathered.
  *
+ * We try to be verbose in the ORM annotations in order to not rely too much on
+ * their default values and provide cheap snippets for future improvements.
+ * This is a strategy I seldom use but here it feels weirdly appropriate.
+ * Besides, it's all cached so it has no effect on production performance.
+ *
+ * Note : about giver and spotter (and possibly owner)
+ *   Maybe I should just drop it and use a single `author` field.
+ *   It feels too weird to have two separate fields that can never be both set.
+ *   I don't see the benefit anymore. This is a paper cut.
+ *   But `author` does not feel good either. It's not authorship of the Item
+ *   itself, only of its symbolic model in our information structure.
+ *   `painter`, `tagger` ... WTF! `tagger` is fine ! `tagger` it is !
+ *   fixme: refactor both giver and spotter into tagger.
+ *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\ItemRepository")
  */
@@ -33,6 +47,7 @@ class Item implements \JsonSerializable
     {
         return array(
             'id'          => $this->getId(),
+            'type'        => $this->getType(),
             'title'       => $this->getTitle(),
             'location'    => $this->getLocation(),
             'latitude'    => $this->getLatitude(),
@@ -49,6 +64,17 @@ class Item implements \JsonSerializable
     }
 
     /**
+     * http://komlenic.com/244/8-reasons-why-mysqls-enum-data-type-is-evil/
+     *
+     * gift : giver legally owns the item and gives it for free
+     * lost : spotter just shares the location of the item
+     * moop : Matter Out Of Place, everything else.
+     */
+    const TYPE_GIFT = 'gift';
+    const TYPE_LOST = 'lost';
+    const TYPE_MOOP = 'moop'; // default
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
@@ -59,7 +85,7 @@ class Item implements \JsonSerializable
 
     /**
      * This is the full location, in any form that we can feed to the
-     * geolocalisation service in order to grab the actual numerical
+     * geolocation service in order to grab the actual numerical
      * coordinates.
      *
      * This may also contain IP addresses.
@@ -91,11 +117,23 @@ class Item implements \JsonSerializable
     /**
      * When we serialize Items in JSON, we usually want to provide the distance
      * at which the item is. This property is obviously highly dynamic.
-     * We (may) enrich the Item with this property right before sending it in
-     * the response, but this is not stored in the database for obvious reasons.
+     * We enrich the Item with this property (when relevant) right before
+     * sending it in the response, but this is not stored in the database for
+     * obvious reasons. This is just sugar from the server to their clients.
+     *
      * @var float
      */
     private $distance;
+
+    /**
+     * One of `Item::TYPES` : gift, lost, moop.
+     * This will be useful for filtering queries.
+     *
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", length=4)
+     */
+    private $type = self::TYPE_MOOP;
 
     /**
      * @var string
@@ -174,7 +212,8 @@ class Item implements \JsonSerializable
 //    protected $owner;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->tags = new ArrayCollection();
     }
 
@@ -202,13 +241,44 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * Get location
+     * Get location, a string that can be pretty much anything that our
+     * third-party geolocating services can reduce to a lat/lng set.
      *
      * @return string 
      */
     public function getLocation()
     {
         return $this->location;
+    }
+
+    /**
+     * One of :
+     * - gift
+     * - lost
+     * - moop (default)
+     *
+     * @param $type
+     */
+    public function setType($type)
+    {
+        if ( ! in_array($type, array(
+            self::TYPE_GIFT, self::TYPE_LOST, self::TYPE_MOOP
+        ))) throw new \InvalidArgumentException("Invalid type.");
+
+        $this->type = $type;
+    }
+
+    /**
+     * One of :
+     * - gift
+     * - lost
+     * - moop (default)
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
@@ -232,6 +302,7 @@ class Item implements \JsonSerializable
     public function getTitle()
     {
         if (null == $this->title) return "";
+
         return $this->title;
     }
 
@@ -256,6 +327,7 @@ class Item implements \JsonSerializable
     public function getDescription()
     {
         if (null == $this->description) return "";
+
         return $this->description;
     }
 
@@ -294,6 +366,7 @@ class Item implements \JsonSerializable
         foreach ($this->tags as $tag) {
             $names[] = $tag->getName();
         }
+
         return $names;
     }
 
@@ -411,6 +484,7 @@ class Item implements \JsonSerializable
     public function getThumbnail()
     {
         if (null == $this->thumbnail) return "";
+
         return $this->thumbnail;
     }
 
