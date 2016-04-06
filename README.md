@@ -42,15 +42,15 @@ A Work in Progress
 
 These are the features we're working on :
 
-- [v] item location, title, type, description, tags, images
-- [v] item finding around coordinates
-- [v] list tags
-- [v] geolocation through third-party services
-- [v] HTTP Auth authentication and registration
-- [v] create, store and serve 200x200 thumbnails
-- [v] user karma points and levels
-- [v] REST API auto-generated documentation
-- [v] a versioned API (starting with prefixing v1/ in the URLs)
+- [x] item location, title, type, description, tags, images
+- [x] item finding around coordinates
+- [x] list tags
+- [x] geolocation through third-party services
+- [x] HTTP Auth authentication and registration
+- [x] create, store and serve 200x200 thumbnails
+- [x] user karma points and levels
+- [x] REST API auto-generated documentation
+- [x] a versioned API (starting with prefixing v1/ in the URLs)
 - [ ] https support
 
 Right now, the database online is filled with fake/test data, so that we may
