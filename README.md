@@ -61,6 +61,10 @@ easily test the client while developing it.
 The Bundle
 ==========
 
+There's only one Give2Peer Symfony2 Bundle for now.
+There's no need for many right now, and it will make refactoring to an API
+framework such as https://github.com/api-platform/api-platform easier.
+
 See [the bundle's README](src/Give2Peer/Give2PeerBundle/README.md).
 
 
@@ -120,6 +124,9 @@ when our pull request makes it to release. :)
 Blackboard
 ==========
 
-All the REST methods are done "by hand", and support only JSON.
-Maybe move to a better way of doing APIs, like using :
+All of the REST API is done "by hand", and supports only JSON and HTTP auth.
+We should probably move to a better way of doing APIs, like using :
 https://github.com/dunglas/DunglasApiBundle
+or
+https://github.com/api-platform/api-platform (<3)
+
