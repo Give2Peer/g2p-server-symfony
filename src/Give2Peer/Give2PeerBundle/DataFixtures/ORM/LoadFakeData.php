@@ -70,6 +70,9 @@ class LoadFakeData extends DataFixture
         $maxLongitudeDiff = 3.3;
 
         $total = 10101;
+        
+        $itemTypes = array(Item::TYPE_MOOP, Item::TYPE_GIFT, Item::TYPE_LOST);
+        
         // Let's create a bunch of items scattered through france
         for ($i=1; $i<=$total; $i++) {
             // Pick a location
@@ -86,6 +89,7 @@ class LoadFakeData extends DataFixture
             $item->setLocation("$latitude, $longitude");
             $item->setLatitude($latitude);
             $item->setLongitude($longitude);
+            $item->setType($itemTypes[array_rand($itemTypes)]);
 
             switch (rand(0, 2)) {
                 case 0:
