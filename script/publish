@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Clear the local cache, no need to upload it
+app/console cache:clear --env=prod
+app/console cache:clear --env=dev
+app/console cache:clear --env=test
+
+# Delete is dangerous, as we're caching item pictures, so we need to exclude the
+# directories in which they are uploaded.
+echo "Uploading files..."
+rsync -r --delete \
+    --exclude .git \
+    --exclude .idea \
+    --exclude web/pictures \
+    --exclude app/cache \
+    --exclude app/log \
+    --exclude app/config/parameters.yml \
+    . web.qrok.me:/home/web/g2p.give2peer.org
+
+# Run some scripts on the server, now
+ssh web@web.qrok.me <<-'ENDSSH'
+    # Commands to run on remote host
+    cd /home/web/g2p.give2peer.org
+    app/console cache:clear --env=prod
+    app/console cache:clear --env=dev
+    app/console cache:warmup --env=prod
+    app/console cache:warmup --env=dev
+    app/console doctrine:schema:update --force
+    app/console assets:install --symlink
+ENDSSH
+
+echo "Done !"
