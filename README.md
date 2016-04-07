@@ -13,7 +13,36 @@ This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org
 
 It will provide a server for [Karma](http://www.give2peer.org), the Android application.
 
-It is extensively [behavior-tested](/features).
+It is extensively [behavior-tested](/features) with features such as this one :
+
+``` gherkin
+Feature: Geotagging items
+  In order to bring joy
+  As a nice, sentient, and connected being
+  I want to geotag items in public places
+
+
+Scenario: Donation
+  Given I am moving out
+    And I have extra furniture
+   When I donate that extra furniture
+   Then I should win some karma
+    And the furniture should be added to the map of donations
+    And gatherers in the vicinity should be alerted
+
+Scenario: Lost & Found
+  Given I am strolling in Paris
+   When I geotag a lost glove below the Eiffel Tower
+   Then I should win some karma
+    And the glove should be added to the map of lost items
+    And glove lookers in the vicinity should be alerted
+
+Scenario: Matter Out Of Place (MOOP)
+  Given I am a nobody
+   When I photograph and geotag some MOOP at 41.694151, -0.156661
+   Then I should win some karma
+    And the MOOP should be added to the MOOP bag
+```
 
 
 Why
@@ -50,11 +79,13 @@ These are the features we're working on :
 - [x] create, store and serve 200x200 thumbnails
 - [x] user karma points and levels
 - [x] REST API auto-generated documentation
-- [x] a versioned API (starting with prefixing v1/ in the URLs)
+- [x] a versioned API (starting with prefixing `v1/` in the URLs)
+- [ ] a sandbox version of this server to develop clients with
 - [ ] https support
 
 Right now, the database online is filled with fake/test data, so that we may
 easily test the client while developing it.
+
 
 
 The Bundle
@@ -67,11 +98,11 @@ framework such as https://github.com/api-platform/api-platform easier.
 See [the bundle's README](src/Give2Peer/Give2PeerBundle/README.md).
 
 
+
 REST API
 ========
 
 See the full and interactive [documentation](http://g2p.give2peer.org) online.
-
 
 
 Error Codes
@@ -107,17 +138,13 @@ Otherwise, here's how to get [Composer] and install :
     curl -s https://getcomposer.org/installer | php
     php composer.phar install
 
-Alternatively, [Composer] is available as a Debian package too :
+Alternatively, [Composer] is also available as a Debian package :
 
     apt-get install composer
 
 
 Then look at and run the setup scripts as-needed in `script/`.
 
-If behat complains about overriding `createKernel`,
-just hit it on the head once or twice !
-Alternatively, update the LiipFunctionalBundle vendor
-when our pull request makes it to release. :)
 
 
 Blackboard
