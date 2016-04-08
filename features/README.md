@@ -25,21 +25,21 @@ What
 The `.feature` files contain _scenarios_ such as :
 
 ``` gherkin
-Feature: Giving items
+Feature: Hindering spammers
   In order to own your brain
   As a spammer
   I want to try to abuse the system
 
 Background:
-  Given I am the registered user named "V14GrA"
+  Given I am the registered user named "V14Gr4"
 
 Scenario: Fail to exceed level 1 daily quota of 2
   Given I am level 1
     And I gave 2 items 1 minute ago
    Then there should be 2 items in the database
    When I try to give an item
-   Then the request should not be accepted
-    And there should be 2 items in the database
+   Then I should fail
+    And there should still be 2 items in the database
 ```
 
 You don't need to know how to code to read them, or even (gasp!) edit them !
@@ -48,16 +48,21 @@ The best part is that each line is automagically ran as code that either
 succeeds or fails, so that the developers know if they broke something
 or if the newly added feature is done yet.
 
-We write first the specifications in those files, and then code until all's green !
+We first write the specifications in those files, and then code until all's green !
 
 
 How
 ---
 
-To run the features while coding, I suggest you use :
+Run `script/setup_behat` once.
+
+We needed to customize the feature runner script, so this setup script only
+symlinks `bin/behat` to point to `script/behat`.
+
+Then, to perfunctorily run the features while coding, I suggest you use :
 
 ```
-$ bin/behat --tags=~geocode
+$ script/behat --tags=~geocode
 ```
 
 Because scenarios tagged with `geocode` use third-party geocoding services with
@@ -66,9 +71,22 @@ quotas you might exceed, and subsequently get banned.
 You *can* of course run the whole suite, but don't do it too often.
 
 
+Notes
+-----
+
+You should install the `fortunes` package. It's optional, as fun is.
+
+As of April 2016, we have :
+
+    30 scenarios (30 passed)
+    172 steps (172 passed)
+
+
 Hey
 ---
 
+Q: What's the tech behind that ?
+A: _[Behat](http://docs.behat.org) runs [Gherkin](http://docs.behat.org/en/v3.0/guides/1.gherkin.html)._
+
 Q: It's unusual to test an API using Gherkin ! Why ?
 A: _For some, I would not recommend it. But for that one, 5/5 would do again._
-
