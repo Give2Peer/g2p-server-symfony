@@ -35,6 +35,7 @@ if ((!$loader = includeIfExists(__DIR__.'/../vendor/autoload.php'))) {
 // Ideally, the test env should use another upload dir that we can safely
 // overwrite and delete, and this would be solved.
 // And if you think writing these comments took longer than to fix, think again.
+// Or, hey, even better : prove it ! ;)
 echo "/!\\ WILL GENERATE A BUNCH OF DUMMY IMAGE FILES IN `web/pictures/`.\n";
 
 // Hot fix to skip phpunit XML config and Other Trouble ©

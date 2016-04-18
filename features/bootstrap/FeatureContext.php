@@ -241,7 +241,15 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^I am the(?: registered)? user named "(.*)" *$/
+     * @Given /^I am not (?:authenticated|logged in)$/
+     */
+    public function iAmNotAuthenticated()
+    {
+        $this->user = null;
+    }
+
+    /**
+     * @Given /^I am (?:the|a)(?: registered)? user named "?(.*?)"? *$/
      */
     public function iAmTheRegisteredUserNamed($name)
     {
@@ -260,15 +268,11 @@ class FeatureContext extends    BaseContext
      */
     public function iAmLevel($level)
     {
-        if (empty($this->user)) {
-            $this->fail("There's no `I` to level up. You don't exist !");
-        }
-
-        $this->user->setLevel(max(1, $level));
+        $this->getI()->setLevel(max(0, $level));
     }
 
     /**
-     * @Given /^there is a user named "(.+)" *$/
+     * @Given /^there is a user named "?(.+?)"? *$/
      */
     public function thereIsAUserNamed($name)
     {
@@ -276,7 +280,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^there is a user with email "(.+)" *$/
+     * @Given /^there is a user (?:with|whose) email (?:is )?"?(.+?)"? *$/
      */
     public function thereIsAUserWithEmail($email)
     {
@@ -299,17 +303,11 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^(there is|I give|I spot) an item at (-?\d+\.\d*) ?, ?(-?\d+\.\d*)$/
+     * @Given /^there is an item at (-?\d+\.\d*) ?, ?(-?\d+\.\d*)$/
      */
-    public function thereIsAnItemAt($action, $latitude, $longitude)
+    public function thereIsAnItemAt($latitude, $longitude)
     {
-        $giver   = ($action == 'I give') ? $this->user : null;
-        $spotter = ($action == 'I spot') ? $this->user : null;
-        if (!empty($action) && empty($this->user)) {
-            $this->fail("There is no I. You are no-one ; you cannot give.");
-        }
-
-        $this->createItem($latitude, $longitude, null, $giver, $spotter);
+        $this->createItem(null, $latitude, $longitude);
     }
 
     /**
@@ -322,43 +320,106 @@ class FeatureContext extends    BaseContext
         }
     }
 
+
+    // ROUTES STEPS ////////////////////////////////////////////////////////////
+
     /**
-     * @Given /^I gave (\d+) items? *(?:(.+) ago)? *$/
+     * @When /^I request my profile information$/
      */
-    public function iGaveItems($howMany, $when=null)
+    public function iGetMyProfile()
+    {
+        $this->request('GET', 'profile');
+    }
+    
+    /**
+     * @When /^I request the profile information of (.+)$/
+     */
+    public function iGetTheProfileOf($username)
+    {
+        $this->request('GET', 'profile/'.$username);
+    }
+    
+    /**
+     * @When /^I (?:try to )?g[ai]ve the following(?: item)? ?:$/
+     */
+    public function iGiveThatItem($pystring='')
+    {
+        $data = empty($pystring) ? [] : $this->fromYaml($pystring);
+        $this->request('POST', 'item', $data);
+    }
+
+    /**
+     * @When /^I (?:try to )?g[ai]ve the following(?: item)? *(.+) ago ?:$/
+     */
+    public function iGaveThatItemAgo($when=null, $pystring='')
+    {
+        $data = empty($pystring) ? [] : $this->fromYaml($pystring);
+        $this->request('POST', 'item', $data);
+
+        if (!empty($when)) {
+            $this->setLastGivenItemCreationDate($when);
+        }
+    }
+
+    /**
+     * @When /^I (?:try to )?give an(?:other)? item *$/
+     */
+    public function iGiveAnItem()
+    {
+        $this->iGiveAnItemAt($this->faker->latitude, $this->faker->longitude);
+    }
+
+    /**
+     * @Given /^I (?:try to )?give an item at (-?\d+\.\d*) ?, ?(-?\d+\.\d*)$/
+     */
+    public function iGiveAnItemAt($latitude, $longitude)
+    {
+        $title = sprintf("%s %s", $this->faker->colorName, $this->faker->word);
+        $pystring  = "location: $latitude, $longitude\n";
+//        $pystring .= "title: $title\n";
+//        $pystring .= "description: $title\n";
+        $this->iPost('item', $pystring);
+    }
+
+    /**
+     * WARNING :
+     * THIS WILL NOT INCREMENT THE AUTHOR'S KARMA
+     * AND IT BYPASSES THE QUOTA SYSTEM (it will never fail)
+     * -- THIS IS INTENTIONAL.
+     * It does count for subsequent quota checks, which was the intent.
+     *
+     * @Given /^I already gave (\d+) items? *(?:(.+) ago)? *$/
+     */
+    public function iAlreadyGaveItemsBypassingQuotas($howMany, $when=null)
     {
         if (!empty($when)) {
             $when = new \DateTime("@".strtotime("-".$when));
         }
 
+        $author = $this->getI();
         for ($i=0; $i<$howMany; $i++) {
-            $this->createItem(null, null, null, $this->user, null, $when);
+            $this->createItem($author, null, null, null, $when);
         }
     }
 
-
-    // ROUTES STEPS ////////////////////////////////////////////////////////////
-
     /**
-     * @When /^I (?:try to )?give the following(?: item)? ?:$/
+     * @Given /^I gave (\d+) items? *(?:(.+) ago)? *$/
      */
-    public function iGiveThatItem($pystring='')
+    public function iGaveItems($howMany, $when=null)
     {
-        $data = empty($pystring) ? [] : $this->fromYaml($pystring);
-        $data['gift'] = true;
-        $this->request('POST', 'item', $data);
-    }
+        for ($i=0; $i<$howMany; $i++) {
+            $lat = $this->faker->latitude;
+            $lng = $this->faker->longitude;
+            $data = [
+                'location' => "$lat / $lng",
+            ];
+            $this->request('POST', 'item', $data);
+            $this->theRequestShouldBeAcceptedOrNot();
 
-    /**
-     * @When /^I (?:try to )give an item *$/
-     */
-    public function iGiveAnItem()
-    {
-        $lat = $this->faker->latitude;
-        $lon = $this->faker->longitude;
-        $pystring  = "location: $lat, $lon\n";
-        $pystring .= "gift: true";
-        $this->iPost('item', $pystring);
+            if (!empty($when)) {
+                $this->setLastGivenItemCreationDate($when);
+            }
+        }
     }
 
     /**
@@ -454,7 +515,7 @@ class FeatureContext extends    BaseContext
 
         if ($this->client->getResponse()->isSuccessful() && !empty($not)) {
             $this->fail(
-                sprintf("Response is successful, with '%d' return code " .
+                sprintf("Response is successful, with '%d' HTTP status code ".
                     "and the following content:\n%s",
                     $this->client->getResponse()->getStatusCode(),
                     $content));
@@ -462,7 +523,7 @@ class FeatureContext extends    BaseContext
 
         if (!$this->client->getResponse()->isSuccessful() && empty($not)) {
             $this->fail(
-                sprintf("Response is unsuccessful, with '%d' return code " .
+                sprintf("Response is unsuccessful, with '%d' HTTP status code ".
                     "and the following content:\n%s",
                     $this->client->getResponse()->getStatusCode(),
                     $content));
@@ -551,19 +612,36 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Then /^the user (.+) should have (\d+) experience points?$/
+     * @Then /^the user (.+) should be level (\d+)$/
      */
-    public function theUserShouldHaveExperiencePoints($username, $experience)
+    public function theUserShouldBeLevel($username, $level)
     {
-        $usr = $this->getEntityManager()
-                    ->getRepository("Give2PeerBundle:User")
-                    ->findOneBy(['username'=>$username])
-                    ;
+        $usr = $this->getUser($username);
 
-        $this->assertEquals($experience, $usr->getExperience());
+        $this->assertEquals($level, $usr->getLevel());
     }
 
+    /**
+     * @Then /^I should be level (\d+)$/
+     */
+    public function iShouldBeLevel($level)
+    {
+        $usr = $this->getUser($this->getI()->getUsername());
 
+        $this->assertEquals($level, $usr->getLevel(), "nope");
+
+        $this->assertEquals($level, $this->getI()->getLevel());
+    }
+
+    /**
+     * @Then /^the user (.+) should have (\d+) karma points?$/
+     */
+    public function theUserShouldHaveKarmaPoints($username, $karma)
+    {
+        $usr = $this->getUser($username);
+
+        $this->assertEquals($karma, $usr->getKarma());
+    }
 
     /**
      * @Then /^there should((?: not)?) be a file at (.*?) *$/
@@ -592,6 +670,68 @@ class FeatureContext extends    BaseContext
     // UTILS ///////////////////////////////////////////////////////////////////
 
     /**
+     * Handy tool to hack Items `createdAt` field after adding them via the API.
+     * Requires that a request to POST /item was made last.
+     * We grab the item id from the response and tweak its creation date
+     * directly in the database.
+     * @param $when
+     */
+    protected function setLastGivenItemCreationDate($when)
+    {
+        $when = new \DateTime("@".strtotime("-".$when));
+
+        $content = $this->client->getResponse()->getContent();
+        try {
+            $ob = json_decode($content);
+            $id = $ob->item->id;
+        } catch (\Exception $e) {
+            $this->fail("Not the response we expected when hacking createdAt\n".
+                "This requires that a request to POST `/item` was made last.".
+                "Response obtained : $content\n".
+                $e->getMessage()."\n".
+                $e->getTraceAsString());
+        }
+
+        $em = $this->getEntityManager();
+        /** @var Item $item */
+        $item = $em->getRepository("Give2PeerBundle:Item")->find($id);
+        $item->setCreatedAt($when);
+        $em->flush();
+    }
+
+    /**
+     * @param $username
+     * @return null|User
+     */
+    protected function getUser($username)
+    {
+        return $this->getEntityManager()
+            ->getRepository("Give2PeerBundle:User")
+            ->findOneBy(['username'=>$username]);
+    }
+
+    /**
+     * Get the user described as "I" in the steps, if one was defined.
+     * @return null|User
+     */
+    protected function getI()
+    {
+        if (empty($this->user)) {
+            $this->fail(
+                "There is no I. Define yourself first, with a step such as :\n".
+                "Given I am a user named \"Tester\"");
+        }
+
+        // This does not refresh user karma ? It's not recommended anyways...
+        // $um = $this->getUserManager();
+        // $um->refresh($this->user);
+
+        // We want a fresh user from database, because we might have made some
+        // requests with this user between its creation and now. Karma changes !
+        return $this->getUser($this->user->getUsername());
+    }
+
+    /**
      * Create a dummy user named $name with password $name
      *
      * @param $name
@@ -613,21 +753,24 @@ class FeatureContext extends    BaseContext
         // This will canonicalize, encode, persist and flush
         $um->updateUser($user);
 
-        return $user;
+//        return $user; // Doctrine says it is not managed ???
+        return $this->getUser($user->getUsername());
     }
 
     /**
      * Create a dummy item.
      *
+     * WARNING: THIS WILL NOT GIVE KARMA TO THE AUTHOR
+     *          (but it will count for quotas)
+     *
      * @param null $latitude
      * @param null $longitude
      * @param null $title
-     * @param null $giver
-     * @param null $spotter
+     * @param null $author
      * @param null $when
      */
-    protected function createItem($latitude=null, $longitude=null, $title=null,
-                                  $giver=null, $spotter=null, $when=null)
+    protected function createItem($author=null, $latitude=null, $longitude=null,
+                                  $title=null,  $when=null)
     {
         // Fill up attributes with default values, random ones
         if (null == $latitude)
@@ -643,12 +786,13 @@ class FeatureContext extends    BaseContext
         $item->setLocation("$latitude, $longitude");
         $item->setLatitude($latitude);
         $item->setLongitude($longitude);
-        if ($giver)   $item->setGiver($giver);
-        if ($spotter) $item->setSpotter($spotter);
+        $item->setAuthor($author);
 
         // Add the item to database
         /** @var EntityManager $em */
         $em = $this->getEntityManager();
+//        $em->refresh($author); // hmmm...
+//        $this->getUserManager()->refreshUser($author);
         $em->persist($item);
         $em->flush();
 
@@ -693,14 +837,14 @@ class FeatureContext extends    BaseContext
         }
         $uri = '/v' . self::$version . $uri;
 
-        $client = $this->getOrCreateClient();
+        $this->client = $this->getOrCreateClient();
 
         if (!empty($this->user)) {
             $server['PHP_AUTH_USER'] = $this->user->getUsername();
             $server['PHP_AUTH_PW']   = $this->user->getUsername();
         }
 
-        $this->crawler = $client->request(
+        $this->crawler = $this->client->request(
             $method, $uri, $parameters, $files,
             $server, $content, $changeHistory
         );

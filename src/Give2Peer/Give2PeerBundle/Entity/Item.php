@@ -21,15 +21,6 @@ use Give2Peer\Give2PeerBundle\Entity\User;
  * This is a strategy I seldom use but here it feels weirdly appropriate.
  * Besides, it's all cached so it has no effect on production performance.
  *
- * Note : about giver and spotter (and possibly owner)
- *   Maybe I should just drop it and use a single `author` field.
- *   It feels too weird to have two separate fields that can never be both set.
- *   I don't see the benefit anymore. This is a paper cut.
- *   But `author` does not feel good either. It's not authorship of the Item
- *   itself, only of its symbolic model in our information structure.
- *   `painter`, `tagger` ... WTF! `tagger` is fine ! `tagger` it is !
- *   fixme: refactor both giver and spotter into tagger.
- *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\ItemRepository")
  */
@@ -58,13 +49,15 @@ class Item implements \JsonSerializable
             'tags'        => $this->getTagnames(),
             'created_at'  => $this->getCreatedAt()->format(DateTime::ISO8601),
             'updated_at'  => $this->getUpdatedAt()->format(DateTime::ISO8601),
-            'giver'       => $this->getGiver(),
-            'spotter'     => $this->getSpotter(),
+            'author'      => $this->getAuthor(),
         );
     }
 
     /**
+     * We use this instead of an ENUM.
      * http://komlenic.com/244/8-reasons-why-mysqls-enum-data-type-is-evil/
+     * Our solution is not much better, but it can evolve rather more easily
+     * towards a foreign key to a `type` table, say.
      *
      * gift : giver legally owns the item and gives it for free
      * lost : spotter just shares the location of the item
@@ -126,9 +119,19 @@ class Item implements \JsonSerializable
     private $distance;
 
     /**
-     * One of `Item::TYPES` : gift, lost, moop.
+     * One of `Item::TYPES` : `gift`, `lost`, or the default : `moop`.
      * This will be useful for filtering queries.
      *
+     * STILL NOT SURE THIS IS THE BEST DESIGN PATTERN.
+     * Maybe we should use tags instead ?
+     * What does this provide that tags don't ?
+     * ...
+     * This can evolve into a foreign key to a `TYPE` table, which could in turn
+     * hold configuration about the various item types, such as color, how high
+     * is the limit of items shown on the map, things like these.
+     * ...
+     * Tags may also hold such information. Hmmm... Time to go for a walk.
+     * 
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=4)
@@ -170,47 +173,17 @@ class Item implements \JsonSerializable
     private $tags;
 
     /**
-     * This is the User that legally owned this Item and transferred its legal
-     * ownership to somebody else.
-     * May be empty if there is no giver, but a spotter.
+     * The user that inserted this item into the database.
      *
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsGiven")
-     * @ORM\JoinColumn(name="giver_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsAuthored")
+     * (this JoinColumn is unnecessary as those are the default values)
+     * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
      */
-    protected $giver;
+    protected $author;
 
-    /**
-     * May be empty if there is no spotter, but a giver.
-     * This is a passerby that spotted the Item in a context where it appears
-     * that the Item has no legal owner anymore. (close to the garbage bins, for
-     * example)
-     *
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsSpotten")
-     * @ORM\JoinColumn(name="spotter_id", referencedColumnName="id")
-     */
-    protected $spotter;
-
-    /**
-     * We don't use this right now. In the future, maybe ?
-     *
-     * This is the current legal owner of this Item. May be nobody.
-     * This property will change through time, as an Item's ownership is
-     * transferred :
-     * - from a giver to a gatherer
-     * - from a giver to nobody     (abandon)
-     * - from nobody to a gatherer  (public spot)
-     *
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="itemsOwned")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
-     */
-//    protected $owner;
-
+    ////////////////////////////////////////////////////////////////////////////
 
     public function __construct()
     {
@@ -258,6 +231,7 @@ class Item implements \JsonSerializable
      * - moop (default)
      *
      * @param $type
+     * @return Item
      */
     public function setType($type)
     {
@@ -266,6 +240,8 @@ class Item implements \JsonSerializable
         ))) throw new \InvalidArgumentException("Invalid type.");
 
         $this->type = $type;
+
+        return $this;
     }
 
     /**
@@ -333,20 +309,27 @@ class Item implements \JsonSerializable
 
     /**
      * @param Tag $tag
+     * @return Item
+     *
      */
     public function addTag(Tag $tag)
     {
         $tag->addItem($this); // synchronously update the inverse side
-        $this->tags[] = $tag;
+        $this->tags->add($tag);
+
+        return $this;
     }
 
     /**
      * @param Tag $tag
+     * @return Item
      */
     public function removeTag(Tag $tag)
     {
         $tag->removeItem($this); // synchronously update the inverse side
         $this->tags->removeElement($tag);
+
+        return $this;
     }
 
     /**
@@ -371,61 +354,25 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * @param User $giver
+     * @return User|null
+     */
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    /**
+     * @param User $author
      * @return Item
      */
-    public function setGiver($giver)
+    public function setAuthor($author)
     {
-        $this->giver = $giver;
+        // Don't update the inverse side of the relationship
+        
+        $this->author = $author;
 
         return $this;
     }
-
-    /**
-     * @return User|null
-     */
-    public function getGiver()
-    {
-        return $this->giver;
-    }
-
-    /**
-     * @param User $spotter
-     * @return Item
-     */
-    public function setSpotter($spotter)
-    {
-        $this->spotter = $spotter;
-
-        return $this;
-    }
-
-    /**
-     * @return User|null
-     */
-    public function getSpotter()
-    {
-        return $this->spotter;
-    }
-
-//    /**
-//     * @param User $owner
-//     * @return Item
-//     */
-//    public function setOwner($owner)
-//    {
-//        $this->owner = $owner;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * @return User
-//     */
-//    public function getOwner()
-//    {
-//        return $this->owner;
-//    }
 
     /**
      * @return float
@@ -437,10 +384,13 @@ class Item implements \JsonSerializable
 
     /**
      * @param float $latitude
+     * @return Item
      */
     public function setLatitude($latitude)
     {
         $this->latitude = $latitude;
+
+        return $this;
     }
 
     /**
@@ -453,10 +403,13 @@ class Item implements \JsonSerializable
 
     /**
      * @param float $longitude
+     * @return Item
      */
     public function setLongitude($longitude)
     {
         $this->longitude = $longitude;
+
+        return $this;
     }
 
     /**
@@ -490,9 +443,12 @@ class Item implements \JsonSerializable
 
     /**
      * @param string $thumbnail
+     * @return Item
      */
     public function setThumbnail($thumbnail)
     {
         $this->thumbnail = $thumbnail;
+
+        return $this;
     }
 }

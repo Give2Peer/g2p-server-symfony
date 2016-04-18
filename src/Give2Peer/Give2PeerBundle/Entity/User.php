@@ -12,7 +12,8 @@ use Give2Peer\Give2PeerBundle\Entity\Item;
  *
  * User accounts are created as-needed by the mobile clients.
  * Users can later ascribe a proper username and password to save their account,
- * and be able to retrieve it from a different device.
+ * to be able to retrieve it from a different device.
+ * Users start at level zero, with zero karma.
  *
  * We use FOS User :
  * https://github.com/FriendsOfSymfony/FOSUserBundle/blob/master/Resources/doc/index.md
@@ -34,11 +35,15 @@ class User extends BaseUser implements \JsonSerializable
     const ACC_EXP_COST = 15;
 
     /**
-     * Required Experience to be level 2.
+     * Required Experience to be level 1.
+     * Users start at level 0.
      * Used as a constant in the formulas for levelling up.
      */
-    const EXP_LVL_2 = 10;
+    const EXP_LVL_1 = 10;
 
+    /**
+     * Provides `created_at` and `updated_at`.
+     */
     use ORMBehaviors\Timestampable\Timestampable;
 
     /**
@@ -55,7 +60,7 @@ class User extends BaseUser implements \JsonSerializable
             'username'   => $this->getUsernameCanonical(),
             'email'      => $this->getEmailCanonical(),
             'created_at' => $this->getCreatedAt(),
-            'experience' => $this->getExperience(),
+            'karma'      => $this->getKarma(),
             'level'      => $this->getLevel(),
         ];
     }
@@ -84,9 +89,10 @@ class User extends BaseUser implements \JsonSerializable
 
     /**
      * A token for REST auth.
-     * Right now it is NOT USED, as we use brutal HttpAuth.
+     * Right now it is NOT USED, as we use brutal HTTPAuth.
      * It should be refreshed, here's some ways to do it :
      * - CRON tasks (we'll need those eventually)
+     * - Use it as password in the HTTPAuth ?
      *
      * @ORM\Column(name="rest_token", type="string", length=32)
      */
@@ -95,41 +101,47 @@ class User extends BaseUser implements \JsonSerializable
     /**
      * IP of the client that registered.
      * This is used to banish abusive Users.
-     * Note that this contains the proxy IP if one was used.
+     * Note that this contains the proxy's IP if one was used.
      *
      * @ORM\Column(name="created_by", type="string", nullable=true)
      */
     protected $createdBy;
 
     /**
-     * The total sum of experience points this user has.
-     * Experience points are gained automatically by using the service,
+     * The total karma points this user has.
+     * Karma points are gained automatically by using the service,
      * and are the building blocks of user levelling (up).
      *
      * @ORM\Column(name="experience", type="integer")
      */
-    protected $experience = 0;
+    protected $karma = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity="Item", mappedBy="giver")
+     * The items that were authored by this user.
+     *
+     * This is the inverse side of the bidirectional relationship with Item.
+     * Changes made only to the inverse side of an association are ignored.
+     * http://doctrine-orm.readthedocs.org/projects/doctrine-orm/en/latest/reference/unitofwork-associations.html
+     *
+     * ORM\OneToMany(targetEntity="Item", mappedBy="author", fetch="EAGER")
+     *
+     * @ORM\OneToMany(targetEntity="Item", mappedBy="author", fetch="EAGER")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
      */
-    protected $itemsGiven;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Item", mappedBy="spotter")
-     */
-    protected $itemsSpotten;
+    protected $itemsAuthored;
 
 
     // CONSTRUCTOR /////////////////////////////////////////////////////////////
 
     /**
-     * Override of parent constructor to make sure we have a WS token ready.
+     * Override of parent constructor to make sure we have a token ready.
      */
     public function __construct()
     {
         parent::__construct();
-        $this->refreshRestToken();
+        if (null == $this->restToken) {
+            $this->refreshRestToken();
+        }
     }
 
 
@@ -138,90 +150,71 @@ class User extends BaseUser implements \JsonSerializable
     /**
      * @return Item[]
      */
-    public function getItemsGiven()
+    public function getItemsAuthored()
     {
-        return $this->itemsGiven;
+        return $this->itemsAuthored;
     }
 
     /**
-     * @return Item[]
+     * @param Item $item
+     * @return User
      */
-    public function getItemsSpotten()
+    public function addItemAuthored(Item $item)
     {
-        return $this->itemsSpotten;
-    }
+        // Update the "owning" side (for Doctrine) of the relationship
+        // Don't. Do it by hand. (for now)
+        //$item->setAuthor($this);
 
-
-    // REST AUTHENTICATION TOKEN ///////////////////////////////////////////////
-    // We don't use this, as we're using basic HTTP Authentication right now.
-
-    /**
-     * @return String
-     */
-    public function getRestToken()
-    {
-        return $this->restToken;
-    }
-
-    /**
-     * Refresh the token used to auth with WebSocket.
-     * Will be a random md5.
-     * /!\ I'M TRYING SOMETHING (the diacritics) HERE : MAY CRASH AND BURN.
-     * @return String
-     */
-    public function refreshRestToken() {
-        $abc = 'Dès Noël où un zéphyr haï me vêt de glaçons würmiens je dîne '.
-               'd’exquis rôtis de bœuf au kir à l’aÿ d’âge mûr & cætera !';
-        $this->restToken = md5($this->getPassword().'{'.str_shuffle($abc).'}');
-
-        return $this->restToken;
+        $this->itemsAuthored[] = $item;
+            
+        return $this;
     }
 
 
     // EXPERIENCE //////////////////////////////////////////////////////////////
 
     /**
-     * @param int $experience to give to this user.
+     * @param int $karma to give to this user.
      */
-    public function addExperience($experience)
+    public function addKarma($karma)
     {
-        $this->experience += max(0, (int) $experience);
+        $this->karma += max(0, (int) $karma);
     }
 
     /**
-     * @param int $experience
+     * @param int $karma
      */
-    public function setExperience($experience)
+    public function setKarma($karma)
     {
-        $this->experience = max(0, (int) $experience);
+        $this->karma = max(0, (int) $karma);
     }
 
     /**
-     * @return int the total amount of experience points this user has.
+     * @return int the total amount of karma points this user has.
      */
-    public function getExperience()
+    public function getKarma()
     {
-        return $this->experience;
+        return $this->karma;
     }
 
     /**
-     * Experience points acquired towards next level.
-     * This is the total of experience points minus the experience points
+     * Karma points acquired towards next level.
+     * This is the total of karma points minus the karma points
      * required to attain the current level of the user.
      *
      * @return int
      */
-    public function getExperienceProgress()
+    public function getKarmaProgress()
     {
-        return $this->experience - self::experienceOf($this->getLevel());
+        return $this->karma - self::karmaOf($this->getLevel());
     }
 
     /**
-     * @return int the amount of experience points missing to gain next level.
+     * @return int the amount of karma points missing to gain next level.
      */
-    public function getExperienceMissing()
+    public function getKarmaMissing()
     {
-        return self::experienceOf($this->getLevel()+1) - $this->experience;
+        return self::karmaOf($this->getLevel()+1) - $this->karma;
     }
 
     /**
@@ -229,7 +222,7 @@ class User extends BaseUser implements \JsonSerializable
      */
     public function getLevel()
     {
-        return self::levelOf($this->experience);
+        return self::levelOf($this->karma);
     }
 
     /**
@@ -240,26 +233,26 @@ class User extends BaseUser implements \JsonSerializable
      */
     public function setLevel($level)
     {
-        $this->setExperience(self::experienceOf($level));
+        $this->setKarma(self::karmaOf($level));
     }
 
     /**
      * @thanks Aurel Page for the formula.
      *
-     * @param  int $experience
+     * @param  int $karma
      * @return int the level attained with $experience points.
      */
-    static function levelOf($experience)
+    static function levelOf($karma)
     {
         $a = self::ACC_EXP_COST;
-        $d = self::EXP_LVL_2;
+        $d = self::EXP_LVL_1;
         $n = floor(
-            (3 * $a - 2 * $d + sqrt(pow(2 * $d - $a, 2) + 8 * $a * $experience))
+            (3 * $a - 2 * $d + sqrt(pow(2 * $d - $a, 2) + 8 * $a * $karma))
             /
             (2 * $a)
         );
 
-        return max($n, 1);
+        return max($n, 1) - 1;
     }
 
     /**
@@ -268,11 +261,11 @@ class User extends BaseUser implements \JsonSerializable
      * @param  int $level
      * @return int the experience required to be $level.
      */
-    static function experienceOf($level)
+    static function karmaOf($level)
     {
         $a = self::ACC_EXP_COST;
-        $d = self::EXP_LVL_2;
-        $n = $level;
+        $d = self::EXP_LVL_1;
+        $n = $level + 1;
 
         return ($d - $a) * ($n - 1) + $a * ($n * $n - $n) / 2;
     }
@@ -296,4 +289,31 @@ class User extends BaseUser implements \JsonSerializable
         $this->createdBy = $createdBy;
     }
 
+
+    // REST AUTHENTICATION TOKEN ///////////////////////////////////////////////
+    // We don't use this, as we're using basic HTTP Authentication right now.
+
+    /**
+     * @return String
+     */
+    public function getRestToken()
+    {
+        return $this->restToken;
+    }
+
+    /**
+     * Refresh the token used to auth with WebSocket.
+     * Will be a random md5.
+     *
+     * /!\ I'M TRYING SOMETHING (the diacritics) HERE : MAY CRASH AND BURN.
+     *
+     * @return String
+     */
+    public function refreshRestToken() {
+        $abc = 'Dès Noël où un zéphyr haï me vêt de glaçons würmiens je dîne '.
+            'd’exquis rôtis de bœuf au kir à l’aÿ d’âge mûr & cætera !';
+        $this->restToken = md5($this->getPassword().'{'.str_shuffle($abc).'}');
+
+        return $this->restToken;
+    }
 }

@@ -53,7 +53,7 @@ class ItemRepository extends EntityRepository
     public function countItemsCreatedBy(User $user, $since)
     {
         return $this->countItemsQb()
-            ->where('i.giver = :user OR i.spotter = :user')
+            ->where('i.author = :user')
             ->andWhere('i.createdAt >= :since')
             ->setParameter('user', $user)
             ->setParameter('since', $since)
@@ -113,23 +113,4 @@ class ItemRepository extends EntityRepository
         return $qb;
     }
 
-//    public function findByDistanceQB($latitude, $longitude, $distanceMax)
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->addSelect('DISTANCE(e.latitude, e.longitude, :latitude, :longitude) AS distance')
-//            ->andWhere('DISTANCE(e.latitude, e.longitude, :latitude, :longitude) <= :distanceMax')
-//            ->addOrderBy('distance')
-//            ->setParameter('latitude', $latitude)
-//            ->setParameter('longitude', $longitude)
-//            ->setParameter('distanceMax', $distanceMax)
-//            ;
-//    }
-//
-//    public function findByDistance($latitude, $longitude, $distanceMax)
-//    {
-//        return $this->findByDistanceQB($latitude, $longitude, $distanceMax)
-//            ->getQuery()
-//            ->execute()
-//            ;
-//    }
 }

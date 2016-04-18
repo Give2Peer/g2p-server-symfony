@@ -91,16 +91,17 @@ class LoadFakeData extends DataFixture
             $item->setLongitude($longitude);
             $item->setType($itemTypes[array_rand($itemTypes)]);
 
-            switch (rand(0, 2)) {
-                case 0:
-                    $item->setGiver($users[array_rand($users)]);
-                    break;
-                case 1:
-                    $item->setSpotter($users[array_rand($users)]);
-                    break;
-                case 2:
-                default:
-            }
+            $item->setAuthor($users[array_rand($users)]);
+//            switch (rand(0, 2)) {
+//                case 0:
+//                    $item->setGiver($users[array_rand($users)]);
+//                    break;
+//                case 1:
+//                    $item->setSpotter($users[array_rand($users)]);
+//                    break;
+//                case 2:
+//                default:
+//            }
 
             // Add the item to database
             $em->persist($item);

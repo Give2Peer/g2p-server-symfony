@@ -20,7 +20,7 @@ items_count: 0
 
 
 Scenario: Get updated statistics
-  Given I gave 42 items
+  Given I already gave 42 items
     And there is a user named "Sherlock"
    When I get /stats
    Then the request should be accepted

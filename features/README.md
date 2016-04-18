@@ -12,7 +12,7 @@ They cover :
   - IPs
   - pagination
 - giving items
-  - gaining experience
+  - gaining karma
   - daily quotas
 - picturing items, as the picture upload is done in a separate request
 

@@ -14,8 +14,11 @@ class ExceededQuotaJsonResponse extends ErrorJsonResponse
      * @param mixed|null $message
      * @param array      $headers
      */
-    public function __construct($message, $headers = array())
+    public function __construct($message = "", $headers = array())
     {
+        if (empty($message)) {
+            $message = "You exceeded your quotas. Please wait and try again.";
+        }
         // 429 is HTTP code for Too Many Requests
         parent::__construct($message, ErrorCode::EXCEEDED_QUOTA, 429, $headers);
     }

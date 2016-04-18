@@ -79,7 +79,7 @@ class Tag
      */
     public function addItem(Item $item)
     {
-        $this->items[] = $item;
+        $this->items->add($item);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Give2Peer\Give2PeerBundle\Controller;
 
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,10 +25,14 @@ use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
  */
 class RestController extends BaseController
 {
+    /** Number of items per day a user may add at level 0 */
+    const ADD_ITEMS_LEVEL_0 = 2;
     /** Number of items per level and per day a user may add */
     const ADD_ITEMS_PER_LEVEL = 2;
+    /** Number of item queries per day a user may make at level 0 */
+    const ITEM_QUERIES_LEVEL_0 = 30;
     /** Number of item queries per level and per day a user may make */
-    const ITEM_QUERIES_PER_LEVEL = 20;
+    const ITEM_QUERIES_PER_LEVEL = 15;
 
     /**
      * Provide some generated documentation about this REST API.
@@ -37,6 +42,17 @@ class RestController extends BaseController
         return $this->forward('NelmioApiDocBundle:ApiDoc:index');
     }
 
+    /**
+     * This exists because sometimes clients want to check their connectivity
+     * and credentials by "pinging" the server.
+     *
+     * This requires to be authenticated (for now), but it won't probably be the
+     * case forever.
+     *
+     * We'll provide later `/ping/{username}` to check for authentication.
+     *
+     * @return JsonResponse
+     */
     public function pingAction()
     {
         return new JsonResponse("pong");
@@ -122,13 +138,20 @@ class RestController extends BaseController
      */
     public function profileAction ()
     {
+        /** @var User $user */
         $user = $this->getUser();
+
         if (empty($user)) {
-            return new ErrorJsonResponse("What ?", Error::NOT_AUTHORIZED);
+            return new ErrorJsonResponse("Nope.", Error::NOT_AUTHORIZED);
         }
 
+        /** @var PersistentCollection $items */
+        $items = $user->getItemsAuthored();
+
         return new JsonResponse([
-            'user' => $user,
+            'user'  => $user,
+            //'items' => $items, // /!\ PITFALL /!\ : parser thinks it's empty
+            'items' => $items->getValues(),
         ]);
     }
 
@@ -226,10 +249,10 @@ class RestController extends BaseController
                 "No location provided.", Error::BAD_LOCATION
             );
         }
+        // Note: some title sanitization happens in `Item::setTitle`
         $title = $request->get('title', '');
         $description = $request->get('description', '');
         $tagnames = $request->get('tags', []);
-        $gift = $request->get('gift', 'false') == 'true';
 
         // Fetch the Tags -- Ignore tags not found, for now.
         $tags = $tagsRepo->findTags($tagnames);
@@ -239,14 +262,13 @@ class RestController extends BaseController
         $user = $this->getUser();
 
         // Check whether the user exceeds his quotas or not
-        $quota = self::ADD_ITEMS_PER_LEVEL * $user->getLevel();
+        $quota  = self::ADD_ITEMS_LEVEL_0;
+        $quota += self::ADD_ITEMS_PER_LEVEL * $user->getLevel(); // 80 chars :|
         $duration = new \DateInterval("P1D"); // 24h
         $since = (new \DateTime())->sub($duration);
         $spent = $itemRepo->countItemsCreatedBy($user, $since);
         if ($spent >= $quota) {
-            return new ExceededQuotaJsonResponse(
-                "Created too many items today. Please wait and try again."
-            );
+            return new ExceededQuotaJsonResponse();
         }
 
         // Check whether the location can be geocoded or not
@@ -268,29 +290,32 @@ class RestController extends BaseController
         foreach ($tags as $tag) {
             $item->addTag($tag);
         }
-        if ($gift) {
-            $item->setGiver($user);
-        } else {
-            $item->setSpotter($user);
-        }
+
+        $item->setAuthor($user);
+        // I'm pretty confident this is not mandatory as it is the inverse side
+        // of the bidirectional relationship, BUT it IS good design.
+        $user->addItemAuthored($item);
 
         // Add the item to database
         $em->persist($item);
 
-        // Compute how much experience the user gains and then give it
+        // fixme: test
+//        $em->persist($user);
+
+        // Compute how much karma the user gains and then give it
         // 3 points for giving, plus one point for a title, and one for tags.
-        $experience = 3;
-        if ('' != $item->getTitle())     { $experience++; }
-        if (0 < count($item->getTags())) { $experience++; }
-        $user->addExperience($experience);
+        $karma = 3;
+        if (2 < mb_strlen($item->getTitle())) { $karma++; }
+        if (0 < count($item->getTags()))      { $karma++; }
+        $user->addKarma($karma);
 
         // Flush the entity manager to commit our changes to database
         $em->flush();
 
         // Send the item and other action data as response
         return new JsonResponse([
-            'item'       => $item,
-            'experience' => $experience,
+            'item'  => $item,
+            'karma' => $karma,
         ]);
     }
 
@@ -331,7 +356,7 @@ class RestController extends BaseController
             );
         }
 
-        if ($item->getGiver() != $user && $item->getSpotter() != $user) {
+        if ($item->getAuthor() != $user) {
             return new ErrorJsonResponse(
                 "Not authorized: not owner.", Error::NOT_AUTHORIZED
             );
@@ -556,18 +581,27 @@ class RestController extends BaseController
 
         /** @var EntityManager $em */
         $em = $this->getEntityManager();
-        $con = $em->getConnection();
+        $conf = $em->getConfiguration();
+        $conn = $em->getConnection();
 
         // Register our DISTANCE function, that only pgSQL can understand
         // Move this into a kernel hook ? or a more specific hook, maybe ?
-        if ($con->getDatabasePlatform() instanceof PostgreSqlPlatform) {
-            $em->getConfiguration()->addCustomNumericFunction(
-                'DISTANCE',
-                'Give2Peer\Give2PeerBundle\Query\AST\Functions\DistanceFunction'
-            );
+        if ($conn->getDatabasePlatform() instanceof PostgreSqlPlatform) {
+            // We need to be ABSOLUTELY SURE we don't do this twice !
+            if (null == $conf->getCustomNumericFunction('DISTANCE')) {
+                $conf->addCustomNumericFunction(
+                    'DISTANCE',
+                    'Give2Peer\Give2PeerBundle\Query\AST\Functions\DistanceFunction'
+                );
+            } else {
+                // Do not hesitate to remove this, it's just a ~sanity check.
+                return new ErrorJsonResponse(
+                    'Ran findAroundCoordinates twice', Error::SYSTEM_ERROR, 500
+                );
+            }
         } else {
             return new ErrorJsonResponse(
-                'Database *must* be pgSQL.', Error::SYSTEM_ERROR, 500
+                'Database MUST be pgSQL.', Error::SYSTEM_ERROR, 500
             );
         }
 

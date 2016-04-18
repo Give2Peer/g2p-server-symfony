@@ -157,7 +157,7 @@ tags:
     And the response should include :
 """
 item:
-  giver:
+  author:
     username: goutte
   title: Alice in Wonderland
   description: |
@@ -229,10 +229,10 @@ item:
     And there should be 1 item in the database
 
 
-## EXPERIENCE ##################################################################
+## KARMA ##################################################################
 
 
-Scenario: Give items and earn some experience points
+Scenario: Give items and earn some karma points
   When I give the following item :
 """
 location: 48.8708484, 2.3053611
@@ -240,10 +240,10 @@ location: 48.8708484, 2.3053611
   Then the request should be accepted
    And the response should include :
 """
-experience: 3
+karma: 3
 """
    And there should be 1 item in the database
-   And the user Goutte should have 3 experience points
+   And the user Goutte should have 3 karma points
   Then I give the following item :
 """
 location: 48.8708484, 2.3053611
@@ -252,26 +252,69 @@ title: This thing
   Then the request should be accepted
    And the response should include :
 """
-experience: 4
+karma: 4
 """
-   And the user Goutte should have 7 experience points
+   And the user Goutte should have 7 karma points
 
 
 ## QUOTAS ######################################################################
 
+# It's possible to level up from 0 to 1 by simply adding two items.
+# It's enjoyable to be able to level up on the first day !
+# But you can only do it if you're providing enough information about the items.
 
-Scenario: Fail to exceed level 1 daily quota of 2
- Given I am level 1
-   And I gave 2 items 1 minute ago
+# IMPORTANT -- PAPER CUT
+# About the step "I gave <N> items <time> ago"
+# It is a HACK that does NOT update the user's karma because it bypasses the API
+# to directly write in the database.
+# It could be fixed to use the API first and then manually update the created_at
+# fields of added items, so that this does not happen, but then it would take a
+# LONG time when N is big. Also, I'm too lazy|hurried to fix this now.
+
+@quotas
+Scenario: Level up from 0 to 1 in one day
+ Given I am level 0
+   And there is a tag named "moop"
+   And there is a tag named "lost"
+  Then I should be level 0
+  When I give the following item :
+"""
+location: 43.596017, 1.437586
+title: 17 old shoes
+tags:
+  - moop
+"""
+   And I give the following item :
+"""
+location: 43.596018, 1.437586
+title: Silk glove
+tags:
+  - lost
+"""
+# Don't use that step here, it's a hack that does not update karma.
+#   And I gave 2 items 1 minute ago
+  Then I should be level 1
   Then there should be 2 items in the database
+  When I try to give another item
+  Then the request should be accepted
+   And there should be 3 items in the database
+# Because my quotas are now level 1, not 0
+
+
+@quotas
+Scenario: Fail to exceed level 1 daily quota of 4
+ Given I am level 1
+   And I already gave 4 items 1 minute ago
+  Then there should be 4 items in the database
   When I try to give an item
   Then the request should not be accepted
-   And there should be 2 items in the database
+   And there should be 4 items in the database
 
 
-Scenario: Fail to exceed level 10 daily quota of 20
- Given I am level 10
-   And I gave 19 items 12 hours ago
+@quotas
+Scenario: Fail to exceed level 9 daily quota of 20
+ Given I am level 9
+   And I already gave 19 items 12 hours ago
   Then there should be 19 items in the database
   When I try to give an item
   Then the request should be accepted
@@ -281,10 +324,11 @@ Scenario: Fail to exceed level 10 daily quota of 20
    And there should be 20 items in the database
 
 
+@quotas
 Scenario: Quotas are daily
  Given I am level 1
-   And I gave 2 items 25 hours ago
-  Then there should be 2 items in the database
+   And I already gave 4 items 25 hours ago
+  Then there should be 4 items in the database
   When I try to give an item
   Then the request should be accepted
-   And there should be 3 items in the database
+   And there should be 5 items in the database
