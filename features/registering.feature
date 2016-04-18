@@ -25,7 +25,7 @@ username: goutte
 
 
 Scenario: Fail to register with an already taken username
-  Given there is a user named "Goutte"
+  Given there is a user named Goutte
    When I register the following :
 """
 username: Goutte
@@ -43,7 +43,7 @@ error:
 
 
 Scenario: Fail to register with an already taken username (lowercase matters)
-  Given there is a user named "Goutte"
+  Given there is a user named Goutte
    When I register the following :
 """
 username: GouTTE

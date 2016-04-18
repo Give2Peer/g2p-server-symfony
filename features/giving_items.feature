@@ -120,7 +120,7 @@ item:
 # This scenario will randomly fail and locate this IP in Portugal ?
 # It does not matter much, as you should run behat with --tags=~geocode
 # We should probably make a test with IPv6 too/instead.
-Scenario: Give an item with only an IP address location
+Scenario: Give an item with only an IP address location (may fail)
   When I give the following item :
 """
 location: 82.241.251.185

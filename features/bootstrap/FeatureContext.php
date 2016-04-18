@@ -316,7 +316,7 @@ class FeatureContext extends    BaseContext
     public function thereAreItemsAt($howMany, $latitude, $longitude)
     {
         for ($i=0; $i<$howMany; $i++) {
-            $this->thereIsAnItemAt('', $latitude, $longitude);
+            $this->thereIsAnItemAt($latitude, $longitude);
         }
     }
 
@@ -428,6 +428,14 @@ class FeatureContext extends    BaseContext
     public function iRegister($pystring='')
     {
         $this->iPost('register', $pystring);
+    }
+
+    /**
+     * @When /^I request the statistics$/
+     */
+    public function iRequestStats()
+    {
+        $this->iGet('stats');
     }
 
 

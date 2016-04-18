@@ -1,20 +1,21 @@
 Welcome to the Features
 =======================
 
-These describe how the server should respond to HTTP REST requests from a client,
-say a mobile app.
+These describe how the server should respond to HTTP REST requests from a
+client, say a mobile app.
 
 They cover :
 - registering
 - finding items around various locations :
-  - latitude / longitude (preferred)
+  - latitude / longitude _(preferred)_
   - postal addresses
-  - IPs
-  - pagination
+  - IPs _(that one randomly fails)_
+  - with pagination
 - giving items
   - gaining karma
   - daily quotas
 - picturing items, as the picture upload is done in a separate request
+- statistics (early stages)
 
 That's pretty much everything this API offers right now.
 
@@ -33,8 +34,8 @@ Feature: Hindering spammers
 Background:
   Given I am the registered user named "V14Gr4"
 
-Scenario: Fail to exceed level 1 daily quota of 2
-  Given I am level 1
+Scenario: Fail to exceed level 0 daily quota of 2
+  Given I am level 0
     And I gave 2 items 1 minute ago
    Then there should be 2 items in the database
    When I try to give an item

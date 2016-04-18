@@ -10,7 +10,7 @@ Background:
 
 
 Scenario: Get initial statistics
-   When I get /stats
+   When I request the statistics
    Then the request should be accepted
     And the response should include :
 """
@@ -22,7 +22,7 @@ items_count: 0
 Scenario: Get updated statistics
   Given I already gave 42 items
     And there is a user named "Sherlock"
-   When I get /stats
+   When I request the statistics
    Then the request should be accepted
     And the response should include :
 """
