@@ -2,6 +2,7 @@
 
 
 use Doctrine\ORM\EntityManager;
+use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
 use Give2Peer\Give2PeerBundle\Entity\UserManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -82,6 +83,19 @@ abstract class BaseContext extends WebTestCase
     protected function fromYaml($pystring)
     {
         return Yaml::parse($pystring, true, true);
+    }
+    
+    
+    // CUSTOM TO GIVE2PEER /////////////////////////////////////////////////////
+
+    /**
+     * Get the item repository.
+     *
+     * @return ItemRepository
+     */
+    protected function getItemRepository()
+    {
+        return $this->getEntityManager()->getRepository("Give2PeerBundle:Item");
     }
 
 }

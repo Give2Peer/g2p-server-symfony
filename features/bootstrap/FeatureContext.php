@@ -634,12 +634,22 @@ class FeatureContext extends    BaseContext
      */
     public function iShouldBeLevel($level)
     {
-        $usr = $this->getUser($this->getI()->getUsername());
-
-        $this->assertEquals($level, $usr->getLevel(), "nope");
-
         $this->assertEquals($level, $this->getI()->getLevel());
     }
+
+    /**
+     * @Then /^I should be the author of (\d+) items?$/
+     */
+    public function iShouldBeTheAuthorOf($count)
+    {
+        $usr = $this->getI();
+        
+        $actual = $this->getItemRepository()->countItemsCreatedBy($usr);
+
+        $this->assertEquals($count, $actual);
+    }
+    
+    
 
     /**
      * @Then /^the user (.+) should have (\d+) karma points?$/

@@ -7,7 +7,9 @@ use Doctrine\ORM\QueryBuilder;
 use Give2Peer\Give2PeerBundle\Entity\User;
 
 /**
- * ItemRepository
+ * The Item Repository is where most of the queries related to Items will be
+ * located. This class should handle all the querying nitty-gritty and tweaks,
+ * and provide dev-friendly methods with sugar on top.
  *
  * The SQL DISTANCE function is our custom function leveraging pgSQL's inner
  * functions of extension `earthdistance`.
@@ -50,17 +52,23 @@ class ItemRepository extends EntityRepository
      * @param  \Datetime $since
      * @return int
      */
-    public function countItemsCreatedBy(User $user, $since)
+    public function countItemsCreatedBy(User $user, $since=null)
     {
-        return $this->countItemsQb()
-            ->where('i.author = :user')
-            ->andWhere('i.createdAt >= :since')
-            ->setParameter('user', $user)
-            ->setParameter('since', $since)
-            ->getQuery()
-            ->execute()
-            [0][1] // first column of first row holds the COUNT
-            ;
+        $qb = $this->countItemsQb()
+                   ->where('i.author = :user')
+                   ->setParameter('user', $user)
+                   ;
+
+        if (null != $since) {
+            $qb->andWhere('i.createdAt >= :since')
+               ->setParameter('since', $since)
+               ;
+        }
+        
+        return $qb->getQuery()
+                  ->execute()
+                  [0][1] // first column of first row holds the COUNT
+                  ;
     }
 
     /**
@@ -86,7 +94,7 @@ class ItemRepository extends EntityRepository
             ->getQuery()
             ->execute()
             ;
-        // Ugly hack to provide the additional `distance` property to items
+        // Ugly injection to provide the additional `distance` property to items
         foreach ($rows as $row) {
             $items[] = $row[0]->setDistance($row['distance']);
         }

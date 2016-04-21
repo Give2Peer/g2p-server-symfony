@@ -6,6 +6,7 @@ Feature: Deleting items
   I want to be able to delete items
 
 
+@wip
 Scenario: Delete my own item
   Given I am the registered user named "Lucie"
     And I am level 3
