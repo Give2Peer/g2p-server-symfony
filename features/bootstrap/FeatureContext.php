@@ -235,7 +235,7 @@ class FeatureContext extends    BaseContext
         }
         
         try {
-            print(json_encode($this->getI(), JSON_PRETTY_PRINT)."\n");
+            print(json_encode($this->getI(), JSON_PRETTY_PRINT));
         } catch (\Exception $e) {
             $this->fail("Nope.");
         }
@@ -666,7 +666,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Then /^my quota for adding items (?:is|should be) (\d+)$/
+     * @Then /^my quota for adding items (?:is|should (?:still )?be) (\d+)$/
      */
     public function myQuotaForAddingItemsShouldBe($quota)
     {
