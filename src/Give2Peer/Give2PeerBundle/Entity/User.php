@@ -2,6 +2,7 @@
 
 namespace Give2Peer\Give2PeerBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 use FOS\UserBundle\Entity\User as BaseUser;
@@ -59,7 +60,7 @@ class User extends BaseUser implements \JsonSerializable
             'id'         => $this->getId(),
             'username'   => $this->getUsernameCanonical(),
             'email'      => $this->getEmailCanonical(),
-            'created_at' => $this->getCreatedAt(),
+            'created_at' => $this->getCreatedAt()->format(DateTime::ISO8601),
             'karma'      => $this->getKarma(),
             'level'      => $this->getLevel(),
         ];
