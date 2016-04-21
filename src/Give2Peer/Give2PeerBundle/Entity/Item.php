@@ -13,12 +13,13 @@ use Give2Peer\Give2PeerBundle\Entity\User;
 /**
  * Item
  *
- * This is a first-class citizen in the give2peer app.
- * It is the thing that is given, or spotted, and gathered.
+ * This is a first-class citizen in the give2peer service architecture.
+ * It is the thing that is given, or spotted, and then gathered or discarded.
  *
  * We try to be verbose in the ORM annotations in order to not rely too much on
  * their default values and provide cheap snippets for future improvements.
  * This is a strategy I seldom use but here it feels weirdly appropriate.
+ * There's no auto-completion in annotations (yet).
  * Besides, it's all cached so it has no effect on production performance.
  *
  * @ORM\Table()
@@ -54,20 +55,6 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * We use this instead of an ENUM.
-     * http://komlenic.com/244/8-reasons-why-mysqls-enum-data-type-is-evil/
-     * Our solution is not much better, but it can evolve rather more easily
-     * towards a foreign key to a `type` table, say.
-     *
-     * gift : giver legally owns the item and gives it for free
-     * lost : spotter just shares the location of the item
-     * moop : Matter Out Of Place, everything else.
-     */
-    const TYPE_GIFT = 'gift';
-    const TYPE_LOST = 'lost';
-    const TYPE_MOOP = 'moop'; // default
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
@@ -81,7 +68,7 @@ class Item implements \JsonSerializable
      * geolocation service in order to grab the actual numerical
      * coordinates.
      *
-     * This may also contain IP addresses.
+     * This may also contain IP addresses, but it SHOULD not, it's not reliable.
      *
      * @var string
      *
@@ -110,13 +97,34 @@ class Item implements \JsonSerializable
     /**
      * When we serialize Items in JSON, we usually want to provide the distance
      * at which the item is. This property is obviously highly dynamic.
-     * We enrich the Item with this property (when relevant) right before
+     * We inject the Item with this property (when relevant) right before
      * sending it in the response, but this is not stored in the database for
      * obvious reasons. This is just sugar from the server to their clients.
      *
      * @var float
      */
     private $distance;
+
+
+
+    /**
+     * This may be handled by tags, or seen as system tags, as tags may be
+     * provided by the community later on.
+     *
+     * We consider these as exclusive, even if they're all MOOP, technically.
+     *
+     * We use constants and a string field instead of an ENUM.
+     * http://komlenic.com/244/8-reasons-why-mysqls-enum-data-type-is-evil/
+     * Our solution is not much better, but it can evolve rather more easily
+     * towards a foreign key, to an `item_type` table, say.
+     *
+     * gift : giver legally owns the item and gives it for free
+     * lost : spotter just shares the location of the item
+     * moop : Matter Out Of Place, everything else, the default type.
+     */
+    const TYPE_GIFT = 'gift';
+    const TYPE_LOST = 'lost';
+    const TYPE_MOOP = 'moop'; // default
 
     /**
      * One of `Item::TYPES` : `gift`, `lost`, or the default : `moop`.
@@ -187,11 +195,12 @@ class Item implements \JsonSerializable
 
     public function __construct()
     {
-        $this->tags = new ArrayCollection();
+        $this->tags = new ArrayCollection(); // Y U NO [] ? => Useful methods !
     }
 
     /**
-     * Get id
+     * Get the unique id of this user.
+     * It is automatically set upon registration and cannot be changed.
      *
      * @return integer 
      */
@@ -201,7 +210,14 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * Set location
+     * Set location, a string that can be pretty much anything that our custom &
+     * third-party geolocating services can reduce to a lat/lng set.
+     *
+     * Most clients should provide a lat/lng set from GPS, but sometimes a user
+     * will want to enter a postal address, that's when the third-party services
+     * are called in. They're subject to quotas.
+     *
+     * Usage of this method is safe as it does not
      *
      * @param string $location
      * @return Item
@@ -214,8 +230,12 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * Get location, a string that can be pretty much anything that our
+     * Get location, a string that can be pretty much anything that our custom &
      * third-party geolocating services can reduce to a lat/lng set.
+     *
+     * Most clients should provide a lat/lng set from GPS, but sometimes a user
+     * will want to enter a postal address, that's when the third-party services
+     * are used.
      *
      * @return string 
      */
@@ -258,7 +278,7 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * Set title
+     * Set the title of this item, truncating it to 32 characters beforehand.
      *
      * @param string $title
      * @return Item
@@ -310,7 +330,6 @@ class Item implements \JsonSerializable
     /**
      * @param Tag $tag
      * @return Item
-     *
      */
     public function addTag(Tag $tag)
     {
@@ -413,6 +432,12 @@ class Item implements \JsonSerializable
     }
 
     /**
+     * Get the distance along the great circle of Earth in meters between this
+     * item and the location provided by the user that queried it.
+     *
+     * This property is NOT loaded from the database but injected into the Item
+     * after some queries, and may NOT be present.
+     *
      * @return float
      */
     public function getDistance()
@@ -421,6 +446,10 @@ class Item implements \JsonSerializable
     }
 
     /**
+     * Injection method. Used by some queries to inject the `distance` property.
+     *
+     * Distance should be in meters along the great circle of Earth.
+     *
      * @param float $distance
      * @return Item
      */
