@@ -52,7 +52,7 @@ class ItemRepository extends EntityRepository
      * @param  \Datetime $since
      * @return int
      */
-    public function countItemsCreatedBy(User $user, $since=null)
+    public function countItemsAuthoredBy(User $user, $since=null, $deleted_too=false)
     {
         $qb = $this->countItemsQb()
                    ->where('i.author = :user')
@@ -64,11 +64,32 @@ class ItemRepository extends EntityRepository
                ->setParameter('since', $since)
                ;
         }
+
+        if ( ! $deleted_too) {
+            $qb->andWhere('i.deletedAt IS NULL');
+        }
         
         return $qb->getQuery()
                   ->execute()
                   [0][1] // first column of first row holds the COUNT
                   ;
+    }
+
+    /**
+     * Computes what's left of the daily quota of the provided $user.
+     * May be zero, but must never be negative.
+     *
+     * @param User $user
+     * @return int
+     */
+    public function getAddItemsCurrentQuota(User $user)
+    {
+        $duration = new \DateInterval("P1D"); // 24h
+        $since = (new \DateTime())->sub($duration);
+        $used = $this->countItemsAuthoredBy($user, $since, true); // deleted too
+        $total = $user->getAddItemsDailyQuota();
+
+        return max(0, $total - $used);
     }
 
     /**

@@ -30,17 +30,29 @@ class User extends BaseUser implements \JsonSerializable
 //    const ROLE_REGISTERED = 'ROLE_REGISTERED'; // fixme: use property instead?
 
     /**
-     * Acceleration of Experience cost per level
+     * Acceleration of karma cost per level
      * Used as a constant in the formulas for levelling up.
      */
-    const ACC_EXP_COST = 15;
+    const ACC_KARMA_COST = 15;
 
     /**
-     * Required Experience to be level 1.
+     * Required karma to be level 1.
      * Users start at level 0.
      * Used as a constant in the formulas for levelling up.
      */
-    const EXP_LVL_1 = 10;
+    const KARMA_LVL_1 = 10;
+
+    /**
+     * Number of items per day a user may add at level 0.
+     * Used as a constant in the `get***Quota()` methods.
+     */
+    const QUOTA_ADD_ITEMS_LEVEL_0 = 2;
+
+    /**
+     * Number of items per level and per day a user may add.
+     * Used as a constant in the `get***Quota()` methods.
+     */
+    const QUOTA_ADD_ITEMS_PER_LEVEL = 2; // maybe too much ? 1 ?
 
     /**
      * Provides `created_at` and `updated_at`.
@@ -120,6 +132,8 @@ class User extends BaseUser implements \JsonSerializable
     /**
      * The items that were authored by this user.
      *
+     * INCLUDING THE ITEMS MARKED FOR DELETION !
+     *
      * This is the inverse side of the bidirectional relationship with Item.
      * Changes made only to the inverse side of an association are ignored.
      * http://doctrine-orm.readthedocs.org/projects/doctrine-orm/en/latest/reference/unitofwork-associations.html
@@ -157,6 +171,9 @@ class User extends BaseUser implements \JsonSerializable
     }
 
     /**
+     * /!\ This method may not change anything in the database when flushing,
+     *     as it is the "inverse" side of the relationship, for Doctrine.
+     *
      * @param Item $item
      * @return User
      */
@@ -169,6 +186,26 @@ class User extends BaseUser implements \JsonSerializable
         $this->itemsAuthored[] = $item;
             
         return $this;
+    }
+
+
+    // QUOTAS //////////////////////////////////////////////////////////////////
+
+    /**
+     * Return the total daily quota for adding items.
+     *
+     * This is simply the maximum number of Items this user may add per day.
+     * It depends only on the karmic level of this user.
+     *
+     * This is NOT the current quota, it does NOT take added Items into account.
+     * Use `ItemRepository#getAddItemsCurrentQuota($user)` for that.
+     *
+     * @return int
+     */
+    public function getAddItemsDailyQuota()
+    {
+        return self::QUOTA_ADD_ITEMS_LEVEL_0
+             + self::QUOTA_ADD_ITEMS_PER_LEVEL * $this->getLevel();
     }
 
 
@@ -245,8 +282,8 @@ class User extends BaseUser implements \JsonSerializable
      */
     static function levelOf($karma)
     {
-        $a = self::ACC_EXP_COST;
-        $d = self::EXP_LVL_1;
+        $a = self::ACC_KARMA_COST;
+        $d = self::KARMA_LVL_1;
         $n = floor(
             (3 * $a - 2 * $d + sqrt(pow(2 * $d - $a, 2) + 8 * $a * $karma))
             /
@@ -264,8 +301,8 @@ class User extends BaseUser implements \JsonSerializable
      */
     static function karmaOf($level)
     {
-        $a = self::ACC_EXP_COST;
-        $d = self::EXP_LVL_1;
+        $a = self::ACC_KARMA_COST;
+        $d = self::KARMA_LVL_1;
         $n = $level + 1;
 
         return ($d - $a) * ($n - 1) + $a * ($n * $n - $n) / 2;

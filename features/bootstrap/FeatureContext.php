@@ -214,7 +214,7 @@ class FeatureContext extends    BaseContext
     public function iDumpTheResponse()
     {
         if (empty($this->client)) {
-            throw new Exception("No client. Request something first.");
+            $this->fail("No client. Request something first.");
         }
         $content = $this->client->getResponse()->getContent();
         try {
@@ -222,6 +222,23 @@ class FeatureContext extends    BaseContext
         } catch (\Exception $e) {}
 
         print($content."\n");
+    }
+
+    /**
+     * Useful for quick'n dirty debugging.
+     * @Then /^I (?:print|dump) myself$/
+     */
+    public function iDumpMyself()
+    {
+        if (empty($this->user)) {
+            $this->fail("No I. Be someone first.");
+        }
+        
+        try {
+            print(json_encode($this->getI(), JSON_PRETTY_PRINT)."\n");
+        } catch (\Exception $e) {
+            $this->fail("Nope.");
+        }
     }
 
 
@@ -269,6 +286,7 @@ class FeatureContext extends    BaseContext
     public function iAmLevel($level)
     {
         $this->getI()->setLevel(max(0, $level));
+        $this->getEntityManager()->flush();
     }
 
     /**
@@ -638,20 +656,6 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Then /^I should be the author of (\d+) items?$/
-     */
-    public function iShouldBeTheAuthorOf($count)
-    {
-        $usr = $this->getI();
-        
-        $actual = $this->getItemRepository()->countItemsCreatedBy($usr);
-
-        $this->assertEquals($count, $actual);
-    }
-    
-    
-
-    /**
      * @Then /^the user (.+) should have (\d+) karma points?$/
      */
     public function theUserShouldHaveKarmaPoints($username, $karma)
@@ -659,6 +663,39 @@ class FeatureContext extends    BaseContext
         $usr = $this->getUser($username);
 
         $this->assertEquals($karma, $usr->getKarma());
+    }
+
+    /**
+     * @Then /^my quota for adding items (?:is|should be) (\d+)$/
+     */
+    public function myQuotaForAddingItemsShouldBe($quota)
+    {
+        $a = $this->getItemRepository()->getAddItemsCurrentQuota($this->getI());
+        $this->assertEquals($quota, $a);
+    }
+
+    /**
+     * @Then /^I should (?:still )?be the author of (\d+) items?$/
+     */
+    public function iShouldBeTheAuthorOf($count)
+    {
+        // Not sure which is best
+        //$actual = count($this->getI()->getItemsAuthored());
+        $actual = $this->getItemRepository()
+            ->countItemsAuthoredBy($this->getI());
+
+        $this->assertEquals($count, $actual);
+    }
+
+    /**
+     * @Then /^I should (?:still )?have (\d+) items? in my profile$/
+     */
+    public function iShouldHaveItemsInMyProfile($count)
+    {
+        $actual = $this->getItemRepository()
+            ->countItemsAuthoredBy($this->getI());
+
+        $this->assertEquals($count, $actual);
     }
 
     /**
@@ -697,7 +734,7 @@ class FeatureContext extends    BaseContext
     protected function setLastGivenItemCreationDate($when)
     {
         $when = new \DateTime("@".strtotime("-".$when));
-
+        $id = null;
         $content = $this->client->getResponse()->getContent();
         try {
             $ob = json_decode($content);
@@ -709,12 +746,17 @@ class FeatureContext extends    BaseContext
                 $e->getMessage()."\n".
                 $e->getTraceAsString());
         }
+        if ($id == null) {
+            $this->fail("Nope, nope, NOPE. That's NOT okay ! No id ?!?");
+        } else {
+            $em = $this->getEntityManager();
+            /** @var Item $item */
+            $item = $em->getRepository("Give2PeerBundle:Item")->find($id);
+            $item->setCreatedAt($when);
+            $em->flush();
+        }
+        
 
-        $em = $this->getEntityManager();
-        /** @var Item $item */
-        $item = $em->getRepository("Give2PeerBundle:Item")->find($id);
-        $item->setCreatedAt($when);
-        $em->flush();
     }
 
     /**
@@ -730,7 +772,9 @@ class FeatureContext extends    BaseContext
 
     /**
      * Get the user described as "I" in the steps, if one was defined.
-     * @return null|User
+     * Note: grabs a "fresh" copy of the user from the database.
+     * 
+     * @return User
      */
     protected function getI()
     {
@@ -745,7 +789,7 @@ class FeatureContext extends    BaseContext
         // $um->refresh($this->user);
 
         // We want a fresh user from database, because we might have made some
-        // requests with this user between its creation and now. Karma changes !
+        // requests with this user between its creation and now. Karma changes
         return $this->getUser($this->user->getUsername());
     }
 

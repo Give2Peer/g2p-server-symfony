@@ -104,9 +104,7 @@ class Item implements \JsonSerializable
      * @var float
      */
     private $distance;
-
-
-
+    
     /**
      * This may be handled by tags, or seen as system tags, as tags may be
      * provided by the community later on.
@@ -190,6 +188,13 @@ class Item implements \JsonSerializable
      * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
      */
     protected $author;
+
+    /**
+     * @var DateTime
+     * 
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    protected $deletedAt;
 
     ////////////////////////////////////////////////////////////////////////////
 

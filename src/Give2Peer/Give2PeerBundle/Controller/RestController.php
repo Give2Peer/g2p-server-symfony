@@ -25,10 +25,7 @@ use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
  */
 class RestController extends BaseController
 {
-    /** Number of items per day a user may add at level 0 */
-    const ADD_ITEMS_LEVEL_0 = 2;
-    /** Number of items per level and per day a user may add */
-    const ADD_ITEMS_PER_LEVEL = 2;
+
     /** Number of item queries per day a user may make at level 0 */
     const ITEM_QUERIES_LEVEL_0 = 30;
     /** Number of item queries per level and per day a user may make */
@@ -262,12 +259,8 @@ class RestController extends BaseController
         $user = $this->getUser();
 
         // Check whether the user exceeds his quotas or not
-        $quota  = self::ADD_ITEMS_LEVEL_0;
-        $quota += self::ADD_ITEMS_PER_LEVEL * $user->getLevel(); // 80 chars :|
-        $duration = new \DateInterval("P1D"); // 24h
-        $since = (new \DateTime())->sub($duration);
-        $spent = $itemRepo->countItemsCreatedBy($user, $since);
-        if ($spent >= $quota) {
+        $quota_left = $itemRepo->getAddItemsCurrentQuota($user);
+        if ($quota_left < 1) {
             return new ExceededQuotaJsonResponse();
         }
 
