@@ -24,7 +24,7 @@ description: |
   Then I should be the author of 1 item
    And I dump myself
    And my quota for adding items should be 7
-   And there should be an item titled "Paroles de l'âme au vent"
+   And there should be 1 item titled "Paroles de l'âme au vent"
    And that item should be shown on the map around 43.590226, 1.432487
   When I try to delete the item titled "Paroles de l'âme au vent"
   Then the request should be accepted

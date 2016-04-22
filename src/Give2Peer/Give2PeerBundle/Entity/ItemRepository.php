@@ -18,16 +18,36 @@ use Give2Peer\Give2PeerBundle\Entity\User;
  */
 class ItemRepository extends EntityRepository
 {
+    const ITEM_QUERY_ALIAS = 'i';
+
+    /**
+     * We should make most of our methods with this qb, as it allows us to
+     * exclude the items marked for deletion.
+     *
+     * @param bool $exclude_deleted
+     * @return QueryBuilder
+     */
+    public function createQueryBuilder($exclude_deleted=true)
+    {
+        $qb = parent::createQueryBuilder(self::ITEM_QUERY_ALIAS);
+        
+        if ($exclude_deleted) {
+            $qb->andWhere('i.deletedAt IS NULL');
+        }
+        
+        return $qb;
+    }
+
+
     /**
      * Get a QueryBuilder to counts all items.
      *
      * @return QueryBuilder
      */
-    public function countItemsQb()
+    public function countItemsQb($exclude_deleted=true)
     {
-        return $this->getEntityManager()->createQueryBuilder()
+        return $this->createQueryBuilder($exclude_deleted)
             ->select('COUNT(i)')
-            ->from($this->getEntityName(), 'i')
             ;
     }
 
@@ -52,9 +72,9 @@ class ItemRepository extends EntityRepository
      * @param  \Datetime $since
      * @return int
      */
-    public function countItemsAuthoredBy(User $user, $since=null, $deleted_too=false)
+    public function countItemsAuthoredBy(User $user, $since=null, $exclude_deleted=true)
     {
-        $qb = $this->countItemsQb()
+        $qb = $this->countItemsQb($exclude_deleted)
                    ->where('i.author = :user')
                    ->setParameter('user', $user)
                    ;
@@ -65,10 +85,6 @@ class ItemRepository extends EntityRepository
                ;
         }
 
-        if ( ! $deleted_too) {
-            $qb->andWhere('i.deletedAt IS NULL');
-        }
-        
         return $qb->getQuery()
                   ->execute()
                   [0][1] // first column of first row holds the COUNT
@@ -86,7 +102,7 @@ class ItemRepository extends EntityRepository
     {
         $duration = new \DateInterval("P1D"); // 24h
         $since = (new \DateTime())->sub($duration);
-        $used = $this->countItemsAuthoredBy($user, $since, true); // deleted too
+        $used = $this->countItemsAuthoredBy($user, $since, false); // deleted too
         $total = $user->getAddItemsDailyQuota();
 
         return max(0, $total - $used);
@@ -110,6 +126,7 @@ class ItemRepository extends EntityRepository
                                $maxDistance=0, $maxResults=64)
     {
         $items = [];
+        /** @var Item[] $rows */
         $rows = $this->findAroundQB($latitude, $longitude, $skipTheFirstN,
             $maxDistance, $maxResults)
             ->getQuery()
@@ -126,8 +143,8 @@ class ItemRepository extends EntityRepository
     public function findAroundQB($latitude, $longitude, $skipTheFirstN,
                                  $maxDistance, $maxResults)
     {
-        $qb = $this->createQueryBuilder('e')
-            ->addSelect('DISTANCE(e.latitude, e.longitude, :latitude, :longitude) AS distance')
+        $qb = $this->createQueryBuilder()
+            ->addSelect('DISTANCE(i.latitude, i.longitude, :latitude, :longitude) AS distance')
             ->addOrderBy('distance')
             ->setFirstResult($skipTheFirstN)
             ->setMaxResults($maxResults)

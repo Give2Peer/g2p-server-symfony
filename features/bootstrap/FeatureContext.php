@@ -638,6 +638,19 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * /!\ Will count items marked for deletion too !
+     *
+     * @Then /^there should (?:still )?be (\d+) items? (?:[ie]n)?titled "(.+)"$/
+     */
+    public function thereShouldBeAnItemTitled($count, $title)
+    {
+        // Will return items marked for deletion too
+        $items = $this->getItemRepository()->findBy(['title' => $title]);
+
+        $this->assertEquals($count, count($items));
+    }
+
+    /**
      * @Then /^the user (.+) should be level (\d+)$/
      */
     public function theUserShouldBeLevel($username, $level)
