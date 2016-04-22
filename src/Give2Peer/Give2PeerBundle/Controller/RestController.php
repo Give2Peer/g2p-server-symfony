@@ -313,7 +313,43 @@ class RestController extends BaseController
     }
 
     /**
+     *
+     *
+     * @param Request $request
+     * @param $id
+     * @return ErrorJsonResponse|JsonResponse
+     */
+    public function itemDeleteAction(Request $request, $id)
+    {
+        $user = $this->getUser();
+        $item = $this->getItem($id);
+
+        if (null == $item) {
+            return new ErrorJsonResponse(
+                "Not authorized: no item.", Error::NOT_AUTHORIZED
+            );
+        }
+
+        if ($item->getAuthor() != $user) {
+            return new ErrorJsonResponse(
+                "Not authorized: not owner.", Error::NOT_AUTHORIZED
+            );
+        }
+
+        $item->markAsDeleted();
+
+        $this->getEntityManager()->flush();
+
+        return new JsonResponse(['item'=>$item]);
+    }
+
+    /**
      * Upload a picture for the item `id`.
+     * 
+     * You need to be the author of the item.
+     * 
+     * Ideas :
+     * - Allow uploading photos for others' items, since level ?
      *
      * @ApiDoc(
      *   parameters = {
@@ -330,18 +366,11 @@ class RestController extends BaseController
      */
     public function itemPictureUploadAction(Request $request, $id)
     {
-        $em = $this->getEntityManager();
-        $repo = $this->getItemRepository();
-
-        // Sanitize (this is *mandatory* !)
-        $id = intval($id);
-
         // Recover the user data and check if we're the giver or the spotter
         // Later on we'll add authorization through spending NRG points.
         $user = $this->getUser();
 
-        /** @var Item $item */
-        $item = $repo->find($id);
+        $item = $this->getItem($id);
 
         if (null == $item) {
             return new ErrorJsonResponse(
@@ -354,10 +383,10 @@ class RestController extends BaseController
                 "Not authorized: not owner.", Error::NOT_AUTHORIZED
             );
         }
-
+        
         // todo: move `web/pictures` to configuration
         $publicPath = $this->get('kernel')->getRootDir() . '/../web/pictures';
-        $publicPath .= DIRECTORY_SEPARATOR . (string) $id;
+        $publicPath .= DIRECTORY_SEPARATOR . (string) intval($id);
 
         if (empty($request->files)) {
             return new ErrorJsonResponse(
@@ -429,10 +458,11 @@ class RestController extends BaseController
             'thumb.jpg',
         ]);
         $item->setThumbnail($thumbUrl);
-//        $em->persist($item); // unsure whether and why we'd need that
-        $em->flush();
+        
+        // Flush our changes to the item to the database
+        $this->getEntityManager()->flush();
 
-        return new JsonResponse($item);
+        return new JsonResponse(['item'=>$item]);
     }
 
     /**

@@ -37,7 +37,7 @@ class Item implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        $json = [
             'id'          => $this->getId(),
             'type'        => $this->getType(),
             'title'       => $this->getTitle(),
@@ -51,7 +51,13 @@ class Item implements \JsonSerializable
             'created_at'  => $this->getCreatedAt()->format(DateTime::ISO8601),
             'updated_at'  => $this->getUpdatedAt()->format(DateTime::ISO8601),
             'author'      => $this->getAuthor(),
-        );
+        ];
+        
+        if ($this->getDeletedAt() != null) {
+            $json['deleted_at'] = $this->getDeletedAt()->format(DateTime::ISO8601);
+        }
+        
+        return $json;
     }
 
     /**
@@ -137,6 +143,8 @@ class Item implements \JsonSerializable
      * is the limit of items shown on the map, things like these.
      * ...
      * Tags may also hold such information. Hmmm... Time to go for a walk.
+     * ...
+     * 
      * 
      * @var string
      *
@@ -484,5 +492,37 @@ class Item implements \JsonSerializable
         $this->thumbnail = $thumbnail;
 
         return $this;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * @param DateTime $deletedAt
+     * @return Item
+     */
+    public function setDeletedAt($deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+        
+        return $this;
+    }
+
+    /**
+     * Sets deletedAt to now.
+     * 
+     * This may bite us in the ass !
+     * DateTime takes a timezone, and we rely on server defaults !
+     * 
+     * @return Item
+     */
+    public function markAsDeleted()
+    {
+        return $this->setDeletedAt(new \DateTime());
     }
 }

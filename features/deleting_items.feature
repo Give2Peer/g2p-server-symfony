@@ -28,8 +28,8 @@ description: |
   When I try to delete the item titled "Paroles de l'âme au vent"
   Then the request should be accepted
    And my quota for adding items should still be 7
+#   And there should be 0 items titled "Paroles de l'âme au vent"
    But I should be the author of 0 item
-   And there should be 0 items titled "Paroles de l'âme au vent"
-     # a good luck spell
+# ... a good luck spell
    And I am level 5
    And I blaze through darkness and light alike

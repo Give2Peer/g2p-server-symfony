@@ -26,6 +26,10 @@ use Faker\Generator;
  * Returns whatever is in $array1 but not in $array2.
  * Can be optimized, if it matters to you :3
  *
+ * Also, should be stored elsewhere, like `extra_functions.php` and loaded via
+ * `composer`. We need such a file to import top-level functions that could be
+ * part of PHP itself anyways, and it's probably not such a big overhead.
+ *
  * @param $array1
  * @param $array2
  * @return array
@@ -172,6 +176,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * To train our inner pigeon into liking Feature-Driven Development...
      * @AfterSuite
      */
     public static function gimmeCookieNomNomNom(AfterSuiteScope $scope)
@@ -217,12 +222,14 @@ class FeatureContext extends    BaseContext
     public function nothingHappens() {}
 
     /**
+     * @Then I blaze through darkness and light alike
+     */
+    public function iBlazeThroughDarknessAndLightAlike() {}
+
+    /**
      * @Given I print :arg1
      */
-    public function iPrint($arg1)
-    {
-        print($arg1);
-    }
+    public function iPrint($arg1) { print($arg1); }
 
     /**
      * Useful for quick'n dirty debugging.
@@ -253,6 +260,23 @@ class FeatureContext extends    BaseContext
         
         try {
             print(json_encode($this->getI(), JSON_PRETTY_PRINT));
+        } catch (\Exception $e) {
+            $this->fail("Nope.");
+        }
+    }
+
+    /**
+     * Useful for quick'n dirty debugging.
+     * @Then /^I (?:print|dump) that item$/
+     */
+    public function iDumpThatItem()
+    {
+        if (empty($this->item)) {
+            $this->fail("No \"that item\". Make one first.");
+        }
+
+        try {
+            print(json_encode($this->item, JSON_PRETTY_PRINT));
         } catch (\Exception $e) {
             $this->fail("Nope.");
         }
@@ -730,10 +754,13 @@ class FeatureContext extends    BaseContext
     {
         // Not sure which is best
         //$actual = count($this->getI()->getItemsAuthored());
-        $actual = $this->getItemRepository()
-            ->countItemsAuthoredBy($this->getI());
+        $items = $this->getItemRepository()->findAuthoredBy($this->getI());
+        
+        $actual = count($items);
 
-        $this->assertEquals($count, $actual);
+        $s = json_encode($items, JSON_PRETTY_PRINT);
+
+        $this->assertEquals($count, $actual, "Got $actual items !\n$s");
     }
 
     /**
@@ -742,7 +769,7 @@ class FeatureContext extends    BaseContext
     public function iShouldHaveItemsInMyProfile($count)
     {
         $actual = $this->getItemRepository()
-            ->countItemsAuthoredBy($this->getI());
+            ->countAuthoredBy($this->getI());
 
         $this->assertEquals($count, $actual);
     }
@@ -961,13 +988,5 @@ class FeatureContext extends    BaseContext
         );
 
         return $this->crawler;
-    }
-
-    /**
-     * @Given /^I blaze through darkness and light alike$/
-     */
-    public function iBlazeThroughDarknessAndLightAlike()
-    {
-        print('IN GIRVM IMVS NOCTE ET CONSVMIMVR IGNI');
     }
 }

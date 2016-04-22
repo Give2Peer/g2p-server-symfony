@@ -3,6 +3,7 @@
 namespace Give2Peer\Give2PeerBundle\Controller;
 
 use Doctrine\ORM\EntityManager;
+use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
 use Give2Peer\Give2PeerBundle\Entity\TagRepository;
 use Give2Peer\Give2PeerBundle\Entity\UserManager;
@@ -63,6 +64,22 @@ abstract class BaseController extends Controller
     protected function getTagRepository()
     {
         return $this->getEntityManager()->getRepository('Give2PeerBundle:Tag');
+    }
+
+    /**
+     * Sugary extra layer to `find()` and sanitize input `$id`.
+     * 
+     * Return `null` when no item by that id could be found.
+     *
+     * @param $id
+     * @return null|Item
+     */
+    protected function getItem($id)
+    {
+        // Sanitize (this is *mandatory* !)
+        $id = intval($id);
+
+        return $this->getItemRepository()->find($id);
     }
 
     /**

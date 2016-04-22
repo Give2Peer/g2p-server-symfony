@@ -31,6 +31,13 @@ give2_peer_item_add:
     defaults: { _controller: Give2PeerBundle:Rest:itemAdd, _format: json }
     methods:  [POST]
 
+give2_peer_item_delete:
+    path:     /item/{id}
+    defaults: { _controller: Give2PeerBundle:Rest:itemDelete, _format: json }
+    methods:  [DELETE]
+    requirements:
+            id:   \d+
+
 give2_peer_picture_upload:
     path:     /item/{id}/picture
     defaults: { _controller: Give2PeerBundle:Rest:itemPictureUpload, _format: json }
