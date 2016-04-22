@@ -2,6 +2,9 @@
 
 /**
  * Fakes latitude and longitude, to provide to the Faker\Generator.
+ * 
+ * This is possibly VERY BAD CODE. (or very good code, but VERY BAD COMMENTS ?)
+ * Why all the zeroes ? -- ... -- I don't remember ! Numerical stability ?
  */
 class GeolocationFaker extends \Faker\Provider\Base
 {

@@ -71,10 +71,27 @@ class FeatureContext extends    BaseContext
     /** @var Crawler $crawler */
     protected $crawler;
 
-    /** @var User $user */
+    /**
+     * Per scenario, usually "I".
+     * @var User $user
+     */
     protected $user;
 
-    /** @var Generator $faker */
+    /**
+     * Per scenario, usually "that item".
+     * @var Item $item
+     */
+    protected $item;
+
+    /**
+     * Generate any type of data you want.
+     * We added `latitude` and `longitude` :
+     * Use it like this :
+     * `$lat = $this->faker->latitude;`
+     * List of properties and methods faker provides :
+     * https://github.com/fzaninotto/Faker#formatters
+     * @var Generator $faker
+     */
     protected $faker;
 
     public function __construct()
@@ -441,6 +458,16 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * @When /^I (?:try to )?delete the item titled "(.+)"$/
+     */
+    public function iDeleteTheItemTitled($title)
+    {
+        $item = $this->getItemRepository()->findOneBy(['title' => $title]);
+
+        $this->iDelete('item/'.$item->getId());
+    }
+
+    /**
      * @When /^I register the following ?:$/
      */
     public function iRegister($pystring='')
@@ -475,6 +502,15 @@ class FeatureContext extends    BaseContext
     {
         $data = empty($pystring) ? [] : $this->fromYaml($pystring);
         $this->request('POST', $route, $data);
+    }
+
+    /**
+     * @When /^I DELETE ([^ ]+)(?: with(?: the parameters) *:)?$/i
+     */
+    public function iDelete($route, $pystring='')
+    {
+        $data = empty($pystring) ? [] : $this->fromYaml($pystring);
+        $this->request('DELETE', $route, $data);
     }
 
     /**
@@ -925,5 +961,13 @@ class FeatureContext extends    BaseContext
         );
 
         return $this->crawler;
+    }
+
+    /**
+     * @Given /^I blaze through darkness and light alike$/
+     */
+    public function iBlazeThroughDarknessAndLightAlike()
+    {
+        print('IN GIRVM IMVS NOCTE ET CONSVMIMVR IGNI');
     }
 }

@@ -21,15 +21,15 @@ description: |
   Des fois les rois sont ceux
   que l'on ne voit pas »
 """
-  Then I should be the author of 1 item
-   And I dump myself
-   And my quota for adding items should be 7
+  Then my quota for adding items should be 7
+   And I should be the author of 1 item
    And there should be 1 item titled "Paroles de l'âme au vent"
-   And that item should be shown on the map around 43.590226, 1.432487
+#   And that item should be shown on the map around 43.590226, 1.432487
   When I try to delete the item titled "Paroles de l'âme au vent"
   Then the request should be accepted
-   But I should be the author of 0 item
    And my quota for adding items should still be 7
-   And there should still be an item titled "Paroles de l'âme au vent"
-   And that item should be marked for deletion
-   And that item should not be shown on the map around 43.590226, 1.432487
+   But I should be the author of 0 item
+   And there should be 0 items titled "Paroles de l'âme au vent"
+     # a good luck spell
+   And I am level 5
+   And I blaze through darkness and light alike
