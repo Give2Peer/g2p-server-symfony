@@ -56,109 +56,6 @@ class RestController extends BaseController
     }
 
     /**
-     * This is possibly really bad.
-     * We should reuse the UserBundle !
-     * 
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function passwordChangeAction(Request $request)
-    {
-        $password = $request->get('password');
-        if (null == $password) {
-            return new JsonResponse(["error"=>"No password provided."], 400);
-        }
-
-        /** @var User $user */
-        $user = $this->getUser();
-        
-        if (null == $user) {
-            return new JsonResponse(["error"=>"No user."], 400);
-        }
-        
-        $user->setPlainPassword($password);
-
-        // This canonicalizes, encodes, persists and flushes
-        $um = $this->getUserManager();
-        $um->updateUser($user);
-
-        // Send the user as response
-        return new JsonResponse(['user'=>$user]);
-    }
-
-    /**
-     * Basic boring registration.
-     *
-     * @ApiDoc(
-     *   parameters = {
-     *     { "name"="username", "dataType"="string", "required"=true },
-     *     { "name"="password", "dataType"="string", "required"=true },
-     *     { "name"="email",    "dataType"="string", "required"=true },
-     *   }
-     * )
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function registerAction(Request $request)
-    {
-        // Recover the user data
-        $username = $request->get('username');
-        $password = $request->get('password');
-        $email    = $request->get('email');
-        $clientIp = $request->getClientIp();
-
-        if (null == $username) {
-            return new JsonResponse(["error"=>"No username provided."], 400);
-        }
-        if (null == $password) {
-            return new JsonResponse(["error"=>"No password provided."], 400);
-        }
-
-        $um = $this->getUserManager();
-
-        // Rebuke if username is taken
-        $user = $um->findUserByUsername($username);
-        if (null != $user) {
-            return new ErrorJsonResponse(
-                "Username already taken.", Error::UNAVAILABLE_USERNAME
-            );
-        }
-
-        // Rebuke if email is taken
-        $user = $um->findUserByEmail($email);
-        if (null != $user) {
-            return new ErrorJsonResponse(
-                "Email already taken.", Error::UNAVAILABLE_EMAIL
-            );
-        }
-
-        // Rebuke if too many Users created in 2 days from this IP
-        // See http://php.net/manual/fr/dateinterval.construct.php
-        $allowed = 42;
-        $duration = new \DateInterval("P2D");
-        $since = (new \DateTime())->sub($duration);
-        $count = $um->countUsersCreatedBy($clientIp, $since);
-        if ($count > $allowed) {
-            return new ExceededQuotaJsonResponse("Too many registrations.");
-        }
-
-        // Create a new User
-        /** @var User $user */
-        $user = $um->createUser();
-        $user->setEmail($email);
-        $user->setUsername($username);
-        $user->setPlainPassword($password);
-        $user->setCreatedBy($clientIp);
-        $user->setEnabled(true);
-
-        // This canonicalizes, encodes, persists and flushes
-        $um->updateUser($user);
-
-        // Send the user as response
-        return new JsonResponse(['user'=>$user]);
-    }
-
-    /**
      * Get the (private) profile information of the current user.
      *
      * @ApiDoc()
@@ -188,14 +85,15 @@ class RestController extends BaseController
      *
      * @ApiDoc()
      * @param  Request $request
-     * @param  String $username
+     * @param  String  $id
      * @return ErrorJsonResponse|JsonResponse
      */
-    public function publicProfileAction (Request $request, $username)
+    public function publicProfileAction (Request $request, $id)
     {
         $um = $this->getUserManager();
         /** @var User $user */
-        $user = $um->findUserByUsername($username);
+        $user = $um->findUserBy(['id' => $id]);
+//        $user = $um->findUserByUsername($username);
 
         if (empty($user)) {
             return new ErrorJsonResponse("Bad username.", Error::BAD_USERNAME);

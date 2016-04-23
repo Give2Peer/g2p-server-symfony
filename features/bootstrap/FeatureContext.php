@@ -561,6 +561,14 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * @When /^I pre-register$/
+     */
+    public function iPreRegister()
+    {
+        $this->iPost('register', '');
+    }
+
+    /**
      * @When /^I register the following ?:$/
      */
     public function iRegister($pystring='')

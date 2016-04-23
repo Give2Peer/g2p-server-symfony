@@ -1,23 +1,18 @@
 <?php
 
-namespace Give2Peer\Give2PeerBundle\Controller;
+namespace Give2Peer\Give2PeerBundle\Controller\Rest;
 
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Give2Peer\Give2PeerBundle\Controller\BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Give2Peer\Give2PeerBundle\Controller\ErrorCode as Error;
-use Give2Peer\Give2PeerBundle\Entity\Item;
-use Give2Peer\Give2PeerBundle\Entity\User;
-use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
-use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc; // used
 
 /**
  * Contains only GET routes that do not need an authenticated user to work.
+ * (later) Errr... I'm pretty sure this is behind a firewall.
+ * 
+ * Let's say this is for routes that do not deserve their own controller.
  */
-class RestDataController extends BaseController
+class DataController extends BaseController
 {
     /**
      * Return all available tags, as a JSONed array.
