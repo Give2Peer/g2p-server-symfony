@@ -1,13 +1,15 @@
 @rest
 @registering
 Feature: Registering
-  In order to use the REST API behind the HTTP authentication
-  As a client
-  I need to automatically register a new user account
+  In order to use my account on another device
+  As a user
+  I want to complete my pre-registration or register directly
 
 
+#Scenario: Complete my pre-registration
 
-Scenario: Register and receive confirmation
+
+Scenario: Register directly and receive confirmation
    When I register the following :
 """
 username: Goutte
@@ -33,7 +35,7 @@ username: Goutte
 password: hO5viH4XDkPbRtuPlop=
 email:    goutte@give2peer.org
 """
-   Then the request should not be accepted
+   Then the request should be denied
     And the response should include :
 """
 error:
@@ -51,7 +53,7 @@ username: GouTTE
 password: hO5viHXDkkPbRtuPlop=
 email:    goutte@give2peer.org
 """
-   Then the request should not be accepted
+   Then the request should be denied
     And the response should include :
 """
 error:
@@ -69,7 +71,7 @@ username: Goutte
 password: hO5viH4XDkPbRtuPlop=
 email:    goutte@give2peer.org
 """
-   Then the request should not be accepted
+   Then the request should be denied
     And the response should include :
 """
 error:

@@ -17,7 +17,7 @@ Scenario: Give an item without a location
 """
 nope: I'm not going to tell you where it is !
 """
-  Then the request should not be accepted
+  Then the request should be denied
    And there should be 0 items in the database
 
 
@@ -27,7 +27,7 @@ Scenario: Give an item with an ungeolocalizable location
 """
 location: The ass-end of nowhere !
 """
-  Then the request should not be accepted
+  Then the request should be denied
    And there should be 0 items in the database
 
 
@@ -307,7 +307,7 @@ Scenario: Fail to exceed level 1 daily quota of 4
    And I already gave 4 items 1 minute ago
   Then there should be 4 items in the database
   When I try to give an item
-  Then the request should not be accepted
+  Then the request should be denied
    And there should be 4 items in the database
 
 
@@ -320,7 +320,7 @@ Scenario: Fail to exceed level 9 daily quota of 20
   Then the request should be accepted
    And there should be 20 items in the database
   When I try to give an item
-  Then the request should not be accepted
+  Then the request should be denied
    And there should be 20 items in the database
 
 

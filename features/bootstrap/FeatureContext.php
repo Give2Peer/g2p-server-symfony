@@ -542,7 +542,7 @@ class FeatureContext extends    BaseContext
                 'location' => "$lat / $lng",
             ];
             $this->request('POST', 'item', $data);
-            $this->theRequestShouldBeAcceptedOrNot();
+            $this->theRequestShouldBeAcceptedOrDenied('accepted');
 
             if (!empty($when)) {
                 $this->setLastGivenItemCreationDate($when);
@@ -666,14 +666,19 @@ class FeatureContext extends    BaseContext
     // RESPONSE STEPS //////////////////////////////////////////////////////////
     
     /**
-     * @Then /^the request should (not )?be accepted$/
+     * @Then /^the request should be (accepted|denied)$/
      */
-    public function theRequestShouldBeAcceptedOrNot($not = '')
+    public function theRequestShouldBeAcceptedOrDenied($which)
     {
-        if (empty($not)) {
-            $this->assertRequestSuccess();
-        } else {
-            $this->assertRequestFailure();
+        switch ($which) {
+            case 'accepted':
+                $this->assertRequestSuccess();
+                break;
+            case 'denied':
+                $this->assertRequestFailure();
+                break;
+            default:
+                $this->fail("Élu, aimé, jeté, ô poète ! Je miaule !");
         }
     }
 

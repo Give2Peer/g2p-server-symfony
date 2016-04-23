@@ -12,6 +12,7 @@ Feature: Picturing items
 # because the danger is too great if by mishap the test suite is ran in prod.
 # Right now it will REPLACE production files, so there is danger, but a lesser
 # one as we only play around with the first item.
+# STRIKE ONE
 
 Background:
   Given I am the registered user named "Goutte"
@@ -29,17 +30,17 @@ Scenario: Attach a JPG picture
 
 Scenario: Do not attach a PNG picture (for now)
    When I POST to /item/1/picture the file features/assets/trollface.png
-   Then the request should not be accepted
+   Then the request should be denied
     And there should not be a file at web/pictures/1/1.png
     And there should not be a file at web/pictures/1/trollface.png
 
 
 Scenario: Fail to attach a picture to a non-existent item
    When I POST to /item/42/picture the file features/assets/1.jpg
-   Then the request should not be accepted
+   Then the request should be denied
 
 
 Scenario: Fail to attach a picture to a non-authorized item
    When I POST to /item/2/picture the file features/assets/2.jpg
-   Then the request should not be accepted
+   Then the request should be denied
 
