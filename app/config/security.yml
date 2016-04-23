@@ -44,7 +44,7 @@ security:
 #            security: false
         # the private API
         rest_api:
-            pattern:   ^/
+            pattern:   ^/(v[\d]+)
             stateless: true
             http_basic:
                 provider: fos_userbundle

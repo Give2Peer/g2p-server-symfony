@@ -17,8 +17,9 @@ email:    goutte@give2peer.org
    Then the request should be accepted
     And the response should include :
 """
-id: 1
-username: goutte
+user:
+    id: 1
+    username: goutte
 """
     And there should be 1 user in the database
 

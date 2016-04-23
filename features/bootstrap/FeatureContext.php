@@ -82,6 +82,17 @@ class FeatureContext extends    BaseContext
     protected $user;
 
     /**
+     * The user class does not have a getPassword method and we need to
+     * sometimes override the fact that all of our created users have the same
+     * password as username.
+     *
+     * In the steps to change the password, for instance.
+     *
+     * @var String $password
+     */
+    protected $password;
+
+    /**
      * Per scenario, usually "that item".
      * @var Item $item
      */
@@ -322,6 +333,18 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * @Given /^my password is "(.+)"$/
+     */
+    public function myPasswordIs($password)
+    {
+        $user = $this->getI()->setPlainPassword($password);
+        $this->getUserManager()->updateUser($user);
+//        $this->getEntityManager()->flush();
+
+        $this->password = $password;
+    }
+
+    /**
      * @Given /^I am level (\d+) *$/
      */
     public function iAmLevel($level)
@@ -382,6 +405,35 @@ class FeatureContext extends    BaseContext
 
     // ROUTES STEPS ////////////////////////////////////////////////////////////
 
+    /**
+     * @When /^I should (fail|succeed) to authenticate(?: with password "(.+)")?$/
+     */
+    public function iFailOrSucceedToAuthenticate($which, $password)
+    {
+        $backup = null;
+        if (null != $this->password) {
+            $backup = $this->password;
+            $this->password = $password;
+        }
+
+        $this->request('GET', 'ping');
+        
+        switch ($which) {
+            case 'fail':
+                $this->assertRequestFailure();
+                break;
+            case 'succeed':
+                $this->assertRequestSuccess();
+                break;
+            default:
+                $this->fail("?");
+        }
+
+        if (null != $backup) {
+            $this->password = $backup;
+        }
+    }
+    
     /**
      * @When /^I request my profile information$/
      */
@@ -500,6 +552,18 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * @When /^I change my password to "(.+)"$/
+     */
+    public function iChangeMyPassword($password)
+    {
+        $this->request('POST', "password/change", [
+            'password' => $password
+        ]);
+
+        $this->password = $password;
+    }
+
+    /**
      * @When /^I request the statistics$/
      */
     public function iRequestStats()
@@ -583,36 +647,16 @@ class FeatureContext extends    BaseContext
 
 
     // RESPONSE STEPS //////////////////////////////////////////////////////////
-
+    
     /**
      * @Then /^the request should (not )?be accepted$/
      */
     public function theRequestShouldBeAcceptedOrNot($not = '')
     {
-        if (empty($this->client)) {
-            throw new Exception("No client. Request something first.");
-        }
-
-        $content = $this->client->getResponse()->getContent();
-        // Good try, but it floods the console too much :(
-        //try {
-        //    $content = json_encode(json_decode($content), JSON_PRETTY_PRINT);
-        //} catch (\Exception $e) {}
-
-        if ($this->client->getResponse()->isSuccessful() && !empty($not)) {
-            $this->fail(
-                sprintf("Response is successful, with '%d' HTTP status code ".
-                    "and the following content:\n%s",
-                    $this->client->getResponse()->getStatusCode(),
-                    $content));
-        }
-
-        if (!$this->client->getResponse()->isSuccessful() && empty($not)) {
-            $this->fail(
-                sprintf("Response is unsuccessful, with '%d' HTTP status code ".
-                    "and the following content:\n%s",
-                    $this->client->getResponse()->getStatusCode(),
-                    $content));
+        if (empty($not)) {
+            $this->assertRequestSuccess();
+        } else {
+            $this->assertRequestFailure();
         }
     }
 
@@ -978,8 +1022,15 @@ class FeatureContext extends    BaseContext
         $this->client = $this->getOrCreateClient();
 
         if (!empty($this->user)) {
+
+            if (null != $this->password) {
+                $password = $this->password;
+            } else {
+                $password = $this->user->getUsername();
+            }
+
             $server['PHP_AUTH_USER'] = $this->user->getUsername();
-            $server['PHP_AUTH_PW']   = $this->user->getUsername();
+            $server['PHP_AUTH_PW']   = $password;
         }
 
         $this->crawler = $this->client->request(
@@ -988,5 +1039,48 @@ class FeatureContext extends    BaseContext
         );
 
         return $this->crawler;
+    }
+
+
+    public function assertRequestSuccess()
+    {
+        if (empty($this->client)) {
+            throw new Exception("No client. Request something first.");
+        }
+
+        $content = $this->client->getResponse()->getContent();
+        // Good try, but it floods the console too much :(
+        //try {
+        //    $content = json_encode(json_decode($content), JSON_PRETTY_PRINT);
+        //} catch (\Exception $e) {}
+
+        if (!$this->client->getResponse()->isSuccessful()) {
+            $this->fail(
+                sprintf("Response is unsuccessful, with '%d' HTTP status code ".
+                    "and the following content:\n%s",
+                    $this->client->getResponse()->getStatusCode(),
+                    $content));
+        }
+    }
+
+    public function assertRequestFailure()
+    {
+        if (empty($this->client)) {
+            throw new Exception("No client. Request something first.");
+        }
+
+        $content = $this->client->getResponse()->getContent();
+        // Good try, but it floods the console too much :(
+        //try {
+        //    $content = json_encode(json_decode($content), JSON_PRETTY_PRINT);
+        //} catch (\Exception $e) {}
+
+        if ($this->client->getResponse()->isSuccessful()) {
+            $this->fail(
+                sprintf("Response is successful, with '%d' HTTP status code ".
+                    "and the following content:\n%s",
+                    $this->client->getResponse()->getStatusCode(),
+                    $content));
+        }
     }
 }

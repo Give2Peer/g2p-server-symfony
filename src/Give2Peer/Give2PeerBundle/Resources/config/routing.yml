@@ -9,6 +9,11 @@ give2_peer_ping:
 
 ## USERS #######################################################################
 
+give2_peer_password_change:
+    path:     /password/change
+    defaults: { _controller: Give2PeerBundle:Rest:passwordChange, _format: json }
+    methods:  [POST]
+
 give2_peer_register:
     path:     /register
     defaults: { _controller: Give2PeerBundle:Rest:register, _format: json }

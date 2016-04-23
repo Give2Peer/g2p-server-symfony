@@ -56,6 +56,37 @@ class RestController extends BaseController
     }
 
     /**
+     * This is possibly really bad.
+     * We should reuse the UserBundle !
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function passwordChangeAction(Request $request)
+    {
+        $password = $request->get('password');
+        if (null == $password) {
+            return new JsonResponse(["error"=>"No password provided."], 400);
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+        
+        if (null == $user) {
+            return new JsonResponse(["error"=>"No user."], 400);
+        }
+        
+        $user->setPlainPassword($password);
+
+        // This canonicalizes, encodes, persists and flushes
+        $um = $this->getUserManager();
+        $um->updateUser($user);
+
+        // Send the user as response
+        return new JsonResponse(['user'=>$user]);
+    }
+
+    /**
      * Basic boring registration.
      *
      * @ApiDoc(
@@ -124,7 +155,7 @@ class RestController extends BaseController
         $um->updateUser($user);
 
         // Send the user as response
-        return new JsonResponse($user);
+        return new JsonResponse(['user'=>$user]);
     }
 
     /**
