@@ -60,6 +60,11 @@ function array_diff_assoc_recursive($array1, $array2) {
 /**
  * “You will not censor me through bug terrorism.”
  *     -- James Troup
+ * 
+ * This file is getting BIG.
+ * Traits work well with FeatureContext.
+ * 
+ * Schedule a refactorization when this file gets more than 1111 lines !
  *
  * This prints a fortune cookie when it passes ; sugar for the mind.
  */
@@ -178,7 +183,7 @@ class FeatureContext extends    BaseContext
         // Loading an empty array still truncates all tables.
         $this->loadFixtures(array());
 
-        // Empty the public directory where pictures are
+        // Empty the public directory where pictures are -- todo
         // THIS IS DANGEROUS !
         // It means that this test suite can never EVER be run on the prod server
         // This is BAD.
@@ -187,12 +192,12 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * To train our inner pigeon into liking Feature-Driven Development...
+     * To train our inner pigeon into enjoying Feature-Driven Development...
      * @AfterSuite
      */
     public static function gimmeCookieNomNomNom(AfterSuiteScope $scope)
     {
-        // Let's make a meme : a fortune cookie each time the suite runs okay
+        // make it a meme : a fortune cookie each time the suite runs okay
         if ($scope->getTestResult()->isPassed()) {
             try { print(shell_exec('fortune -a')); } catch (\Exception $e) {}
         }
@@ -203,6 +208,10 @@ class FeatureContext extends    BaseContext
 
     /**
      * A very handy transformer for integers, registered to Behat.
+     * 
+     * This could be improved to add support for more idiomatic numbers like
+     * "one", "a", "forty-two". Not easy to match with a regex !?
+     * 
      * @Transform /^(-?\d+)$/
      */
     public function castStringToInt($string)
@@ -448,6 +457,14 @@ class FeatureContext extends    BaseContext
     public function iGetTheProfileOf($username)
     {
         $this->request('GET', 'profile/'.$username);
+    }
+    
+    /**
+     * @When /^I request the tags$/
+     */
+    public function iGetThetags()
+    {
+        $this->request('GET', 'tags');
     }
     
     /**
