@@ -57,7 +57,7 @@ class User extends BaseUser implements \JsonSerializable
     /**
      * Provides `created_at` and `updated_at`.
      */
-    use ORMBehaviors\Timestampable\Timestampable;
+    use Behavior\GedmoTimestampable;
 
     /**
      * Specify data which should be serialized to JSON and sent to the clients.
@@ -103,9 +103,9 @@ class User extends BaseUser implements \JsonSerializable
     /**
      * A token for REST auth.
      * Right now it is NOT USED, as we use brutal HTTPAuth.
+     * Use it as password in the HTTPAuth ?
      * It should be refreshed, here's some ways to do it :
      * - CRON tasks (we'll need those eventually)
-     * - Use it as password in the HTTPAuth ?
      *
      * @ORM\Column(name="rest_token", type="string", length=32)
      */

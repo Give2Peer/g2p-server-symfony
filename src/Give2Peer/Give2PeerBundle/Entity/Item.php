@@ -33,7 +33,8 @@ class Item implements \JsonSerializable
     // /!\ Fool's gold ! -- Y U NO snake_case ?
     //     Database table column is `createdAt` instead of `created_at` !
     // use ORMBehaviors\Timestampable\Timestampable;
-    // ... we use explicit annotations instead !
+    // ... we use our own trait instead !
+    use Behavior\GedmoTimestampable;
 
     /**
      * Specify data which should be serialized to JSON
@@ -202,26 +203,6 @@ class Item implements \JsonSerializable
      * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
      */
     protected $author;
-
-    /**
-     * The date and time (to the second) at which this item was created.
-     *
-     * @var DateTime
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     * @Gedmo\Timestampable(on="create")
-     */
-    protected $createdAt;
-
-    /**
-     * The date and time (to the second) at which this item was last updated.
-     *
-     * @var DateTime
-     *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-     * @Gedmo\Timestampable(on="update")
-     */
-    protected $updatedAt;
 
     /**
      * The date and time (to the second) at which this item was deleted.
@@ -530,62 +511,6 @@ class Item implements \JsonSerializable
     public function setThumbnail($thumbnail)
     {
         $this->thumbnail = $thumbnail;
-
-        return $this;
-    }
-
-    /**
-     * The date and time (to the second) at which this item was created.
-     *
-     * @return DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set the date and time of the creation of this item.
-     *
-     * Don't bother, our ORM hooks handle setting this on creation for us.
-     *
-     * If you're actually using this, you're probably writing kickass features.
-     *
-     * @param DateTime $createdAt
-     * @return Item
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-        
-        return $this;
-    }
-
-    /**
-     * The date and time (to the second) at which this item was last updated.
-     *
-     * Any change in any field of this Item will refresh this value.
-     *
-     * Our ORM hooks handle refreshing this on update for us.
-     *
-     * @return DateTime
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * Set the date and time when this item was last updated.
-     *
-     * Don't bother, our ORM hooks handle refreshing this on update for us.
-     *
-     * @param DateTime $updatedAt
-     * @return Item
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }
