@@ -11,58 +11,15 @@ use Give2Peer\Give2PeerBundle\Entity\User;
  * located. This class should handle all the querying nitty-gritty and tweaks,
  * and provide dev-friendly methods with sugar on top.
  *
+ * We enabled by default a `softdeleteable` filter on all Item queries.
+ *
  * The SQL DISTANCE function is our custom function leveraging pgSQL's inner
  * functions of extension `earthdistance`.
- *
- *
- * /!\
- * Use should use softdeleteable instead of writing methods such as authoredBy()
- * This would remove lots of code in here, and that would be good ©.
- *
- *
- *
  * See : http://www.postgresql.org/docs/9.2/static/earthdistance.html
  */
 class ItemRepository extends EntityRepository
 {
-    const ITEM_QUERY_ALIAS = 'i';
-
-    /**
-     * We should make most of our methods with this qb, as it allows us to
-     * exclude the items marked for deletion.
-     *
-     * fixme: use SoftDeletable instead !
-     * https://github.com/Atlantic18/DoctrineExtensions/blob/master/doc/softdeleteable.md
-     *
-     * @param bool $exclude_deleted
-     * @return QueryBuilder
-     */
-    public function createQueryBuilder($exclude_deleted=true)
-    {
-        $qb = parent::createQueryBuilder(self::ITEM_QUERY_ALIAS);
-        
-        if ($exclude_deleted) {
-            // Equivalent
-            //$qb = $qb->andWhere('i.deletedAt IS NULL');
-            $qb = $qb->andWhere($qb->expr()->isNull('i.deletedAt'));
-        }
-        
-        return $qb;
-    }
-
     ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Get a QueryBuilder to counts all items.
-     *
-     * @return QueryBuilder
-     */
-    public function countItemsQb($exclude_deleted=true)
-    {
-        return $this->createQueryBuilder($exclude_deleted)
-                    ->select('COUNT(i)') // replaces previous select in parent
-                    ;
-    }
 
     /**
      * Counts all items.
@@ -71,7 +28,8 @@ class ItemRepository extends EntityRepository
      */
     public function countItems()
     {
-        return $this->countItemsQb()
+        return $this->createQueryBuilder('i')
+            ->select('COUNT(i)') // replaces previous select in parent
             ->getQuery()
             ->execute()
             [0][1] // first column of first row holds the COUNT
@@ -81,16 +39,13 @@ class ItemRepository extends EntityRepository
     /**
      * Counts all items that were created by $user, $since that time.
      *
-     * This methods makes sense because it provdes the `since` parameter for
-     * convenience, but the `exclude_deleted` parameter should NOT be here.
-     *
      * @param  User      $user
      * @param  \Datetime $since
      * @return int
      */
-    public function countAuthoredBy(User $user, $since=null, $exclude_deleted=true)
+    public function countAuthoredBy(User $user, $since=null)
     {
-        $qb = $this->authoredByQb($user, $since, $exclude_deleted);
+        $qb = $this->authoredByQb($user, $since);
 
         return $qb->select('COUNT(i)')
                   ->getQuery()
@@ -102,24 +57,21 @@ class ItemRepository extends EntityRepository
     /**
      * Finds all items that were created by $user, $since that time.
      *
-     * This methods makes sense because it provdes the `since` parameter for
-     * convenience, but the `exclude_deleted` parameter should NOT be here.
-     *
      * @param  User      $user
      * @param  \Datetime $since
      * @return int
      */
-    public function findAuthoredBy(User $user, $since=null, $exclude_deleted=true)
+    public function findAuthoredBy(User $user, $since=null)
     {
-        $qb = $this->authoredByQb($user, $since, $exclude_deleted);
+        $qb = $this->authoredByQb($user, $since);
 
         return $qb->getQuery()
                   ->execute();
     }
 
-    protected function authoredByQb(User $user, $since=null, $exclude_deleted=true)
+    protected function authoredByQb(User $user, $since=null)
     {
-        $qb = $this->createQueryBuilder($exclude_deleted)
+        $qb = $this->createQueryBuilder('i')
                    ->andWhere('i.author = :user')
                    ->setParameter('user', $user)
                    ;
@@ -137,6 +89,9 @@ class ItemRepository extends EntityRepository
      * Computes what's left of the daily quota of the provided $user.
      * May be zero, but must never be negative.
      *
+     * Disables the `softdeleteable` filter so as to take into account deleted
+     * items.
+     *
      * @param User $user
      * @return int
      */
@@ -144,7 +99,11 @@ class ItemRepository extends EntityRepository
     {
         $duration = new \DateInterval("P1D"); // 24h
         $since = (new \DateTime())->sub($duration);
-        $used = $this->countAuthoredBy($user, $since, false); // deleted too
+        $filters = $this->getEntityManager()->getFilters();
+        // We want to count the deleted items too
+        $filters->disable('softdeleteable');
+        $used = $this->countAuthoredBy($user, $since);
+        $filters->enable('softdeleteable');
         $total = $user->getAddItemsDailyQuota();
 
         return max(0, $total - $used);
@@ -185,7 +144,7 @@ class ItemRepository extends EntityRepository
     public function findAroundQB($latitude, $longitude, $skipTheFirstN,
                                  $maxDistance, $maxResults)
     {
-        $qb = $this->createQueryBuilder()
+        $qb = $this->createQueryBuilder('i')
             ->addSelect('DISTANCE(i.latitude, i.longitude, :latitude, :longitude) AS distance')
             ->addOrderBy('distance')
             ->setFirstResult($skipTheFirstN)

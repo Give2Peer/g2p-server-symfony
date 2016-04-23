@@ -15,6 +15,7 @@ parameters:
     mailer_password:   ~
 
     locale:            en
+    loc_le:            en_US
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt

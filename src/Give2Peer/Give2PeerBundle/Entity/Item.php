@@ -5,9 +5,10 @@ namespace Give2Peer\Give2PeerBundle\Entity;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Knp\DoctrineBehaviors\Model as ORMBehaviors;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Geocoder\Result\Geocoded;
 use Give2Peer\Give2PeerBundle\Provider\LatitudeLongitudeProvider;
-use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 use Give2Peer\Give2PeerBundle\Entity\User;
 
 /**
@@ -24,10 +25,15 @@ use Give2Peer\Give2PeerBundle\Entity\User;
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\ItemRepository")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class Item implements \JsonSerializable
 {
-    use ORMBehaviors\Timestampable\Timestampable;
+    // Provides createdAt and updatedAt.
+    // /!\ Fool's gold ! -- Y U NO snake_case ?
+    //     Database table column is `createdAt` instead of `created_at` !
+    // use ORMBehaviors\Timestampable\Timestampable;
+    // ... we use explicit annotations instead !
 
     /**
      * Specify data which should be serialized to JSON
@@ -198,8 +204,33 @@ class Item implements \JsonSerializable
     protected $author;
 
     /**
+     * The date and time (to the second) at which this item was created.
+     *
      * @var DateTime
-     * 
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="create")
+     */
+    protected $createdAt;
+
+    /**
+     * The date and time (to the second) at which this item was last updated.
+     *
+     * @var DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     * @Gedmo\Timestampable(on="update")
+     */
+    protected $updatedAt;
+
+    /**
+     * The date and time (to the second) at which this item was deleted.
+     *
+     * Items in all queries are filtered by this field, as specified in the
+     * `Gedmo\SoftDeleteable` annotation above.
+     *
+     * @var DateTime
+     *
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     protected $deletedAt;
@@ -210,6 +241,41 @@ class Item implements \JsonSerializable
     {
         $this->tags = new ArrayCollection(); // Y U NO [] ? => Useful methods !
     }
+
+
+
+    /**
+     * Get the distance along the great circle of Earth in meters between this
+     * item and the location provided by the user that queried it.
+     *
+     * This property is NOT loaded from the database but injected into the Item
+     * after some queries, and may NOT be present.
+     *
+     * @return float
+     */
+    public function getDistance()
+    {
+        return $this->distance;
+    }
+
+    /**
+     * Injection method. Used by some queries to inject the `distance` property.
+     *
+     * Distance should be in meters along the great circle of Earth.
+     *
+     * @param float $distance
+     * @return Item
+     */
+    public function setDistance($distance)
+    {
+        $this->distance = $distance;
+
+        return $this;
+    }
+
+
+    // BOOOOOOOOOOOOORIIIIIIIIIIIIIINNG ! //////////////////////////////////////
+
 
     /**
      * Get the unique id of this user.
@@ -341,6 +407,9 @@ class Item implements \JsonSerializable
     }
 
     /**
+     * fixme: bad design here
+     * solution: second parameter $recursive=true on both inverse and owning ?
+     *
      * @param Tag $tag
      * @return Item
      */
@@ -378,7 +447,7 @@ class Item implements \JsonSerializable
     public function getTagnames()
     {
         $names = [];
-        foreach ($this->tags as $tag) {
+        foreach ($this->getTags() as $tag) {
             $names[] = $tag->getName();
         }
 
@@ -445,35 +514,6 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * Get the distance along the great circle of Earth in meters between this
-     * item and the location provided by the user that queried it.
-     *
-     * This property is NOT loaded from the database but injected into the Item
-     * after some queries, and may NOT be present.
-     *
-     * @return float
-     */
-    public function getDistance()
-    {
-        return $this->distance;
-    }
-
-    /**
-     * Injection method. Used by some queries to inject the `distance` property.
-     *
-     * Distance should be in meters along the great circle of Earth.
-     *
-     * @param float $distance
-     * @return Item
-     */
-    public function setDistance($distance)
-    {
-        $this->distance = $distance;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getThumbnail()
@@ -495,6 +535,66 @@ class Item implements \JsonSerializable
     }
 
     /**
+     * The date and time (to the second) at which this item was created.
+     *
+     * @return DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set the date and time of the creation of this item.
+     *
+     * Don't bother, our ORM hooks handle setting this on creation for us.
+     *
+     * If you're actually using this, you're probably writing kickass features.
+     *
+     * @param DateTime $createdAt
+     * @return Item
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        
+        return $this;
+    }
+
+    /**
+     * The date and time (to the second) at which this item was last updated.
+     *
+     * Any change in any field of this Item will refresh this value.
+     *
+     * Our ORM hooks handle refreshing this on update for us.
+     *
+     * @return DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Set the date and time when this item was last updated.
+     *
+     * Don't bother, our ORM hooks handle refreshing this on update for us.
+     *
+     * @param DateTime $updatedAt
+     * @return Item
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * The date and time (to the second) at which this item was deleted.
+     *
+     * Items in default queries are filtered by this field. (softdeleteable)
+     *
      * @return DateTime
      */
     public function getDeletedAt()
@@ -503,13 +603,17 @@ class Item implements \JsonSerializable
     }
 
     /**
+     * Set the date and time when you want this item to be marked as deleted.
+     *
+     * To mark it deleted **now**, use `markAsDeleted()` instead.
+     *
      * @param DateTime $deletedAt
      * @return Item
      */
     public function setDeletedAt($deletedAt)
     {
         $this->deletedAt = $deletedAt;
-        
+
         return $this;
     }
 

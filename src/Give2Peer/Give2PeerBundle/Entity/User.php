@@ -141,7 +141,7 @@ class User extends BaseUser implements \JsonSerializable
      * ORM\OneToMany(targetEntity="Item", mappedBy="author", fetch="EAGER")
      *
      * @ORM\OneToMany(targetEntity="Item", mappedBy="author", fetch="EAGER")
-     * @ORM\OrderBy({"createdAt" = "DESC"})
+     * @ORM\OrderBy({"updatedAt" = "DESC"})
      */
     protected $itemsAuthored;
 
