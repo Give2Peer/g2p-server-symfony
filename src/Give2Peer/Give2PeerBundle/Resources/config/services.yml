@@ -1,6 +1,7 @@
 # List of tags : http://symfony.com/doc/current/reference/dic_tags.html
 
 services:
+    #
     g2p.event_subscriber_authentication:
         class: Give2Peer\Give2PeerBundle\EventSubscriber\Authentication
         arguments:
@@ -17,3 +18,13 @@ services:
             - @fos_user.util.email_canonicalizer
             - @fos_user.entity_manager
             - Give2Peer\Give2PeerBundle\Entity\User
+
+    # Register the ... what ? the annotations reader ?
+    # The softdeletable filter itself is enabled in config.yml.
+    # Why do I even need this ? These are defaults, no ?
+    gedmo.listener.softdeleteable:
+      class: Gedmo\SoftDeleteable\SoftDeleteableListener
+      tags:
+          - { name: doctrine.event_subscriber, connection: default }
+      calls:
+          - [ setAnnotationReader, [ @annotation_reader ] ]

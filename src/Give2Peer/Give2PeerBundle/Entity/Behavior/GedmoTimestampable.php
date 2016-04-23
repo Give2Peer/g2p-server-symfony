@@ -20,9 +20,11 @@ use Give2Peer\Give2PeerBundle\Entity\User;
  * Replaces
  * Knp\DoctrineBehaviors\Model\Timestampable\Timestampable
  * to ensure that created SQL table fields are snake_case.
- *
+ * 
  * We use Gedmo :
  * https://github.com/Atlantic18/DoctrineExtensions/blob/master/doc/timestampable.md
+ *
+ * Timestampable needs to be enabled in the config.yml too.
  */
 trait GedmoTimestampable
 {
