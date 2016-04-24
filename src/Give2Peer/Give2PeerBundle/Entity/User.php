@@ -134,6 +134,7 @@ class User extends BaseUser implements \JsonSerializable
      * The items that were authored by this user.
      *
      * INCLUDING THE ITEMS MARKED FOR DELETION !
+     * Looks like our softdeleteable filter does not apply here...
      *
      * This is the inverse side of the bidirectional relationship with Item.
      * Changes made only to the inverse side of an association are ignored.

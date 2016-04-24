@@ -59,7 +59,7 @@ class ItemRepository extends EntityRepository
      *
      * @param  User      $user
      * @param  \Datetime $since
-     * @return int
+     * @return Item[]
      */
     public function findAuthoredBy(User $user, $since=null)
     {

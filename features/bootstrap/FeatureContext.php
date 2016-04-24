@@ -581,11 +581,25 @@ class FeatureContext extends    BaseContext
      */
     public function iChangeMyPassword($password)
     {
-        $this->request('POST', "password/change", [
+        $this->request('POST', "change/password", [
             'password' => $password
         ]);
 
         $this->password = $password;
+    }
+
+    /**
+     * /!\ THIS STEP WILL PROBABLY BREAK OUR HTTP CLIENT AND I FOR THE SCENARIO
+     *
+     * @When /^I (?:try to )?change my username to (.+)$/
+     */
+    public function iChangeMyUsername($username)
+    {
+        $this->request('POST', "change/username", [
+            'username' => $username
+        ]);
+
+        // pitfall solution: also update context variables on success
     }
 
     /**
@@ -785,6 +799,20 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * @Then /^there should ((?:not )?)be a user named (.+)$/
+     */
+    public function thereShouldBeUserNamed($not, $username)
+    {
+        $usr = $this->getUser($username);
+
+        if (empty($not)) {
+            $this->assertNotNull($usr);
+        } else {
+            $this->assertNull($usr);
+        }
+    }
+
+    /**
      * @Then /^the user (.+) should be level (\d+)$/
      */
     public function theUserShouldBeLevel($username, $level)
@@ -826,15 +854,16 @@ class FeatureContext extends    BaseContext
      */
     public function iShouldBeTheAuthorOf($count)
     {
-        // Not sure which is best
-        //$actual = count($this->getI()->getItemsAuthored());
         $items = $this->getItemRepository()->findAuthoredBy($this->getI());
-        
-        $actual = count($items);
-
         $s = json_encode($items, JSON_PRETTY_PRINT);
 
+        $actual = count($items);
         $this->assertEquals($count, $actual, "Got $actual items !\n$s");
+
+        // THAT ONE IS BROKEN OMG OMG OMG
+        // Our softdeleteable filter, Y U NO DO DIS ?
+//        $actual = count($this->getI()->getItemsAuthored());
+//        $this->assertEquals($count, $actual, "Got $actual items !\n$s");
     }
 
     /**

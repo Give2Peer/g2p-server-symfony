@@ -78,12 +78,18 @@ class UserController extends BaseController
 
 
     /**
-     * Change the authenticated user's password.
+     * Change the authenticated user's password to the provided `password`.
+     *
+     * @ApiDoc(
+     *   parameters = {
+     *     { "name"="password", "dataType"="string", "required"=true },
+     *   }
+     * )
      * 
      * @param Request $request
      * @return JsonResponse
      */
-    public function passwordChangeAction(Request $request)
+    public function changePasswordAction(Request $request)
     {
         $password = $request->get('password');
         if (null == $password) {
@@ -101,6 +107,51 @@ class UserController extends BaseController
 
         // This canonicalizes, encodes, persists and flushes
         $um = $this->getUserManager();
+        $um->updateUser($user);
+
+        // Send the user as response
+        return new JsonResponse(['user'=>$user]);
+    }
+
+    /**
+     * Change the authenticated user's username to the provided `username`.
+     *
+     * @ApiDoc(
+     *   parameters = {
+     *     { "name"="username", "dataType"="string", "required"=true },
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changeUsernameAction(Request $request)
+    {
+        $username = $request->get('username');
+        if (null == $username) {
+            return new JsonResponse(["error"=>"No username provided."], 400);
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (null == $user) {
+            return new JsonResponse(["error"=>"No user."], 400);
+        }
+
+        $um = $this->getUserManager();
+
+        // Rebuke if username is taken
+        $existingUser = $um->findUserByUsername($username);
+        if (null != $existingUser) {
+            return new ErrorJsonResponse(
+                "Username already taken.", Error::UNAVAILABLE_USERNAME
+            );
+        }
+
+        $user->setUsername($username);
+
+        // This canonicalizes, encodes, persists and flushes
         $um->updateUser($user);
 
         // Send the user as response

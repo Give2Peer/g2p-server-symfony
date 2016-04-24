@@ -25,9 +25,14 @@ give2_peer_authenticate:
 
 ## USERS #######################################################################
 
-give2_peer_password_change:
-    path:     /password/change
-    defaults: { _controller: Give2PeerBundle:Rest/User:passwordChange, _format: json }
+give2_peer_change_password:
+    path:     /change/password
+    defaults: { _controller: Give2PeerBundle:Rest/User:changePassword, _format: json }
+    methods:  [POST]
+
+give2_peer_change_username:
+    path:     /change/username
+    defaults: { _controller: Give2PeerBundle:Rest/User:changeUsername, _format: json }
     methods:  [POST]
 
 give2_peer_register:
@@ -37,15 +42,11 @@ give2_peer_register:
 
 ## PROFILES ####################################################################
 
+# Public profile of provided `username`, or my own private profile otherwise.
 give2_peer_profile:
     path:     /profile
     defaults: { _controller: Give2PeerBundle:Rest:profile, _format: json }
     methods:  [GET]
-
-#give2_peer_public_profile:
-#    path:     /profile/{id}
-#    defaults: { _controller: Give2PeerBundle:Rest:publicProfile, _format: json }
-#    methods:  [GET]
 
 ## ITEMS #######################################################################
 
@@ -59,7 +60,7 @@ give2_peer_item_delete:
     defaults: { _controller: Give2PeerBundle:Rest:itemDelete, _format: json }
     methods:  [DELETE]
     requirements:
-            id:   \d+
+        id:   \d+
 
 give2_peer_picture_upload:
     path:     /item/{id}/picture
@@ -73,8 +74,8 @@ give2_peer_items_around:
     defaults: { _controller: Give2PeerBundle:Rest:itemsAround, _format: json }
     methods:  [GET]
     requirements:
-      latitude:   "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
-      longitude:  "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
+        latitude:   "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
+        longitude:  "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
 
 ## GENERAL DATA COLLECTION #####################################################
 
