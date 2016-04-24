@@ -14,6 +14,8 @@ use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
 use Symfony\Component\Yaml\Yaml;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+
 /**
  * Routes are configured in YAML, in `Resources/config/routing.yml`.
  * ApiDoc's documentation can be found at :
@@ -48,7 +50,8 @@ class UserController extends BaseController
         $y = random_int(0, 9);
         $z = random_int(0, 9);
         
-        $nb = count($beings) * count($adjectives) * count($colors) * 1000;
+        // About 42 billion right now
+        //$nb = count($beings) * count($adjectives) * count($colors) * 1000;
         //print("Possibilities : $nb\n");
 
         return "${a} ${c} ${b} ${x}${y}${z}";
@@ -79,6 +82,8 @@ class UserController extends BaseController
 
     /**
      * Change the authenticated user's password to the provided `password`.
+     *
+     * If you need to change more than the password, use `users/{id}`.
      *
      * @ApiDoc(
      *   parameters = {
@@ -115,6 +120,8 @@ class UserController extends BaseController
 
     /**
      * Change the authenticated user's username to the provided `username`.
+     *
+     * If you need to change more than the username, use `users/{id}`.
      *
      * @ApiDoc(
      *   parameters = {
@@ -161,6 +168,8 @@ class UserController extends BaseController
     /**
      * Change the authenticated user's email to the provided `email`.
      *
+     * If you need to change more than the email, use `users/{id}`.
+     *
      * @ApiDoc(
      *   parameters = {
      *     { "name"="email", "dataType"="string", "required"=true },
@@ -172,6 +181,57 @@ class UserController extends BaseController
      */
     public function changeEmailAction(Request $request)
     {
+        $email = $request->get('email');
+        if (null == $email) {
+            return new JsonResponse(["error"=>"No email provided."], 400);
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (null == $user) {
+            return new JsonResponse(["error"=>"No user."], 400);
+        }
+
+        $um = $this->getUserManager();
+
+        // Rebuke if username is taken
+        $existingUser = $um->findUserByEmail($email);
+        if (null != $existingUser) {
+            return new ErrorJsonResponse(
+                "Email already taken.", Error::UNAVAILABLE_EMAIL
+            );
+        }
+
+        $user->setEmail($email);
+
+        // This canonicalizes, encodes, persists and flushes
+        $um->updateUser($user);
+
+        // Send the user as response
+        return new JsonResponse(['user'=>$user]);
+    }
+
+    /**
+     * Change the 
+     *
+     * @ApiDoc(
+     *   parameters = {
+     *     { "name"="username", "dataType"="string", "required"=false },
+     *     { "name"="password", "dataType"="string", "required"=false },
+     *     { "name"="email",    "dataType"="string", "required"=false },
+     *   }
+     * )
+     *
+     * @ParamConverter("user", class="User")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function editAction(Request $request, User $user)
+    {
+        // fixme
+
+
         $email = $request->get('email');
         if (null == $email) {
             return new JsonResponse(["error"=>"No email provided."], 400);

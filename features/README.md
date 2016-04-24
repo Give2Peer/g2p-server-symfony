@@ -1,6 +1,22 @@
 Welcome to the Features
 =======================
 
+TLDR;
+-----
+
+```
+$ sudo apt-get install composer fortunes
+$ cd <project root where composer.json resides>
+$ composer install
+$ script/setup_behat
+$ script/reset_db_schema
+$ bin/behat -vv --tags=~geocode
+```
+
+
+What
+----
+
 These describe how the server should respond to HTTP REST requests from a
 client, say a mobile app.
 
@@ -19,9 +35,6 @@ They cover :
 
 That's pretty much everything this API offers right now.
 
-
-What
-----
 
 The `.feature` files contain _scenarios_ such as :
 
@@ -63,7 +76,7 @@ symlinks `bin/behat` to point to `script/behat`.
 Then, to perfunctorily run the features while coding, I suggest you use :
 
 ```
-$ script/behat --tags=~geocode
+$ script/behat --tags=~geocode -vv
 ```
 
 Because scenarios tagged with `geocode` use third-party geocoding services with

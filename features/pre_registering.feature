@@ -1,5 +1,5 @@
 @rest
-@registering
+@register
 Feature: Pre-registering
   In order to authenticate without asking my user to register first
   As a client
@@ -20,6 +20,8 @@ user:
     And there should be 1 user in the database
 
 
+
+# Random fortune :
 # Psychologists think they're experimental psychologists.
 # Experimental psychologists think they're biologists.
 # Biologists think they're biochemists.

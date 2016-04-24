@@ -23,34 +23,37 @@ security:
         fos_userbundle:
             id: fos_user.user_provider.username
 
-    # the main part of the security, where you can set up firewalls
+    # The main part of the security, where you can set up firewalls
     # for specific sections of your app
+    # (/v[\d]+)? matches the version prefixes `v1`, `v2`, etc.
     firewalls:
-        # disables authentication for assets and the profiler, adapt it according to your needs
+        # Disables authentication for assets and the profiler
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        # the ping
+        # The ping
         rest_hello:
             pattern:  ^(/v[\d]+)?/hello$
             security: false
-        # the registration
+        # The registration
+        # paper cut: this does not but *should* only allow POST through
+        # we'll put a 404 on GET /users for now
+        # it's no big matter anyway if our user list is public,
+        # as long as it's censored of private informations, which it should be
+        # even if only our users may access it. Censorship... Obscenity...
         rest_register:
-            pattern:  ^(/v[\d]+)?/register$
+            pattern:  ^(/v[\d]+)?/users$
             security: false
-        # the index -> the doc
+        # The root of the API -> its doc
         rest_index:
             pattern:  ^/(v[\d]+)?$
             security: false
-        # the doc (not sure this is and/or should be used ?)
-#        rest_doc:
-#            pattern:  ^(/v[\d]+)?/api/doc
-#            security: false
-        # the private API
+        # The private API (everything else ?)
         rest_api:
             pattern:   ^/(v[\d]+)
             stateless: true
             http_basic:
+            #    realm: "The Karmic Realm"
                 provider: fos_userbundle
 
         # the login page has to be accessible for everybody

@@ -561,56 +561,60 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @When /^I pre-register$/
+     * @When /^I (?:try to )?pre-register$/
      */
     public function iPreRegister()
     {
-        $this->iPost('register', '');
+        $this->iPost('users', '');
     }
 
     /**
-     * @When /^I register the following ?:$/
+     * @When /^I (?:try to )?register the following ?:$/
      */
     public function iRegister($pystring='')
     {
-        $this->iPost('register', $pystring);
+        $this->iPost('users', $pystring);
     }
 
     /**
-     * @When /^I change my email to (.+)$/
+     * @When /^I (?:try to )?change my email to (.+)$/
      */
     public function iChangeMyEmail($email)
     {
-        $this->request('POST', "change/email", [
+        $id = $this->getI()->getId();
+        $this->request('POST', "users/$id/email", [
             'email' => $email
         ]);
     }
 
     /**
-     * @When /^I change my password to "(.+)"$/
-     */
-    public function iChangeMyPassword($password)
-    {
-        $this->request('POST', "change/password", [
-            'password' => $password
-        ]);
-
-        $this->password = $password;
-    }
-
-    /**
-     * /!\ THIS STEP WILL PROBABLY BREAK OUR HTTP CLIENT AND I FOR THE SCENARIO
-     * ou getI() uses the username to refresh its contents !
-     *
      * @When /^I (?:try to )?change my username to (.+)$/
      */
     public function iChangeMyUsername($username)
     {
-        $this->request('POST', "change/username", [
+        $id = $this->getI()->getId();
+        $this->request('POST', "users/$id/username", [
             'username' => $username
         ]);
 
-        // pitfall solution: also update context variables on success
+        // also update context variables on success otherwise getI() is broken
+        // (only for the rest of the scenario, but still...)
+        if ($this->client->getResponse()->isOk()) {
+            $this->user->setUsername($username);
+        }
+    }
+
+    /**
+     * @When /^I (?:try to )?change my password to "(.+)"$/
+     */
+    public function iChangeMyPassword($password)
+    {
+        $id = $this->getI()->getId();
+        $this->request('POST', "users/$id/password", [
+            'password' => $password
+        ]);
+
+        $this->password = $password;
     }
 
     /**

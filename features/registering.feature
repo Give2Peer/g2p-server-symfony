@@ -1,5 +1,5 @@
 @rest
-@registering
+@register
 Feature: Registering
   In order to use my account on another device
   As a user

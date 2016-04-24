@@ -11,7 +11,7 @@ the community ; we love you.
 
 This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org).
 
-It will provide a server for [Karma](http://www.give2peer.org), the Android application.
+It will provide a server for [Karma](http://www.give2peer.org), the Android app.
 
 It is extensively [behavior-tested](/features) with features such as this one :
 
@@ -69,22 +69,40 @@ the materials you needed for that awesome creation you just made ?
 A Work in Progress
 ==================
 
-These are the features we're working on :
+RoadMap
+-------
 
-- [x] item location, title, type, description, tags, images
-- [x] item finding around coordinates
-- [x] list tags
-- [x] geolocation through third-party services
-- [x] HTTP Auth authentication and registration
-- [x] create, store and serve 200x200 thumbnails
-- [x] user karma points and levels
-- [x] REST API auto-generated documentation
+### 1.1
+- [ ] RESTful routes for Tags
+- [ ] Provide basic stats
+
+### 1.0
+- [x] Provide basic stats
 - [x] a versioned API (starting with prefixing `v1/` in the URLs)
-- [ ] a sandbox version of this server to develop clients with
+- [ ] RESTful routes for Users
+- [ ] RESTful routes for Items
+- [ ] move scattered bundle configuration to project config files
+- [ ] a sandbox version of this server to test-drive clients with
 - [ ] https support
 
 Right now, the database online is filled with fake/test data, so that we may
 easily test the client while developing it.
+
+
+ChangeLog
+---------
+
+### 0.4
+
+- [x] Item location, title, type, description, tags, images
+- [x] Find items by closeness to lat/lng coordinates
+- [x] List tags
+- [x] Geolocation through third-party services
+- [x] HTTP Auth authentication and registration
+- [x] Create, store and serve 200x200 thumbnails
+- [x] Karma points and levels
+- [x] API auto-generated documentation (NelmioApiBundle)
+
 
 
 
@@ -93,7 +111,7 @@ The Bundle
 
 There's only one Give2Peer Symfony2 Bundle for now.
 There's no need for many right now, and it will make refactoring to an API
-framework such as https://github.com/api-platform/api-platform easier.
+framework such as https://github.com/api-platform/api-platform easier if want to.
 
 See [the bundle's README](src/Give2Peer/Give2PeerBundle/README.md).
 
@@ -112,9 +130,9 @@ The error codes are available as constants in the class `Controller\ErrorCode`.
 
 ```
 001 UNAVAILABLE_USERNAME Username already taken
-002 BANNED_FOR_ABUSE     Too many registrations
+002 BANNED_FOR_ABUSE     Too many registrations, usually
 003 UNSUPPORTED_FILE     Wrong or missing picture file uploaded
-004 NOT_AUTHORIZED       Not authorized
+004 NOT_AUTHORIZED       Wrong credentials or permissions
 005 SYSTEM_ERROR         System error, usually a bad setup
 006 BAD_LOCATION         Provided location could not be resolved to coordinates
 007 UNAVAILABLE_EMAIL    Email already taken

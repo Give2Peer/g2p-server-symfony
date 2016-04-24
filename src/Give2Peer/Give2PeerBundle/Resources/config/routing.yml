@@ -1,3 +1,5 @@
+# REMEMBER TO EDIT THE FIREWALL IN `app/config/security.yml` TOO
+
 # HOME
 # We show the generated documentation and sandbox.
 give2_peer_home:
@@ -14,9 +16,10 @@ give2_peer_hello:
     defaults: { _controller: Give2PeerBundle:Rest:ping, _format: json }
     methods:  [GET]
 
-# Like 'hello', but to check if credentials work too.
+# Like 'hello', but to check if credentials pass through the firewall.
 # Checks :
 # - credentials given in HTTPAuth
+# - that the server works
 # - nothing else for now
 give2_peer_authenticate:
     path:     /check
@@ -25,25 +28,38 @@ give2_peer_authenticate:
 
 ## USERS #######################################################################
 
+# We had `/register` for a while but...
+# I believe this is the correct REST route to create a new user
+give2_peer_register:
+    path:     /users
+    defaults: { _controller: Give2PeerBundle:Rest/User:register, _format: json }
+    methods:  [POST]
+
 give2_peer_change_email:
-    path:     /change/email
+    path:     /users/{id}/email
     defaults: { _controller: Give2PeerBundle:Rest/User:changeEmail, _format: json }
     methods:  [POST]
 
 give2_peer_change_username:
-    path:     /change/username
+    path:     /users/{id}/username
     defaults: { _controller: Give2PeerBundle:Rest/User:changeUsername, _format: json }
     methods:  [POST]
 
 give2_peer_change_password:
-    path:     /change/password
+    path:     /users/{id}/password
     defaults: { _controller: Give2PeerBundle:Rest/User:changePassword, _format: json }
     methods:  [POST]
 
-give2_peer_register:
-    path:     /register
-    defaults: { _controller: Give2PeerBundle:Rest/User:register, _format: json }
+# Kind of a synication of the three routes above
+# Accepts :
+# - email
+# - username
+# - password
+give2_peer_change_profile:
+    path:     /users/{id}
+    defaults: { _controller: Give2PeerBundle:Rest/User:edit, _format: json }
     methods:  [POST]
+
 
 ## PROFILES ####################################################################
 
@@ -74,6 +90,7 @@ give2_peer_picture_upload:
     requirements:
         id:   \d+
 
+# There are other GET parameters allowed, to filter and paginate the request
 give2_peer_items_around:
     path:     /items/around/{latitude}/{longitude}
     defaults: { _controller: Give2PeerBundle:Rest:itemsAround, _format: json }

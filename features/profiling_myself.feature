@@ -1,12 +1,15 @@
 @rest
+@user
 @profile
-Feature: Profiling
-  In order to display the user's profile
-  As a client
-  I need to get that information from the server
+Feature: Profiling myself
+  In order to "know thyself"
+  As a user
+  I want to have all the information about myself, and some more
 
+#  In order to display my user's profile
+#  As a client
+#  I need to get that information from the server
 
-# Possibly two features, one for own profile, one for other's profiles.
 
 
 Scenario: Fail to get my profile information when not authenticated
@@ -33,15 +36,21 @@ user:
 
 Scenario: Get information about my items
   Given I am a user named Goutte
-    And I gave the following item 5 minutes ago :
+    And I am level 27
+    And I gave the following item 5 hours ago :
 """
 location: 48.8708484/2.3053611
 title: Alice in Wonderland
 """
+    And I gave the following item 42 minutes ago :
+"""
+location: 43.758035/4.503676
+title: La Horde de Contrevent
+"""
     And I gave the following item 1 minute ago :
 """
-location: 48.8708484/2.3053611
-title: More Recent Gift
+location: 44.210891/4.013791
+title: Gift I just made
 """
    When I request my profile information
    Then the request should be accepted
@@ -49,28 +58,12 @@ title: More Recent Gift
 """
 items:
     -
-        title: More Recent Gift
+        title: Gift I just made
+    -
+        title: La Horde de Contrevent
     -
         title: Alice in Wonderland
 """
-# Because the list of items should be sorted by reverse publication order.
+# Because the list of items should be ordered by reverse `updated at` time.
 
 
-
-Scenario: Get another user's public profile information
-  Given I am a user named Goutte
-    And there is a user named Migi
-   When I request the profile information of Migi
-   Then the request should be accepted
-    And the response should include :
-"""
-user:
-    username: migi
-    level: 0
-"""
-    But the response should not include :
-"""
-user:
-    karma: 0
-"""
-# Because I should not see other people's karma points.
