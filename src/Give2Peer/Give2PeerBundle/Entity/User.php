@@ -71,6 +71,7 @@ class User extends BaseUser implements \JsonSerializable
         return [
             'id'         => $this->getId(),
             'username'   => $this->getUsernameCanonical(),
+            'name'       => $this->getUsername(),
             'email'      => $this->getEmailCanonical(),
             'created_at' => $this->getCreatedAt()->format(DateTime::ISO8601),
             'karma'      => $this->getKarma(),

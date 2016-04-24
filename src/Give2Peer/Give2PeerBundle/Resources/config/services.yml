@@ -23,8 +23,8 @@ services:
     # The softdeletable filter itself is enabled in config.yml.
     # Why do I even need this ? These are defaults, no ?
     gedmo.listener.softdeleteable:
-      class: Gedmo\SoftDeleteable\SoftDeleteableListener
-      tags:
-          - { name: doctrine.event_subscriber, connection: default }
-      calls:
-          - [ setAnnotationReader, [ @annotation_reader ] ]
+        class: Gedmo\SoftDeleteable\SoftDeleteableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ @annotation_reader ] ]

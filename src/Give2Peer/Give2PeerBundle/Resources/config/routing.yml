@@ -42,10 +42,10 @@ give2_peer_profile:
     defaults: { _controller: Give2PeerBundle:Rest:profile, _format: json }
     methods:  [GET]
 
-give2_peer_public_profile:
-    path:     /profile/{id}
-    defaults: { _controller: Give2PeerBundle:Rest:publicProfile, _format: json }
-    methods:  [GET]
+#give2_peer_public_profile:
+#    path:     /profile/{id}
+#    defaults: { _controller: Give2PeerBundle:Rest:publicProfile, _format: json }
+#    methods:  [GET]
 
 ## ITEMS #######################################################################
 

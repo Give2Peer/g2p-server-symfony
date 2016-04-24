@@ -425,7 +425,7 @@ class FeatureContext extends    BaseContext
             $this->password = $password;
         }
 
-        $this->request('GET', 'ping');
+        $this->request('GET', 'check');
         
         switch ($which) {
             case 'fail':
@@ -456,7 +456,7 @@ class FeatureContext extends    BaseContext
      */
     public function iGetTheProfileOf($username)
     {
-        $this->request('GET', 'profile/'.$username);
+        $this->request('GET', 'profile', ['username'=>$username]);
     }
     
     /**
@@ -902,10 +902,11 @@ class FeatureContext extends    BaseContext
             $em = $this->getEntityManager();
             /** @var Item $item */
             $item = $em->getRepository("Give2PeerBundle:Item")->find($id);
+
             $item->setCreatedAt($when);
+            $item->setUpdatedAt($when); // it works !
             $em->flush();
         }
-        
 
     }
 

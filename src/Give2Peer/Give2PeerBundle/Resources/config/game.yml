@@ -9,6 +9,7 @@ adjectives:
     - Agile
     - Alien
     - American
+    - Anonymous
     - Antic
     - Arctic
     - Asian
@@ -18,6 +19,7 @@ adjectives:
     - Bald
     - Beautiful
     - Big
+    - Brave
     - Brutal
     - Caribbean
     - Caucasian
@@ -53,23 +55,31 @@ adjectives:
     - Hybrid
     - Indian
     - Intrepid
+    - Italian
     - Karmic
     - Laconic
     - Laughing
     - Lava
     - Mad
     - Magical
+    - Magnificent
     - Mellow
     - Mongol
     - Mute
     - Mysterious
+    - Native
     - New
+    - Northern
     - Open
+    - Pacific
+    - Pensive
     - Poor
     - Princess
     - Prussian
     - Psychedelic
     - Quantic
+    - Radiant
+    - Radioactive
     - Raw
     - Relative
     - Relaxed
@@ -79,8 +89,13 @@ adjectives:
     - Sensible
     - Shiny
     - Sick
+    - Skilled
     - Sleepy
+    - Slender
     - Small
+    - Snowy
+    - Southern
+    - Suave
     - Superb
     - Spanish
     - Splendid
@@ -137,6 +152,7 @@ beings:
     - Bearded
     - Beaver
     - Bee
+    - Beetle
     - Beisa
     - Bellied
     - Bengal
@@ -216,7 +232,7 @@ beings:
     - Cheetah
     - Chestnut
     - Chickadee
-    - Chilean
+    - Chimera
     - Chimpanzee
     - Chipmunk
     - Chital
@@ -251,7 +267,6 @@ beings:
     - Crake
     - Crane
     - Creeper
-    - Crested
     - Crimson
     - Crocodile
     - Crow
@@ -260,11 +275,7 @@ beings:
     - Cuis
     - Curlew
     - Currasow
-    - Curve
-    - Dabchick
     - Dama
-    - Dark
-    - Darter
     - Darwin
     - Dassie
     - Deer
@@ -297,31 +308,20 @@ beings:
     - Eland
     - Elegant
     - Elephant
-    - Eleven
     - Elk
     - Emerald
     - Emu
     - Eurasian
-    - Euro
-    - European
-    - Eye
-    - Eyed
-    - Faced
     - Fairy
     - Falcon
-    - False
-    - Fat
     - Feathertail
-    - Feral
     - Ferret
     - Finch
+    - Firefly
     - Fish
     - Flamingo
     - Fly
     - Flycatcher
-    - Flying
-    - Footed
-    - Foreset
     - Fowl
     - Fox
     - Francolin
@@ -331,6 +331,7 @@ beings:
     - Frog
     - Fruit
     - Galah
+    - Galaxy
     - Gambels
     - Gaur
     - Gazelle
@@ -346,7 +347,6 @@ beings:
     - Giant
     - Gila
     - Giraffe
-    - Glider
     - Gnu
     - Goanna
     - Goat
@@ -357,15 +357,9 @@ beings:
     - Goose
     - Gopher
     - Gorilla
-    - Grants
     - Grass
     - Gray
-    - Great
-    - Greater
-    - Grebe
-    - Green
     - Grenadier
-    - Grey
     - Greylag
     - Griffon
     - Grison
@@ -407,7 +401,6 @@ beings:
     - Ibis
     - Iguana
     - Impala
-    - Indigo
     - Insect
     - Jabiru
     - Jacana
@@ -415,10 +408,6 @@ beings:
     - Jackrabbit
     - Jaeger
     - Jaguar
-    - Jaguarundi
-    - Japanese
-    - Javan
-    - Javanese
     - Jungle
     - Kaffir
     - Kafue
@@ -441,27 +430,19 @@ beings:
     - Kookaburra
     - Kori
     - Kudu
-    - Land
     - Langur
     - Lappet
     - Lapwing
-    - Large
     - Lark
-    - Leadbeateris
     - Lechwe
     - Legaan
-    - Legged
     - Lemming
     - Lemur
     - Leopard
-    - Levaillants
     - Lightfoot
     - Lilac
     - Lily
-    - Lined
     - Lion
-    - Lipped
-    - Little
     - Lizard
     - Llama
     - Lorikeet
@@ -472,10 +453,7 @@ beings:
     - Lynx
     - Macaque
     - Macaw
-    - Madagascar
-    - Magellanic
     - Magistrate
-    - Magnificent
     - Magpie
     - Malabar
     - Malachite
@@ -494,52 +472,38 @@ beings:
     - Marmot
     - Marshbird
     - Marten
-    - Masked
     - Meadowlark
     - Meerkat
     - Melba
-    - Mexican
     - Miners
-    - Mississippi
-    - Moccasin
-    - Mocking
     - Mockingbird
     - Mongoose
-    - Monitor
     - Monkey
     - Monster
     - Moorhen
     - Moose
     - Mouflon
     - Mountain
-    - Mourning
     - Mouse
     - Mudskipper
     - Mule
     - Musk
+    - Mygal
     - Mynah
-    - Native
-    - Necked
     - Nelson
-    - Neotropic
+    - Neotrope
     - Netted
     - Night
     - Nighthawk
     - Nile
     - Nilgai
     - Nine
-    - North
-    - Northern
-    - Nose
     - Nosed
-    - Nubian
     - Numbat
     - Nutcracker
     - Nuthatch
     - Nyala
     - Ocelot
-    - Of
-    - Old
     - Olive
     - Onager
     - Openbill
@@ -557,7 +521,6 @@ beings:
     - Ox
     - Oyster
     - Paca
-    - Pacific
     - Paddy
     - Pademelon
     - Painted
@@ -569,12 +532,10 @@ beings:
     - Parakeet
     - Parrot
     - Partridge
-    - Patch
     - Peacock
     - Peccary
     - Pelican
     - Penguin
-    - Peregrine
     - Phalarope
     - Phascogale
     - Pheasant
@@ -584,9 +545,9 @@ beings:
     - Pikachu
     - Pilot
     - Pine
-    - Pink
     - Pintail
     - Plains
+    - Planet
     - Platypus
     - Plover
     - Pocket
@@ -596,7 +557,6 @@ beings:
     - Possum
     - Potoroo
     - Prairie
-    - Praying
     - Pronghorn
     - Puffin
     - Puku
@@ -609,7 +569,6 @@ beings:
     - Rabbit
     - Raccoon
     - Racer
-    - Radiated
     - Rainbow
     - Rat
     - Rattlesnake
@@ -650,7 +609,6 @@ beings:
     - Savannah
     - Scaly
     - Scarlet
-    - Scottish
     - Screamer
     - Scrub
     - Sea
@@ -667,20 +625,14 @@ beings:
     - Shouldered
     - Shrew
     - Shrike
-    - Sidewinder
     - Sifaka
-    - Silver
     - Siskin
     - Skimmer
     - Skink
     - Skua
     - Skunk
-    - Slender
     - Sloth
-    - Smiths
     - Snake
-    - Snow
-    - Snowy
     - Sociable
     - Sockeye
     - South
@@ -703,7 +655,6 @@ beings:
     - Steenbok
     - Steenbuck
     - Steller
-    - Stellers
     - Stick
     - Stilt
     - Stone
@@ -730,14 +681,12 @@ beings:
     - Tern
     - Thorns
     - Thrasher
-    - Throated
     - Tiger
     - Timber
     - Tinamou
     - Toddy
     - Toed
     - Tokay
-    - Toothed
     - Topi
     - Tortoise
     - Toucan
@@ -1249,6 +1198,7 @@ colors:
     - Pixie
     - Pizzazz
     - Platinum
+    - Plasma
     - Plum
     - Plump
     - Pomp

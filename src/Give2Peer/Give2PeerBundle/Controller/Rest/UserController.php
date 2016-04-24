@@ -2,8 +2,8 @@
 
 namespace Give2Peer\Give2PeerBundle\Controller\Rest;
 
+use Gedmo\Sluggable\Util\Urlizer;
 use Give2Peer\Give2PeerBundle\Controller\BaseController;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -51,7 +51,7 @@ class UserController extends BaseController
         $nb = count($beings) * count($adjectives) * count($colors) * 1000;
         //print("Possibilities : $nb\n");
 
-        return "${a}_${c}_${b}_${x}${y}${z}";
+        return "${a} ${c} ${b} ${x}${y}${z}";
     }
 
     // YAML cleaner I used
@@ -153,7 +153,8 @@ class UserController extends BaseController
         // If you don't provide an email, we'll generate a dummy one
         $email_generated = null;
         if (null == $email) {
-            $email_generated = "$username@dummies.give2peer.org";
+            $email = Urlizer::urlize($username, '_');
+            $email_generated = "$email@dummies.give2peer.org";
             $email = $email_generated;
         }
 
@@ -199,6 +200,10 @@ class UserController extends BaseController
 
         // Send the user in the response
         $response = ['user' => $user];
+        // Along with the username if one was generated
+        if (null != $username_generated) {
+            $response['username'] = $username_generated;
+        }
         // Along with the password if one was generated
         if (null != $password_generated) {
             $response['password'] = $password_generated;

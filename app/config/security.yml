@@ -30,6 +30,10 @@ security:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        # the ping
+        rest_hello:
+            pattern:  ^(/v[\d]+)?/hello$
+            security: false
         # the registration
         rest_register:
             pattern:  ^(/v[\d]+)?/register$

@@ -16,6 +16,9 @@ use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
 
 /**
+ * todo:
+ * - continue moving methods out of this file and into controllers in `Rest/`.
+ * 
  * Routes are configured in YAML, in `Resources/config/routing.yml`.
  * ApiDoc's documentation can be found at :
  * https://github.com/nelmio/NelmioApiDocBundle/blob/master/Resources/doc/index.md
@@ -42,11 +45,8 @@ class RestController extends BaseController
     /**
      * This exists because sometimes clients want to check their connectivity
      * and credentials by "pinging" the server.
-     *
-     * This requires to be authenticated (for now), but it won't probably be the
-     * case forever.
-     *
-     * We'll provide later `/ping/{username}` to check for authentication.
+     * 
+     * This should return useful information about the server.
      *
      * @return JsonResponse
      */
@@ -56,12 +56,37 @@ class RestController extends BaseController
     }
 
     /**
-     * Get the (private) profile information of the current user.
+     * Get the profile information of the current or specified user.
+     * 
+     * If `username` is provided, will look for the public profile of that user.
      *
-     * @ApiDoc()
+     * @ApiDoc(
+     *   parameters = {
+     *     {
+     *       "name"="username", "dataType"="string", "required"=false,
+     *       "description"="Example: -2.4213, 43.1235"
+     *     },
+     *   }
+     * )
      * @return ErrorJsonResponse|JsonResponse
      */
-    public function profileAction ()
+    public function profileAction (Request $request)
+    {
+        $username = $request->get('username');
+        if (null != $username) {
+            return $this->publicProfileAction($request);
+        } else {
+            return $this->privateProfileAction($request);
+        }
+    }
+
+    /**
+     * Get the (private) profile information of the current user.
+     *
+     * @param  Request $request
+     * @return ErrorJsonResponse|JsonResponse
+     */
+    public function privateProfileAction (Request $request)
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -83,17 +108,20 @@ class RestController extends BaseController
     /**
      * Get the (public) profile information of the given user.
      *
-     * @ApiDoc()
      * @param  Request $request
-     * @param  String  $id
      * @return ErrorJsonResponse|JsonResponse
      */
-    public function publicProfileAction (Request $request, $id)
+    public function publicProfileAction (Request $request)
     {
         $um = $this->getUserManager();
+        $username = $request->get('username');
+        
+        if (null == $username) {
+            return new ErrorJsonResponse("Bad username.", Error::BAD_USERNAME);
+        }
+        
         /** @var User $user */
-        $user = $um->findUserBy(['id' => $id]);
-//        $user = $um->findUserByUsername($username);
+        $user = $um->findUserByUsername($username);
 
         if (empty($user)) {
             return new ErrorJsonResponse("Bad username.", Error::BAD_USERNAME);
