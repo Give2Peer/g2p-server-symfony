@@ -25,14 +25,19 @@ give2_peer_authenticate:
 
 ## USERS #######################################################################
 
-give2_peer_change_password:
-    path:     /change/password
-    defaults: { _controller: Give2PeerBundle:Rest/User:changePassword, _format: json }
+give2_peer_change_email:
+    path:     /change/email
+    defaults: { _controller: Give2PeerBundle:Rest/User:changeEmail, _format: json }
     methods:  [POST]
 
 give2_peer_change_username:
     path:     /change/username
     defaults: { _controller: Give2PeerBundle:Rest/User:changeUsername, _format: json }
+    methods:  [POST]
+
+give2_peer_change_password:
+    path:     /change/password
+    defaults: { _controller: Give2PeerBundle:Rest/User:changePassword, _format: json }
     methods:  [POST]
 
 give2_peer_register:

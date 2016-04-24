@@ -577,6 +577,16 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * @When /^I change my email to (.+)$/
+     */
+    public function iChangeMyEmail($email)
+    {
+        $this->request('POST', "change/email", [
+            'email' => $email
+        ]);
+    }
+
+    /**
      * @When /^I change my password to "(.+)"$/
      */
     public function iChangeMyPassword($password)
@@ -590,6 +600,7 @@ class FeatureContext extends    BaseContext
 
     /**
      * /!\ THIS STEP WILL PROBABLY BREAK OUR HTTP CLIENT AND I FOR THE SCENARIO
+     * ou getI() uses the username to refresh its contents !
      *
      * @When /^I (?:try to )?change my username to (.+)$/
      */
@@ -847,6 +858,19 @@ class FeatureContext extends    BaseContext
     {
         $a = $this->getItemRepository()->getAddItemsCurrentQuota($this->getI());
         $this->assertEquals($quota, $a);
+    }
+
+    /**
+     * @Then /^my email should (?:still )?((?:not )?)be (.+)$/
+     */
+    public function myEmailShouldStillBe($not, $email)
+    {
+        $actual = $this->getI()->getEmailCanonical();
+        if (empty($not)) {
+            $this->assertEquals($email, $actual);
+        } else {
+            $this->assertNotEquals($email, $actual);
+        }
     }
 
     /**

@@ -159,6 +159,51 @@ class UserController extends BaseController
     }
 
     /**
+     * Change the authenticated user's email to the provided `email`.
+     *
+     * @ApiDoc(
+     *   parameters = {
+     *     { "name"="email", "dataType"="string", "required"=true },
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changeEmailAction(Request $request)
+    {
+        $email = $request->get('email');
+        if (null == $email) {
+            return new JsonResponse(["error"=>"No email provided."], 400);
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (null == $user) {
+            return new JsonResponse(["error"=>"No user."], 400);
+        }
+
+        $um = $this->getUserManager();
+
+        // Rebuke if username is taken
+        $existingUser = $um->findUserByEmail($email);
+        if (null != $existingUser) {
+            return new ErrorJsonResponse(
+                "Email already taken.", Error::UNAVAILABLE_EMAIL
+            );
+        }
+
+        $user->setEmail($email);
+
+        // This canonicalizes, encodes, persists and flushes
+        $um->updateUser($user);
+
+        // Send the user as response
+        return new JsonResponse(['user'=>$user]);
+    }
+
+    /**
      * Basic boring registration. (well... not really)
      * 
      * If you don't provide a password, we'll generate one for you and give it
