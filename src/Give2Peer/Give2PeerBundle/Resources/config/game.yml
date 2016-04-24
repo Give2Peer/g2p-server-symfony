@@ -1,5 +1,12 @@
-# Non-exhaustive list of animals
 # todo: proper script to uniquify and sort
+
+# This is a good place to start contributing.
+# - add words
+# - remove dumb values (initial lists were leeched)
+# - no `-`, `,`, or `'`.
+
+# Default usernames will be generated as follows :
+# <adjective> <color> <being>
 
 adjectives:
     - Absolute
@@ -283,6 +290,7 @@ beings:
     - Denhams
     - Desert
     - Devil
+    - Diamond
     - Diamondback
     - Dik
     - Dingo
@@ -301,12 +309,9 @@ beings:
     - Dusky
     - Dwarf
     - Eagle
-    - Eared
     - Echidna
     - Egret
-    - Egyptian
     - Eland
-    - Elegant
     - Elephant
     - Elk
     - Emerald
@@ -326,7 +331,6 @@ beings:
     - Fox
     - Francolin
     - Frigate
-    - Frilled
     - Fringe
     - Frog
     - Fruit
@@ -464,7 +468,6 @@ beings:
     - Manatee
     - Mandras
     - Mantis
-    - Mantled
     - Mara
     - Marabou
     - Margay
@@ -713,6 +716,7 @@ beings:
     - Wambenger
     - Wapiti
     - Warthog
+    - Wasp
     - Water
     - Waterbuck
     - Waxbill

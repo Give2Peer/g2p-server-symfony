@@ -176,10 +176,10 @@ class UserController extends BaseController
             );
         }
 
-        // Rebuke if too many Users created in 2 days from this IP
+        // Rebuke if too many Users created in 3 days from this IP
         // See http://php.net/manual/fr/dateinterval.construct.php
         $allowed = 42;
-        $duration = new \DateInterval("P2D");
+        $duration = new \DateInterval("P3D");
         $since = (new \DateTime())->sub($duration);
         $count = $um->countUsersCreatedBy($clientIp, $since);
         if ($count > $allowed) {
