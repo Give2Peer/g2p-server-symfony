@@ -25,9 +25,9 @@ class UserController extends BaseController
 {
 
     /**
-     *
-     * todo:
-     * <adjective>_<color>_<animal>
+     * Generate a username from dictionaries of words.
+     * 
+     * <adjective>_<color>_<being>
      *
      * @return String
      */
@@ -39,13 +39,22 @@ class UserController extends BaseController
         $colors = Yaml::parse(file_get_contents($path))['colors'];
         $adjectives = Yaml::parse(file_get_contents($path))['adjectives'];
 
+
         $a = $adjectives[array_rand($adjectives)];
         $b = $beings[array_rand($beings)];
         $c = $colors[array_rand($colors)];
 
-        return "${a}_${c}_${b}";
+        $x = random_int(0, 9);
+        $y = random_int(0, 9);
+        $z = random_int(0, 9);
+        
+        $nb = count($beings) * count($adjectives) * count($colors) * 1000;
+        //print("Possibilities : $nb\n");
+
+        return "${a}_${c}_${b}_${x}${y}${z}";
     }
 
+    // YAML cleaner I used
 //        $words = [];
 //        foreach($animals as $a) {
 //            $b = str_replace(['-',','], ' ', str_replace("'", '', trim($a)));
@@ -59,21 +68,14 @@ class UserController extends BaseController
 //        $words = array_unique($words);
 //        sort($words);
 //
-//        print("------");
-//        print(count($animals)."\n");
-//        print(count($words)."\n");
-//
 //        $s = '';
 //        foreach($words as $w) {
 //            $s .= "- $w\n";
 //        }
-////        print($s);
 //        $f = fopen(__DIR__.'_colors.yml', 'w+');
 //        fprintf($f, $s);
 //        fclose($f);
 
-//        return $animal;
-//    }
 
     /**
      * Change the authenticated user's password.

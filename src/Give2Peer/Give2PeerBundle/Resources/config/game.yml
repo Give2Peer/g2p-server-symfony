@@ -1,5 +1,5 @@
 # Non-exhaustive list of animals
-# todo: script to uniquify and sort
+# todo: proper script to uniquify and sort
 
 adjectives:
     - Absolute
@@ -9,17 +9,94 @@ adjectives:
     - Agile
     - Alien
     - American
-    - Android
-    - Antique
+    - Antic
     - Arctic
     - Asian
     - Asiatic
     - Atomic
     - Australian
     - Bald
-    - Barking
+    - Beautiful
+    - Big
+    - Brutal
+    - Caribbean
+    - Caucasian
+    - Chinese
+    - Cool
+    - Crazy
+    - Creative
+    - Curious
+    - Cyber
+    - Deaf
+    - Deep
+    - Devilish
+    - Dreamy
+    - Dutch
+    - Eastern
+    - Egyptian
+    - Ethereal
+    - Epic
+    - Fast
     - Ferruginous
+    - Fierce
+    - French
     - Fuliginous
+    - Funny
+    - Generic
+    - Genial
+    - Gentle
+    - German
+    - Ghastly
+    - Grumpy
+    - Humble
+    - Huge
+    - Hybrid
+    - Indian
+    - Intrepid
+    - Karmic
+    - Laconic
+    - Laughing
+    - Lava
+    - Mad
+    - Magical
+    - Mellow
+    - Mongol
+    - Mute
+    - Mysterious
+    - New
+    - Open
+    - Poor
+    - Princess
+    - Prussian
+    - Psychedelic
+    - Quantic
+    - Raw
+    - Relative
+    - Relaxed
+    - Romantic
+    - Rich
+    - Sad
+    - Sensible
+    - Shiny
+    - Sick
+    - Sleepy
+    - Small
+    - Superb
+    - Spanish
+    - Splendid
+    - Swift
+    - Tall
+    - Tropical
+    - Turkish
+    - Unhinged
+    - Veteran
+    - Virulent
+    - Vivid
+    - Western
+    - Wild
+    - Winged
+    - Wise
+    - Witty
 
 beings:
     - Aardwolf
@@ -30,19 +107,17 @@ beings:
     - Albatross
     - Alligator
     - Alpaca
-    - American
     - Anaconda
     - Andean
+    - Android
     - Ant
     - Anteater
     - Antechinus
     - Antelope
-    - Arboral
     - Argalis
     - Armadillo
     - Ass
     - Avocet
-    - Away
     - Azaras
     - Baboon
     - Badger
@@ -80,8 +155,6 @@ beings:
     - Blacksmith
     - Bleeding
     - Blesbok
-    - Bleu
-    - Blue
     - Boa
     - Boar
     - Boat
@@ -218,9 +291,6 @@ beings:
     - Dwarf
     - Eagle
     - Eared
-    - Eastern
-    - Eater
-    - Eating
     - Echidna
     - Egret
     - Egyptian
@@ -247,15 +317,11 @@ beings:
     - Finch
     - Fish
     - Flamingo
-    - Flats
-    - Flicker
     - Fly
     - Flycatcher
     - Flying
     - Footed
     - Foreset
-    - Fork
-    - Four
     - Fowl
     - Fox
     - Francolin
@@ -264,12 +330,12 @@ beings:
     - Fringe
     - Frog
     - Fruit
-    - Fur
     - Galah
     - Gambels
     - Gaur
     - Gazelle
     - Gazer
+    - Gargoyle
     - Gecko
     - Gelada
     - Gemsbok
@@ -280,16 +346,11 @@ beings:
     - Giant
     - Gila
     - Giraffe
-    - Girdled
     - Glider
-    - Glossy
     - Gnu
-    - Go
     - Goanna
     - Goat
     - Godwit
-    - Gold
-    - Golden
     - Goldeneye
     - Goliath
     - Gonolek
@@ -309,23 +370,19 @@ beings:
     - Griffon
     - Grison
     - Grizzly
-    - Ground
     - Groundhog
     - Grouse
     - Guanaco
     - Guerza
     - Guinea
     - Gull
-    - Gulls
     - Hanuman
-    - Harbor
     - Hare
     - Hartebeest
     - Hawk
     - Headed
     - Heart
     - Hedgehog
-    - Helmeted
     - Hen
     - Heron
     - Herring
@@ -350,7 +407,6 @@ beings:
     - Ibis
     - Iguana
     - Impala
-    - Indian
     - Indigo
     - Insect
     - Jabiru
@@ -391,17 +447,13 @@ beings:
     - Lapwing
     - Large
     - Lark
-    - Laughing
-    - Lava
     - Leadbeateris
-    - Least
     - Lechwe
     - Legaan
     - Legged
     - Lemming
     - Lemur
     - Leopard
-    - Lesser
     - Levaillants
     - Lightfoot
     - Lilac
@@ -412,7 +464,6 @@ beings:
     - Little
     - Lizard
     - Llama
-    - Long
     - Lorikeet
     - Loris
     - Lory
@@ -546,7 +597,6 @@ beings:
     - Potoroo
     - Prairie
     - Praying
-    - Prehensile
     - Pronghorn
     - Puffin
     - Puku
@@ -606,6 +656,7 @@ beings:
     - Sea
     - Seal
     - Secretary
+    - Serpent
     - Serval
     - Seven
     - Shark
@@ -626,7 +677,6 @@ beings:
     - Skunk
     - Slender
     - Sloth
-    - Small
     - Smiths
     - Snake
     - Snow
@@ -638,10 +688,7 @@ beings:
     - Sparrow
     - Spectacled
     - Spider
-    - Spiny
     - Spoonbill
-    - Sportive
-    - Spotted
     - Springbok
     - Springbuck
     - Springhare
@@ -661,21 +708,15 @@ beings:
     - Stilt
     - Stone
     - Stork
-    - Sugar
-    - Sulfur
     - Sun
     - Sunbird
     - Sungazer
-    - Superb
     - Suricate
     - Swainsons
     - Swallow
     - Swallowtail
     - Swamp
     - Swan
-    - Tail
-    - Tailed
-    - Tailless
     - Tamandua
     - Tammar
     - Tanager
@@ -689,7 +730,6 @@ beings:
     - Tern
     - Thorns
     - Thrasher
-    - Three
     - Throated
     - Tiger
     - Timber
@@ -697,7 +737,6 @@ beings:
     - Toddy
     - Toed
     - Tokay
-    - Tongued
     - Toothed
     - Topi
     - Tortoise
@@ -718,7 +757,6 @@ beings:
     - Vicuna
     - Vine
     - Viper
-    - Virginia
     - Vulture
     - Wagtail
     - Wallaby
@@ -728,8 +766,6 @@ beings:
     - Warthog
     - Water
     - Waterbuck
-    - Wattled
-    - Waved
     - Waxbill
     - Weaver
     - Weeper
@@ -738,12 +774,9 @@ beings:
     - Whip
     - Whistling
     - White
-    - Wild
     - Wildebeest
-    - Winged
     - Wolf
     - Wombat
-    - Wood
     - Woodchuck
     - Woodcock
     - Woodpecker
@@ -752,7 +785,6 @@ beings:
     - Worm
     - Woylie
     - Yak
-    - Yellow
     - Zebra
     - Zorilla
     - Zorro
@@ -857,14 +889,11 @@ colors:
     - Cambridge
     - Camel
     - Cameo
-    - Camouflage
     - Canary
     - Candy
     - Capri
     - Caput
-    - Car
     - Cardinal
-    - Caribbean
     - Carmine
     - Carnation
     - Carnelian
@@ -874,7 +903,6 @@ colors:
     - Catalina
     - Catawba
     - Cedar
-    - Ceil
     - Celadon
     - Celeste
     - Celestial
@@ -892,8 +920,6 @@ colors:
     - Chest
     - Chestnut
     - Chiffon
-    - China
-    - Chinese
     - Chlorophyll
     - Chocolate
     - Chrome
@@ -908,20 +934,13 @@ colors:
     - Cocoa
     - Coconut
     - Coffee
-    - Columbia
-    - Congo
     - Cool
     - Copper
     - Coquelicot
     - Coral
-    - Cordovan
-    - Corn
-    - Cornell
     - Cornflower
     - Cornsilk
-    - Corsa
     - Cosmic
-    - Cotta
     - Cotton
     - Coyote
     - Cream
@@ -931,28 +950,20 @@ colors:
     - Cyan
     - Cyber
     - Cyclamen
-    - Cyclops
+    - Cyclop
     - Daffodil
     - Dandelion
     - Dark
-    - De
-    - Debian
     - Deep
-    - Deer
     - Desaturated
     - Desert
-    - Desire
-    - Devil
     - Diamond
-    - Dim
     - Dingy
     - Dirt
     - Disco
     - Dodger
     - Dogwood
     - Dollar
-    - Dolphin
-    - Donkey
     - Drab
     - Dream
     - Dregs
@@ -960,7 +971,6 @@ colors:
     - Dune
     - Dungeon
     - Dust
-    - Dutch
     - Dye
     - Earth
     - Ebony
@@ -969,11 +979,9 @@ colors:
     - Egg
     - Eggplant
     - Eggshell
-    - Egyptian
     - Electric
     - Emerald
-    - Eminence
-    - English
+    - Erubescent
     - Eton
     - Eucalyptus
     - Eye
@@ -982,7 +990,6 @@ colors:
     - Fandango
     - Fashion
     - Fawn
-    - Feet
     - Feldgrau
     - Feldspar
     - Fern
@@ -1001,8 +1008,7 @@ colors:
     - Fluorescent
     - Folly
     - Forest
-    - France
-    - French
+    - Free
     - Fresh
     - Frost
     - Frostbite
@@ -1012,9 +1018,7 @@ colors:
     - Fuzzy
     - Gainsboro
     - Gamboge
-    - Gargoyle
     - Gas
-    - Generic
     - Ghost
     - Giants
     - Glace
@@ -1141,8 +1145,6 @@ colors:
     - Mandarin
     - Mango
     - Mania
-    - Mantis
-    - Mardi
     - Marigold
     - Maroon
     - Mass
@@ -1184,7 +1186,6 @@ colors:
     - Mustard
     - Myrtle
     - Mystic
-    - Nadeshiko
     - Napier
     - Naples
     - Navajo
@@ -1196,6 +1197,7 @@ colors:
     - Nyanza
     - Ocean
     - Ochre
+    - Octarine
     - Odor
     - Office
     - Ogre
@@ -1249,7 +1251,6 @@ colors:
     - Platinum
     - Plum
     - Plump
-    - Polished
     - Pomp
     - Poppy
     - Popstar
@@ -1257,11 +1258,7 @@ colors:
     - Potion
     - Powder
     - Power
-    - Princess
-    - Princeton
     - Prune
-    - Prussian
-    - Psychedelic
     - Puce
     - Puff
     - Puke
@@ -1278,7 +1275,6 @@ colors:
     - Raisin
     - Rajah
     - Raspberry
-    - Raw
     - Razzle
     - Razzmatazz
     - Razzmic
@@ -1287,16 +1283,13 @@ colors:
     - Redwood
     - Reef
     - Regalia
-    - Resolution
     - Rhythm
-    - Rich
     - Rifle
     - Roast
     - Robin
     - Rocket
     - Roman
     - Rose
-    - Rosewood
     - Rosso
     - Rosy
     - Royal
@@ -1320,7 +1313,6 @@ colors:
     - Sandy
     - Sangria
     - Sanguine
-    - Sap
     - Sapphire
     - Sasquatch
     - Satin
@@ -1335,11 +1327,9 @@ colors:
     - Seaweed
     - Selective
     - Sepia
-    - Serpent
     - Shadow
     - Shadows
     - Shampoo
-    - Shamrock
     - Sheen
     - Sherbet
     - Shimmering
@@ -1368,7 +1358,6 @@ colors:
     - Solid
     - Sonic
     - Space
-    - Spanish
     - Sparkle
     - Spartan
     - Spicy
@@ -1383,7 +1372,6 @@ colors:
     - Strawberry
     - Sugar
     - Sunburnt
-    - Sunburst
     - Sunglow
     - Sunny
     - Sunray
@@ -1393,7 +1381,6 @@ colors:
     - Super
     - Surf
     - Sweet
-    - Tan
     - Tangelo
     - Tangerine
     - Tango
@@ -1401,14 +1388,12 @@ colors:
     - Taupe
     - Tea
     - Teal
-    - Telemagenta
     - Terra
     - Thistle
     - Thulian
     - Tickle
     - Tiffany
     - Tiger
-    - Timberwolf
     - Titanium
     - Tomato
     - Toolbox
@@ -1420,7 +1405,6 @@ colors:
     - Tufts
     - Tulip
     - Tumbleweed
-    - Turkish
     - Turquoise
     - Turtle
     - Tuscan
@@ -1428,7 +1412,6 @@ colors:
     - Twilight
     - Tyrian
     - Tyzantium
-    - Ube
     - Ultra
     - Ultramarine
     - Umber
@@ -1438,29 +1421,20 @@ colors:
     - Urobilin
     - Vale
     - Vanilla
-    - Vegas
     - Venetian
     - Verdigris
     - Vermilion
     - Vermillion
-    - Veronica
     - Verte
     - Violet
     - Viridian
-    - Vista
-    - Vivid
     - Volt
-    - Wageningen
     - Warm
     - Watermelon
     - Waterspout
-    - Wave
     - Wenge
     - Wheat
     - White
-    - Wild
-    - Willpower
-    - Windsor
     - Wine
     - Winter
     - Wintergreen
@@ -1475,6 +1449,5 @@ colors:
     - Yonder
     - York
     - Zaffre
-    - Zero
     - Zinnwaldite
     - Zomp
