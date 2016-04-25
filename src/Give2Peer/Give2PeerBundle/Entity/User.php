@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 use FOS\UserBundle\Entity\User as BaseUser;
 use Give2Peer\Give2PeerBundle\Entity\Item;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 /**
  * A User of give2peer.
@@ -131,6 +132,16 @@ class User extends BaseUser implements \JsonSerializable
     protected $karma = 0;
 
     /**
+     * The date and time (to the second) at which this user gained the daily
+     * karma point.
+     *
+     * @var DateTime
+     *
+     * @ORM\Column(name="daily_karma_at", type="datetime", nullable=true)
+     */
+    protected $dailyKarmaAt;
+
+    /**
      * The items that were authored by this user.
      *
      * INCLUDING THE ITEMS MARKED FOR DELETION !
@@ -165,6 +176,9 @@ class User extends BaseUser implements \JsonSerializable
     // ITEMS ///////////////////////////////////////////////////////////////////
 
     /**
+     * Ordered by updatedAt DESC.
+     * todo: limits, and make sure it passes through softdeleteable
+     *
      * @return Item[]
      */
     public function getItemsAuthored()
@@ -310,6 +324,43 @@ class User extends BaseUser implements \JsonSerializable
         return ($d - $a) * ($n - 1) + $a * ($n * $n - $n) / 2;
     }
 
+    /**
+     * @return DateTime
+     */
+    public function getDailyKarmaAt()
+    {
+        return $this->dailyKarmaAt;
+    }
+
+    /**
+     * @param DateTime $dailyKarmaAt
+     */
+    public function setDailyKarmaAt($dailyKarmaAt)
+    {
+        $this->dailyKarmaAt = $dailyKarmaAt;
+    }
+
+    public function hadDailyKarmaPoint()
+    {
+        $last = $this->getDailyKarmaAt();
+
+        // We never had any daily karma point
+        if (null == $last) return false;
+
+        $diff = date_diff($last, new \DateTime(), true);
+
+        if (false === $diff->days) {
+            throw new Exception("Possibly a wrong php version ?");
+        }
+
+        return $diff->days === 0;
+    }
+
+    public function addDailyKarmaPoint()
+    {
+        $this->addKarma(1);
+        $this->setDailyKarmaAt(new \DateTime());
+    }
 
     // BORING STUFF ////////////////////////////////////////////////////////////
 

@@ -14,6 +14,8 @@ Background:
 
 Scenario: Gain karma when adding an item
 
+
+
 Scenario: Gain karma once a day just by looking at the map
   Then I should have 0 karma points
   When I request the items around 41.0, 2.0
@@ -22,7 +24,13 @@ Scenario: Gain karma once a day just by looking at the map
   When I request the items around 41.0, 2.0
   Then the request should be accepted
    And I should still have 1 karma point
-  When I wait for the next day
+  When I gained the daily karma 12 hours ago
    And I request the items around 41.0, 2.0
-  Then I should have 2 karma points
+   But I should still have 1 karma point
+  # It should be 24 hours, BUT the now() on the server and in the test suite
+  # are not always the same... Wait... what ?
+  # my remote server is out of sync, that I know. But this ? why ?
+  When I gained the daily karma 36 hours ago
+   And I request the items around 41.0, 2.0
+  Then I should now have 2 karma points
 

@@ -6,7 +6,7 @@ Feature: Giving items
 
 
 Background:
-  Given I am the registered user named "Goutte"
+  Given I am the registered user named Goutte
 
 
 ## WRONG LOCATIONS #############################################################

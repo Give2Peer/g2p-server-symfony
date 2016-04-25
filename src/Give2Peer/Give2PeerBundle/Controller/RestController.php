@@ -528,6 +528,14 @@ class RestController extends BaseController
             $latitude, $longitude, $maxDistance, $skip
         );
 
+        // Gain the daily karma point if not done already today
+        /** @var User $user (but may not be if firewall goes away) */
+        $user = $this->getUser();
+        if ( ! $user->hadDailyKarmaPoint()) {
+            $user->addDailyKarmaPoint();
+        }
+        $this->getEntityManager()->flush();
+
         return new JsonResponse($items);
     }
 
@@ -553,7 +561,7 @@ class RestController extends BaseController
      */
     public function findAroundCoordinates($latitude, $longitude, $radius, $skip)
     {
-        $maxResults = 64; // todo: move this to configuration
+        $maxResults = 64; // todo: move this to configuration SECOND STRIKE
 
         // This sanitization may not be necessary anymore. Still.
         $latitude  = floatval($latitude);

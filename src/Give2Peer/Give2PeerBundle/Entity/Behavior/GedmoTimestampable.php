@@ -24,12 +24,12 @@ use Give2Peer\Give2PeerBundle\Entity\User;
  * We use Gedmo :
  * https://github.com/Atlantic18/DoctrineExtensions/blob/master/doc/timestampable.md
  *
- * Timestampable needs to be enabled in the config.yml too.
+ * Timestampable needs to be enabled in the `config.yml` too.
  */
 trait GedmoTimestampable
 {
     /**
-     * The date and time (to the second) at which this item was created.
+     * The date and time (to the second) at which this entity was created.
      *
      * @var DateTime
      *
@@ -39,7 +39,7 @@ trait GedmoTimestampable
     protected $createdAt;
 
     /**
-     * The date and time (to the second) at which this item was last updated.
+     * The date and time (to the second) at which this entity was last updated.
      *
      * @var DateTime
      *
@@ -50,7 +50,7 @@ trait GedmoTimestampable
 
 
     /**
-     * The date and time (to the second) at which this item was created.
+     * The date and time (to the second) at which this entity was created.
      *
      * @return DateTime
      */
@@ -60,7 +60,7 @@ trait GedmoTimestampable
     }
 
     /**
-     * Set the date and time (to the second) of the creation of this item.
+     * Set the date and time (to the second) of the creation of this entity.
      *
      * Don't bother, our ORM hooks handle setting this on creation for us.
      *
@@ -77,9 +77,9 @@ trait GedmoTimestampable
     }
 
     /**
-     * The date and time (to the second) at which this item was last updated.
+     * The date and time (to the second) at which this entity was last updated.
      *
-     * Any change in any field of this Item will refresh this value.
+     * Any change in any field of this entity will refresh this value.
      *
      * Our ORM hooks handle refreshing this on update for us.
      *
@@ -91,7 +91,7 @@ trait GedmoTimestampable
     }
 
     /**
-     * Set the date and time (to the second) when this item was last updated.
+     * Set the date and time (to the second) when this entity was last updated.
      *
      * Don't bother, our ORM hooks handle refreshing this on update for us.
      *

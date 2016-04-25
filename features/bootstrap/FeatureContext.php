@@ -363,6 +363,16 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * @Given /^I gained the daily karma (.+)$/
+     */
+    public function iGainedDailyKarmaWhen($when)
+    {
+        $when = new \DateTime("@".strtotime("-".$when));
+        $this->getI()->setDailyKarmaAt($when);
+        $this->getEntityManager()->flush();
+    }
+
+    /**
      * @Given /^there is a user named "?(.+?)"? *$/
      */
     public function thereIsAUserNamed($name)
@@ -474,6 +484,15 @@ class FeatureContext extends    BaseContext
     public function iGetThetags()
     {
         $this->request('GET', 'tags');
+    }
+
+    /**
+     * Big regex for such small numbers !
+     * @When /^I (?:try to )?request the items around ([+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+) *[,\/] ([+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+)$/
+     */
+    public function iRequestTheItemsAround($lat, $lng)
+    {
+        $this->request('GET', "items/around/$lat/$lng");
     }
     
     /**
@@ -861,13 +880,21 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Then /^the user (.+) should have (\d+) karma points?$/
+     * @Then /^the user (.+) should (?:still )?have (\d+) karma points?$/
      */
     public function theUserShouldHaveKarmaPoints($username, $karma)
     {
         $usr = $this->getUser($username);
 
         $this->assertEquals($karma, $usr->getKarma());
+    }
+
+    /**
+     * @Then /^I should (?:still |now )?have (\d+) karma points?$/
+     */
+    public function iShouldHaveKarmaPoints($karma)
+    {
+        $this->assertEquals($karma, $this->getI()->getKarma());
     }
 
     /**
