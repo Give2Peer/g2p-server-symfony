@@ -263,14 +263,6 @@ karma: 4
 # It's enjoyable to be able to level up on the first day !
 # But you can only do it if you're providing enough information about the items.
 
-# IMPORTANT -- PAPER CUT
-# About the step "I gave <N> items <time> ago"
-# It is a HACK that does NOT update the user's karma because it bypasses the API
-# to directly write in the database.
-# It could be fixed to use the API first and then manually update the created_at
-# fields of added items, so that this does not happen, but then it would take a
-# LONG time when N is big. Also, I'm too lazy|hurried to fix this now.
-
 @quotas
 Scenario: Level up from 0 to 1 in one day
  Given I am level 0

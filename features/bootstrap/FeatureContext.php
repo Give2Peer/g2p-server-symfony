@@ -422,8 +422,8 @@ class FeatureContext extends    BaseContext
         $backup = null;
         if (null != $this->password) {
             $backup = $this->password;
-            $this->password = $password;
         }
+        $this->password = $password;
 
         $this->request('GET', 'check');
         
@@ -457,6 +457,15 @@ class FeatureContext extends    BaseContext
     public function iGetTheProfileOf($username)
     {
         $this->request('GET', 'profile', ['username'=>$username]);
+    }
+
+    /**
+     * @When /^I (?:try to )?update my profile information with the following ?:$/
+     */
+    public function iUpdateMyProfile($pystring='')
+    {
+        $data = empty($pystring) ? [] : $this->fromYaml($pystring);
+        $this->request('POST', 'users/'.$this->getI()->getId(), $data);
     }
     
     /**
@@ -821,9 +830,15 @@ class FeatureContext extends    BaseContext
         $usr = $this->getUser($username);
 
         if (empty($not)) {
-            $this->assertNotNull($usr);
+            $s = "There is no user named '$username', yet we expected one.";
+            $this->assertTrue(null != $usr, $s);
+            // definitely too verbose for our ORM-driven entities
+            //$this->assertNotNull($usr, $s);
         } else {
-            $this->assertNull($usr);
+            $s = "There is user named '$username', yet we expected none.";
+            $this->assertTrue(null == $usr, $s);
+            // definitely too verbose for our ORM-driven entities
+            //$this->assertNull($usr, $s);
         }
     }
 

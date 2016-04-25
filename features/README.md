@@ -22,14 +22,18 @@ client, say a mobile app.
 
 They cover :
 - registering
-- finding items around various locations :
-  - latitude / longitude _(preferred)_
-  - postal addresses
-  - IPs _(that one randomly fails)_
-  - with pagination
+- editing profile
+- finding items
+  - around various locations :
+      - latitude / longitude _(preferred)_
+      - postal addresses
+      - IPs _(that one randomly fails)_
+  - with pagination (to review)
+  - filtered by tags (to do)
 - giving items
   - gaining karma
   - daily quotas
+- levelling up
 - picturing items, as the picture upload is done in a separate request
 - statistics (early stages)
 

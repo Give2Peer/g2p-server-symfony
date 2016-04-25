@@ -83,7 +83,7 @@ class UserController extends BaseController
     /**
      * Change the authenticated user's password to the provided `password`.
      *
-     * If you need to change more than the password, use `users/{id}`.
+     * If you need to change more than the password, POST `users/{id}`.
      *
      * @ApiDoc(
      *   parameters = {
@@ -103,25 +103,14 @@ class UserController extends BaseController
 
         /** @var User $user */
         $user = $this->getUser();
-        
-        if (null == $user) {
-            return new JsonResponse(["error"=>"No user."], 400);
-        }
-        
-        $user->setPlainPassword($password);
 
-        // This canonicalizes, encodes, persists and flushes
-        $um = $this->getUserManager();
-        $um->updateUser($user);
-
-        // Send the user as response
-        return new JsonResponse(['user'=>$user]);
+        return $this->editAction($request, $user);
     }
 
     /**
      * Change the authenticated user's username to the provided `username`.
      *
-     * If you need to change more than the username, use `users/{id}`.
+     * If you need to change more than the username, POST `users/{id}`.
      *
      * @ApiDoc(
      *   parameters = {
@@ -142,33 +131,13 @@ class UserController extends BaseController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (null == $user) {
-            return new JsonResponse(["error"=>"No user."], 400);
-        }
-
-        $um = $this->getUserManager();
-
-        // Rebuke if username is taken
-        $existingUser = $um->findUserByUsername($username);
-        if (null != $existingUser) {
-            return new ErrorJsonResponse(
-                "Username already taken.", Error::UNAVAILABLE_USERNAME
-            );
-        }
-
-        $user->setUsername($username);
-
-        // This canonicalizes, encodes, persists and flushes
-        $um->updateUser($user);
-
-        // Send the user as response
-        return new JsonResponse(['user'=>$user]);
+        return $this->editAction($request, $user);
     }
 
     /**
      * Change the authenticated user's email to the provided `email`.
      *
-     * If you need to change more than the email, use `users/{id}`.
+     * If you need to change more than the email, POST `users/{id}`.
      *
      * @ApiDoc(
      *   parameters = {
@@ -189,31 +158,17 @@ class UserController extends BaseController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (null == $user) {
-            return new JsonResponse(["error"=>"No user."], 400);
-        }
-
-        $um = $this->getUserManager();
-
-        // Rebuke if username is taken
-        $existingUser = $um->findUserByEmail($email);
-        if (null != $existingUser) {
-            return new ErrorJsonResponse(
-                "Email already taken.", Error::UNAVAILABLE_EMAIL
-            );
-        }
-
-        $user->setEmail($email);
-
-        // This canonicalizes, encodes, persists and flushes
-        $um->updateUser($user);
-
-        // Send the user as response
-        return new JsonResponse(['user'=>$user]);
+        return $this->editAction($request, $user);
     }
 
     /**
-     * Change the 
+     * Change the system properties of a User.
+     * You can only change the user you're authenticated with.
+     *
+     * Ideally we'll make another route for more trivial profile preferences.
+     * Maybe ?
+     *
+     * The flow to change such important properties may be different. But how ?
      *
      * @ApiDoc(
      *   parameters = {
@@ -223,38 +178,70 @@ class UserController extends BaseController
      *   }
      * )
      *
-     * @ParamConverter("user", class="User")
+     *
+     * ParamConverter("user", class="Give2PeerBundle:User")
+     *
      * @param Request $request
+     * @param User $user
      * @return JsonResponse
      */
     public function editAction(Request $request, User $user)
     {
-        // fixme
+        // Recover the user data
+        $username = $request->get('username');
+        $password = $request->get('password');
+        $email    = $request->get('email');
 
-
-        $email = $request->get('email');
-        if (null == $email) {
-            return new JsonResponse(["error"=>"No email provided."], 400);
-        }
+        $clientIp = $request->getClientIp(); // use this somehow ?
 
         /** @var User $user */
-        $user = $this->getUser();
+        $authenticatedUser = $this->getUser();
 
-        if (null == $user) {
+        if (null == $user || null == $authenticatedUser) {
             return new JsonResponse(["error"=>"No user."], 400);
+        }
+
+        if ($user->getId() != $authenticatedUser->getId()) {
+            return new ErrorJsonResponse(
+                "You can only edit yourself.", Error::NOT_AUTHORIZED
+            );
         }
 
         $um = $this->getUserManager();
 
-        // Rebuke if username is taken
-        $existingUser = $um->findUserByEmail($email);
-        if (null != $existingUser) {
-            return new ErrorJsonResponse(
-                "Email already taken.", Error::UNAVAILABLE_EMAIL
-            );
+        // EMAIL
+        if (null != $email) {
+            // Rebuke if email is taken
+            $existingEmailUser = $um->findUserByEmail($email);
+            if (null != $existingEmailUser) {
+                return new ErrorJsonResponse(
+                    "Email already taken.", Error::UNAVAILABLE_EMAIL
+                );
+            }
+
+            $user->setEmail($email);
         }
 
-        $user->setEmail($email);
+        // USERNAME
+        if (null != $username) {
+            // Rebuke if username is taken
+            $existingUsernameUser = $um->findUserByUsername($username);
+            if (null != $existingUsernameUser) {
+                return new ErrorJsonResponse(
+                    "Username already taken.", Error::UNAVAILABLE_USERNAME
+                );
+            }
+
+            $user->setUsername($username);
+        }
+
+        // PASSWORD
+        if (null != $password) {
+            $user->setPlainPassword($password);
+        }
+
+        // If we changed nothing, we're OK.
+        // Maybe send back an appropriate NOTHING CHANGED HTTP code ?
 
         // This canonicalizes, encodes, persists and flushes
         $um->updateUser($user);
