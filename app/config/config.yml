@@ -26,6 +26,13 @@ framework:
     fragments:       ~
     http_method_override: true
 
+# Easier REST routes, we can DRY the conversion of $id into Item or User
+# This are the defaults (it's already enabled)
+#sensio_framework_extra:
+#    request:
+#        converters: true
+#        auto_convert: true
+
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"
