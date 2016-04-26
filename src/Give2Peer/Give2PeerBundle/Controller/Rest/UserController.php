@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  */
 class UserController extends BaseController
 {
-
     /**
      * Generate a username from dictionaries of words.
      * 
@@ -79,6 +78,22 @@ class UserController extends BaseController
 //        fprintf($f, $s);
 //        fclose($f);
 
+    /**
+     * Get the (public) profile information of the given user.
+     *
+     * @param  Request $request
+     * @return ErrorJsonResponse|JsonResponse
+     */
+    public function getAction (Request $request, User $user)
+    {
+        if (empty($user)) {
+            return new ErrorJsonResponse("Bad username.", Error::BAD_USERNAME);
+        }
+
+        return new JsonResponse([
+            'user' => $user->publicJsonSerialize(),
+        ]);
+    }
 
     /**
      * Change the authenticated user's password to the provided `password`.

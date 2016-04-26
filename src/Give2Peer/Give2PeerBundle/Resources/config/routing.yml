@@ -31,22 +31,22 @@ give2_peer_authenticate:
 # We had `/register` for a while but...
 # I believe this is the correct REST route to create a new user
 give2_peer_register:
-    path:     /users
+    path:     /user
     defaults: { _controller: Give2PeerBundle:Rest/User:register, _format: json }
     methods:  [POST]
 
-give2_peer_change_email:
-    path:     /users/{id}/email
+give2_peer_update_user_email:
+    path:     /user/{id}/email
     defaults: { _controller: Give2PeerBundle:Rest/User:changeEmail, _format: json }
     methods:  [POST]
 
-give2_peer_change_username:
-    path:     /users/{id}/username
+give2_peer_update_user_username:
+    path:     /user/{id}/username
     defaults: { _controller: Give2PeerBundle:Rest/User:changeUsername, _format: json }
     methods:  [POST]
 
-give2_peer_change_password:
-    path:     /users/{id}/password
+give2_peer_update_user_password:
+    path:     /user/{id}/password
     defaults: { _controller: Give2PeerBundle:Rest/User:changePassword, _format: json }
     methods:  [POST]
 
@@ -55,15 +55,18 @@ give2_peer_change_password:
 # - email
 # - username
 # - password
-give2_peer_change_profile:
-    path:     /users/{id}
+give2_peer_update_user:
+    path:     /user/{id}
     defaults: { _controller: Give2PeerBundle:Rest/User:edit, _format: json }
     methods:  [POST]
 
+# Public profile of user described by its `id`.
+give2_peer_get_user:
+    path:     /user/{id}
+    defaults: { _controller: Give2PeerBundle:Rest/User:get, _format: json }
+    methods:  [GET]
 
-## PROFILES ####################################################################
-
-# Public profile of provided `username`, or my own private profile otherwise.
+# Private profile of current user (may be changed to GET /user)
 give2_peer_profile:
     path:     /profile
     defaults: { _controller: Give2PeerBundle:Rest:profile, _format: json }

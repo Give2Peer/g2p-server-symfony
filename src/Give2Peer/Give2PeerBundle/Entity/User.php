@@ -86,6 +86,7 @@ class User extends BaseUser implements \JsonSerializable
     public function publicJsonSerialize()
     {
         $publicData = [
+            'id'         => $this->getId(),
             'username'   => $this->getUsernameCanonical(),
             'level'      => $this->getLevel(),
         ];

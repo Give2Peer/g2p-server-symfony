@@ -475,7 +475,7 @@ class FeatureContext extends    BaseContext
     public function iUpdateMyProfile($pystring='')
     {
         $data = empty($pystring) ? [] : $this->fromYaml($pystring);
-        $this->request('POST', 'users/'.$this->getI()->getId(), $data);
+        $this->request('POST', 'user/'.$this->getI()->getId(), $data);
     }
     
     /**
@@ -593,7 +593,7 @@ class FeatureContext extends    BaseContext
      */
     public function iPreRegister()
     {
-        $this->iPost('users', '');
+        $this->iPost('user', '');
     }
 
     /**
@@ -601,7 +601,7 @@ class FeatureContext extends    BaseContext
      */
     public function iRegister($pystring='')
     {
-        $this->iPost('users', $pystring);
+        $this->iPost('user', $pystring);
     }
 
     /**
@@ -610,7 +610,7 @@ class FeatureContext extends    BaseContext
     public function iChangeMyEmail($email)
     {
         $id = $this->getI()->getId();
-        $this->request('POST', "users/$id/email", [
+        $this->request('POST', "user/$id/email", [
             'email' => $email
         ]);
     }
@@ -621,7 +621,7 @@ class FeatureContext extends    BaseContext
     public function iChangeMyUsername($username)
     {
         $id = $this->getI()->getId();
-        $this->request('POST', "users/$id/username", [
+        $this->request('POST', "user/$id/username", [
             'username' => $username
         ]);
 
@@ -638,7 +638,7 @@ class FeatureContext extends    BaseContext
     public function iChangeMyPassword($password)
     {
         $id = $this->getI()->getId();
-        $this->request('POST', "users/$id/password", [
+        $this->request('POST', "user/$id/password", [
             'password' => $password
         ]);
 

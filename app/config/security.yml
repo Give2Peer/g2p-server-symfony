@@ -42,7 +42,7 @@ security:
         # as long as it's censored of private informations, which it should be
         # even if only our users may access it. Censorship... Obscenity...
         rest_register:
-            pattern:  ^(/v[\d]+)?/users$
+            pattern:  ^(/v[\d]+)?/user$
             security: false
         # The root of the API -> its doc
         rest_index:
