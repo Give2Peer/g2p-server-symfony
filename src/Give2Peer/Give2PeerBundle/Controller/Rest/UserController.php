@@ -83,6 +83,9 @@ class UserController extends BaseController
      *
      * @param  Request $request
      * @return ErrorJsonResponse|JsonResponse
+     *
+     * Milo : 0563764240
+     *
      */
     public function getAction (Request $request, User $user)
     {
