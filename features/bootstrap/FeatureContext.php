@@ -421,6 +421,22 @@ class FeatureContext extends    BaseContext
         }
     }
 
+    /**
+     * @When /^(.+) added without karma gain an item titled "(.+)"$/
+     */
+    public function someoneAddedAnItemTitled($user, $title)
+    {
+        $user = $this->getUser($user);
+
+        if (null == $user) {
+            $this->fail("User $user could not be found.");
+        } // refactor into getMandatoryUser() or getUser($user, require=true)
+
+        $this->createItem($user, null, null, $title, null);
+
+//        $item = $this->getItemRepository()->findOneBy(['title' => $title]);
+    }
+
 
     // ROUTES STEPS ////////////////////////////////////////////////////////////
 
@@ -586,6 +602,22 @@ class FeatureContext extends    BaseContext
         $item = $this->getItemRepository()->findOneBy(['title' => $title]);
 
         $this->iDelete('item/'.$item->getId());
+    }
+
+    /**
+     * @When /^I thank the author of the item titled "(.+)"$/
+     */
+    public function iThankTheAuthorOfItemTitled($title)
+    {
+        $item = $this->getItemRepository()->findOneBy(['title' => $title]);
+
+        if (null == $item) {
+            $this->fail("Nooooope.");
+        }
+
+        $id = $item->getId();
+
+        $this->request('POST', "/thank/item/$id", []);
     }
 
     /**
@@ -830,6 +862,7 @@ class FeatureContext extends    BaseContext
 
     /**
      * /!\ Will count items marked for deletion too !
+     *     Will it anymore ? To test, we upgraded to softdeletable since.
      *
      * @Then /^there should (?:still )?be (\d+) items? (?:[ie]n)?titled "(.+)"$/
      */
@@ -880,21 +913,17 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Then /^the user (.+) should (?:still )?have (\d+) karma points?$/
+     * @Then /^(?:the user )?(.+) should (?:still |now )?have (\d+) karma points?$/
      */
-    public function theUserShouldHaveKarmaPoints($username, $karma)
+    public function theUzerShouldHaveKarmaPoints($username, $karma)
     {
-        $usr = $this->getUser($username);
+        if ( $username == "I") {
+            $uzer = $this->getI();
+        } else {
+            $uzer = $this->getUser($username);
+        }
 
-        $this->assertEquals($karma, $usr->getKarma());
-    }
-
-    /**
-     * @Then /^I should (?:still |now )?have (\d+) karma points?$/
-     */
-    public function iShouldHaveKarmaPoints($karma)
-    {
-        $this->assertEquals($karma, $this->getI()->getKarma());
+        $this->assertEquals($karma, $uzer->getKarma());
     }
 
     /**
@@ -1010,6 +1039,8 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * Get the user from its username, or null if not found.
+     *
      * @param $username
      * @return null|User
      */
