@@ -12,6 +12,7 @@ Background:
 
 
 
+# See `giving_items.feature`.
 Scenario: Gain karma when adding an item
 
 

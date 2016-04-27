@@ -474,7 +474,7 @@ class FeatureContext extends    BaseContext
      */
     public function iGetMyProfile()
     {
-        $this->request('GET', 'profile');
+        $this->request('GET', 'user');
     }
     
     /**
@@ -482,7 +482,8 @@ class FeatureContext extends    BaseContext
      */
     public function iGetTheProfileOf($username)
     {
-        $this->request('GET', 'profile', ['username'=>$username]);
+        $id = $this->getUser($username)->getId();
+        $this->request('GET', "user/$id", []);
     }
 
     /**

@@ -96,8 +96,8 @@ You should install the `fortunes` package. It's optional, as fun is.
 
 As of April 2016, we have :
 
-    30 scenarios (30 passed)
-    172 steps (172 passed)
+    45 scenarios (45 passed)
+    287 steps (287 passed)
 
 
 Hey

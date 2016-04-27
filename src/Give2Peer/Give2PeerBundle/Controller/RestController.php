@@ -56,83 +56,6 @@ class RestController extends BaseController
     }
 
     /**
-     * Get the profile information of the current or specified user.
-     * 
-     * If `username` is provided, will look for the public profile of that user.
-     *
-     * @ApiDoc(
-     *   parameters = {
-     *     {
-     *       "name"="username", "dataType"="string", "required"=false,
-     *       "description"="Example: -2.4213, 43.1235"
-     *     },
-     *   }
-     * )
-     * @return ErrorJsonResponse|JsonResponse
-     */
-    public function profileAction (Request $request)
-    {
-        $username = $request->get('username');
-        if (null != $username) {
-            return $this->publicProfileAction($request);
-        } else {
-            return $this->privateProfileAction($request);
-        }
-    }
-
-    /**
-     * Get the (private) profile information of the current user.
-     *
-     * @param  Request $request
-     * @return ErrorJsonResponse|JsonResponse
-     */
-    public function privateProfileAction (Request $request)
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-
-        if (empty($user)) {
-            return new ErrorJsonResponse("Nope.", Error::NOT_AUTHORIZED);
-        }
-
-        /** @var PersistentCollection $items */
-        $items = $user->getItemsAuthored();
-
-        return new JsonResponse([
-            'user'  => $user,
-            //'items' => $items, // /!\ PITFALL /!\ : parser thinks it's empty
-            'items' => $items->getValues(),
-        ]);
-    }
-
-    /**
-     * Get the (public) profile information of the given user.
-     *
-     * @param  Request $request
-     * @return ErrorJsonResponse|JsonResponse
-     */
-    public function publicProfileAction (Request $request)
-    {
-        $um = $this->getUserManager();
-        $username = $request->get('username');
-        
-        if (null == $username) {
-            return new ErrorJsonResponse("Bad username.", Error::BAD_USERNAME);
-        }
-        
-        /** @var User $user */
-        $user = $um->findUserByUsername($username);
-
-        if (empty($user)) {
-            return new ErrorJsonResponse("Bad username.", Error::BAD_USERNAME);
-        }
-
-        return new JsonResponse([
-            'user' => $user->publicJsonSerialize(),
-        ]);
-    }
-
-    /**
      * A Giver is the legal owner of the item.
      *
      * Item attributes can be provided as POST variables :
@@ -306,7 +229,8 @@ class RestController extends BaseController
      * You need to be the author of the item.
      * 
      * Ideas :
-     * - Allow uploading photos for others' items, since level ?
+     * - Allow uploading more than one picture for one item, since level ???
+     * - Allow uploading photos for others' items, since level ???
      *
      * @ApiDoc(
      *   parameters = {

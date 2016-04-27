@@ -4,6 +4,7 @@ namespace Give2Peer\Give2PeerBundle\Controller\Rest;
 
 use Gedmo\Sluggable\Util\Urlizer;
 use Give2Peer\Give2PeerBundle\Controller\BaseController;
+use Give2Peer\Give2PeerBundle\Entity\Thank;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -23,91 +24,79 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  * 
  * 
  */
-class UserController extends BaseController
+class SocialController extends BaseController
 {
+
     /**
-     * Generate a username from dictionaries of words.
+     * Thank the author of the Item `id`.
+     * You can only thank for a specific item once.
      * 
-     * <adjective>_<color>_<being>
-     *
-     * @return String
-     */
-    public function generateUsername()
-    {
-        $dir = "@Give2PeerBundle/Resources/config/";
-        $path = $this->get('kernel')->locateResource($dir . 'game.yml');
-        $beings = Yaml::parse(file_get_contents($path))['beings'];
-        $colors = Yaml::parse(file_get_contents($path))['colors'];
-        $adjectives = Yaml::parse(file_get_contents($path))['adjectives'];
-
-
-        $a = $adjectives[array_rand($adjectives)];
-        $b = $beings[array_rand($beings)];
-        $c = $colors[array_rand($colors)];
-
-        $x = random_int(0, 9);
-        $y = random_int(0, 9);
-        $z = random_int(0, 9);
-        
-        // About 42 billion right now
-        //$nb = count($beings) * count($adjectives) * count($colors) * 1000;
-        //print("Possibilities : $nb\n");
-
-        return "${a} ${c} ${b} ${x}${y}${z}";
-    }
-
-    // YAML cleaner I used
-//        $words = [];
-//        foreach($animals as $a) {
-//            $b = str_replace(['-',','], ' ', str_replace("'", '', trim($a)));
-//            foreach(explode(' ', $b) as $w) {
-//                if (strlen($w)) {
-//                    $words[] = strtoupper($w{0}) . substr($w,1);
-//                }
-//            }
-//        }
-//
-//        $words = array_unique($words);
-//        sort($words);
-//
-//        $s = '';
-//        foreach($words as $w) {
-//            $s .= "- $w\n";
-//        }
-//        $f = fopen(__DIR__.'_colors.yml', 'w+');
-//        fprintf($f, $s);
-//        fclose($f);
-
-
-    /**
-     * Get the (private) profile information of the current user.
+     * /!\
+     *   This will cost karma points to use.
+     *   (it does not, right now)
      * 
      * @ApiDoc()
      *
      * @param  Request $request
      * @return ErrorJsonResponse|JsonResponse
      */
-    public function privateReadAction (Request $request)
+    public function thankForItemAction (Request $request, Item $item)
     {
-        /** @var User $user */
-        $user = $this->getUser();
+        /** @var User $thanker */
+        $thanker = $this->getUser();
 
-        if (empty($user)) {
+        if (empty($thanker)) {
             return new ErrorJsonResponse("Nope.", Error::NOT_AUTHORIZED);
         }
 
-        /** @var PersistentCollection $items */
-        $items = $user->getItemsAuthored(); // not sure softdeletable is applied
+        $thankee = $item->getAuthor();
 
+        // Disallow thanking more than once for the same item
+        $doneAlready = $this->getThankRepository()->findOneBy([
+            'thanker' => $thanker,
+            'item' => $item,
+        ]);
+        if ($doneAlready) {
+            return new ErrorJsonResponse(
+                "One thanks per item only.",
+                Error::EXCEEDED_QUOTA
+            );
+        }
+
+        // GAME DESIGN
+        // The idea is to give karma to make karma.
+        // Thanker should choose how much karma he gives,
+        // and it should be multiplied by a coefficient
+        // that depends on its level, and thankee should receive it all.
+        // But if you just levelled up you won't lose any karma so you can't
+        // lose your level.
+        // Let's say for now the coefficient is the level, and users don't lose
+        // karma. They will. Maybe even before release.
+        $karma_given = 0;
+        $karma_received = $thanker->getLevel() + 1;
+        ///
+
+        $thanker->addKarma(-1 * $karma_given);
+        $thankee->addKarma($karma_received);
+
+        $thank = new Thank();
+        $thank->setItem($item);
+        $thank->setThanker($thanker);
+        $thank->setThankee($item->getAuthor());
+        $thank->setKarmaReceived($karma_received);
+        $thank->setKarmaGiven($karma_given);
+        
+        $em = $this->getEntityManager();
+        $em->persist($thank);
+        $em->flush();
+        
         return new JsonResponse([
-            'user'  => $user,
-            //'items' => $items, // /!\ PITFALL /!\ : parser thinks it's empty
-            'items' => $items->getValues(),
+            'thank'  => $thank,
         ]);
     }
     
     /**
-     * Get the (public) profile information of the given user.
+     * Get the (public) profile information of the given user `id`.
      * 
      * @ApiDoc()
      *

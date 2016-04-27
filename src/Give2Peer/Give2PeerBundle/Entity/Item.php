@@ -29,10 +29,10 @@ use Give2Peer\Give2PeerBundle\Entity\User;
  */
 class Item implements \JsonSerializable
 {
+    // use ORMBehaviors\Timestampable\Timestampable;
     // Provides createdAt and updatedAt.
     // /!\ Fool's gold ! -- Y U NO snake_case ?
     //     Database table column is `createdAt` instead of `created_at` !
-    // use ORMBehaviors\Timestampable\Timestampable;
     // ... we use our own trait instead !
     use Behavior\GedmoTimestampable;
 

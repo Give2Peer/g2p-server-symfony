@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
 use Give2Peer\Give2PeerBundle\Entity\TagRepository;
+use Give2Peer\Give2PeerBundle\Entity\ThankRepository;
 use Give2Peer\Give2PeerBundle\Entity\UserManager;
 use Give2Peer\Give2PeerBundle\Entity\UserRepository;
 use Give2Peer\Give2PeerBundle\Service\Geocoder;
@@ -64,6 +65,14 @@ abstract class BaseController extends Controller
     protected function getTagRepository()
     {
         return $this->getEntityManager()->getRepository('Give2PeerBundle:Tag');
+    }
+
+    /**
+     * @return ThankRepository
+     */
+    protected function getThankRepository()
+    {
+        return $this->getEntityManager()->getRepository('Give2PeerBundle:Thank');
     }
 
     /**

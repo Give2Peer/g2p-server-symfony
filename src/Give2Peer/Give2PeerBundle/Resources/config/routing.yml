@@ -28,11 +28,34 @@ give2_peer_authenticate:
 
 ## USERS #######################################################################
 
+# Private profile of current user (may be changed to GET /user)
+give2_peer_profile:
+    path:     /user
+    defaults: { _controller: Give2PeerBundle:Rest/User:privateRead, _format: json }
+    methods:  [GET]
+
 # We had `/register` for a while but...
 # I believe this is the correct REST route to create a new user
 give2_peer_register:
     path:     /user
     defaults: { _controller: Give2PeerBundle:Rest/User:register, _format: json }
+    methods:  [POST]
+
+
+# Public profile of user described by its `id`.
+give2_peer_get_user:
+    path:     /user/{id}
+    defaults: { _controller: Give2PeerBundle:Rest/User:publicRead, _format: json }
+    methods:  [GET]
+
+# Kind of a syndication of the three routes below
+# Accepts :
+# - email
+# - username
+# - password
+give2_peer_update_user:
+    path:     /user/{id}
+    defaults: { _controller: Give2PeerBundle:Rest/User:edit, _format: json }
     methods:  [POST]
 
 give2_peer_update_user_email:
@@ -49,28 +72,6 @@ give2_peer_update_user_password:
     path:     /user/{id}/password
     defaults: { _controller: Give2PeerBundle:Rest/User:changePassword, _format: json }
     methods:  [POST]
-
-# Kind of a synication of the three routes above
-# Accepts :
-# - email
-# - username
-# - password
-give2_peer_update_user:
-    path:     /user/{id}
-    defaults: { _controller: Give2PeerBundle:Rest/User:edit, _format: json }
-    methods:  [POST]
-
-# Public profile of user described by its `id`.
-give2_peer_get_user:
-    path:     /user/{id}
-    defaults: { _controller: Give2PeerBundle:Rest/User:get, _format: json }
-    methods:  [GET]
-
-# Private profile of current user (may be changed to GET /user)
-give2_peer_profile:
-    path:     /profile
-    defaults: { _controller: Give2PeerBundle:Rest:profile, _format: json }
-    methods:  [GET]
 
 ## ITEMS #######################################################################
 
@@ -101,6 +102,13 @@ give2_peer_items_around:
     requirements:
         latitude:   "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
         longitude:  "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
+
+## SOCIAL ACTIONS ##############################################################
+
+give2_peer_thank_item:
+    path:     /thank/item/{id}
+    defaults: { _controller: Give2PeerBundle:Rest/Social:thankForItem, _format: json }
+    methods:  [POST]
 
 ## GENERAL DATA COLLECTION #####################################################
 

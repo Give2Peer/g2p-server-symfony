@@ -43,6 +43,7 @@ security:
         # even if only our users may access it. Censorship... Obscenity...
         rest_register:
             pattern:  ^(/v[\d]+)?/user$
+            methods: [POST]
             security: false
         # The root of the API -> its doc
         rest_index:
