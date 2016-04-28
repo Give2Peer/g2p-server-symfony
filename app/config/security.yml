@@ -49,12 +49,18 @@ security:
         rest_index:
             pattern:  ^/(v[\d]+)?$
             security: false
+        # The CRON tasks
+        # These are run by the webserver itself
+        # /v1/cron/daily every day
+        rest_cron:
+            pattern:  ^/?(v[\d]+)?/cron/(hourly|daily|weekly|monthly)$
+            security: false
         # The private API (everything else ?)
         rest_api:
             pattern:   ^/(v[\d]+)
             stateless: true
             http_basic:
-            #    realm: "The Karmic Realm"
+                realm: "The Karmic Realm"
                 provider: fos_userbundle
 
         # the login page has to be accessible for everybody
