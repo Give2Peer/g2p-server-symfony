@@ -1,11 +1,15 @@
 #!/bin/sh
 
+# Not mandatory, but useful if like me your cache cleaner whines
+# It it also done on `web\` because we write the item's images there.
+
 # Change to project directory
 SCRIPT=$(readlink -f $0)
 SCRIPTPATH=$(dirname $SCRIPT)
 cd $SCRIPTPATH
 cd ..
 
+# Set permissions (should be forever, but I've seen things...)
 sudo setfacl -R -m u:www-data:rwx -m u:`whoami`:rwx app/cache app/logs
 sudo setfacl -dR -m u:www-data:rwx -m u:`whoami`:rwx app/cache app/logs
 sudo setfacl -R -m u:www-data:rwx -m u:`whoami`:rwx web

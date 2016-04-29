@@ -1,8 +1,13 @@
 #!/bin/bash
 
+# Fair warning
+
+echo "This script is NOT MEANT to be run MULTIPLE TIMES."
+echo "(it should be safe, but it will crash)"
+
 # Installs postgresql
 
-echo "Installing required packages..."
+echo "Installing required debian packages..."
 sudo apt-get install php5-pgsql postgresql postgresql-doc
 
 
@@ -23,8 +28,14 @@ psql -d give2peer_test -c "CREATE EXTENSION earthdistance;"
 
 EOSU
 
+
+# Create a system user that pgsql needs for peer auth (by default)
+
 echo "Creating give2peer system user..."
 sudo adduser give2peer --no-create-home --disabled-password
+
+
+# Now let's see if Doctrine can do the rest
 
 echo "Creating database schema..."
 ./app/console doctrine:schema:create

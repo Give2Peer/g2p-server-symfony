@@ -1,8 +1,16 @@
 #!/bin/bash
 
-echo "RUN FROM PROJECT ROOT OR ELSE HEART.BREAK()"
+# Change to project directory
+SCRIPT=$(readlink -f $0)
+SCRIPTPATH=$(dirname $SCRIPT)
+cd $SCRIPTPATH
+cd ..
 
+echo "Removing bin/behat if need be..."
+rm -f bin/behat
 
-rm bin/behat
-
+echo "Symlinking script/behat to bin/behat..."
 ln -s ../script/behat bin/behat
+
+echo "Well done ! Now run :"
+echo "bin/behat --tags=~geocode"
