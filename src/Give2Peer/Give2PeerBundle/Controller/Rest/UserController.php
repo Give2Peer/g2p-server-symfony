@@ -210,7 +210,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Change the system properties of a User.
+     * Change the system properties of the User described by its `id`.
      * You can only change the user you're authenticated with.
      *
      * Ideally we'll make another route for more trivial profile preferences.
