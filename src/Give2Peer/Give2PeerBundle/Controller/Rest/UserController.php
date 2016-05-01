@@ -2,6 +2,7 @@
 
 namespace Give2Peer\Give2PeerBundle\Controller\Rest;
 
+use Doctrine\ORM\PersistentCollection;
 use Gedmo\Sluggable\Util\Urlizer;
 use Give2Peer\Give2PeerBundle\Controller\BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,6 +26,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  */
 class UserController extends BaseController
 {
+
+    const DUMMY_EMAIL_DOMAIN = "anons.give2peer.org";
+
     /**
      * Generate a username from dictionaries of words.
      * 
@@ -54,6 +58,16 @@ class UserController extends BaseController
         //print("Possibilities : $nb\n");
 
         return "${a} ${c} ${b} ${x}${y}${z}";
+    }
+
+
+    public function generatePassword()
+    {
+        $a = $this->generateUsername();
+        $b = random_int(0, 9);
+        $c = random_int(0, 9);
+        $d = random_int(0, 9);
+        return "$a$b$c$d";
     }
 
     // YAML cleaner I used
@@ -337,7 +351,7 @@ class UserController extends BaseController
         // and give it back to you in the response.
         $password_generated = null;
         if (null == $password) {
-            $password_generated = "I swear I'm here to help."; // fixme, you lazy fsck
+            $password_generated = $this->generatePassword();
             $password = $password_generated;
         }
         
@@ -345,7 +359,8 @@ class UserController extends BaseController
         $email_generated = null;
         if (null == $email) {
             $email = Urlizer::urlize($username, '_');
-            $email_generated = "$email@dummies.give2peer.org";
+            $domain = self::DUMMY_EMAIL_DOMAIN;
+            $email_generated = "$email@$domain";
             $email = $email_generated;
         }
 
