@@ -1,9 +1,14 @@
-# todo: proper script to uniquify and sort
+# todo: a proper script to uniquify and sort this
+
+# collected at first from wikipedia pages with
+# var s=""; $("table.wikitable tr a").each(function(t, e){s+="- "+$(e).text()+"\n"}); s;
 
 # This is a good place to start contributing.
 # - add words
 # - remove dumb values (initial lists were leeched)
 # - no `-`, `,`, or `'`.
+# - basically just [a-z0-9] but don't end beings with numbers.
+#   (the current client prettifies the usernames by removing trailing numbers)
 
 # Default usernames will be generated as follows :
 # <adjective> <color> <being>
@@ -11,6 +16,7 @@
 adjectives:
     - Absolute
     - Acid
+    - Adorable
     - Aerial
     - African
     - Agile
@@ -27,20 +33,26 @@ adjectives:
     - Bald
     - Beautiful
     - Big
+    - Blind
     - Brave
     - Brutal
+    - Canadian
     - Caribbean
     - Caucasian
     - Chinese
     - Common
     - Cool
+    - Cosmic
     - Crazy
+    - Creepy
     - Creative
+    - Crowned
     - Curious
     - Cyber
     - Deaf
     - Deep
     - Devilish
+    - Double
     - Dreamy
     - Dutch
     - Eastern
@@ -68,7 +80,6 @@ adjectives:
     - Karmic
     - Laconic
     - Laughing
-    - Lava
     - Mad
     - Magical
     - Magnificent
@@ -94,8 +105,10 @@ adjectives:
     - Relaxed
     - Romantic
     - Rich
+    - Sacred
     - Sad
     - Sensible
+    - Sensitive
     - Shiny
     - Sick
     - Skilled
@@ -107,12 +120,15 @@ adjectives:
     - Suave
     - Superb
     - Spanish
+    - Spectacled
     - Splendid
     - Swift
     - Tall
     - Tropical
     - Turkish
     - Unhinged
+    - Vague
+    - Vehement
     - Veteran
     - Virulent
     - Vivid
@@ -216,13 +232,8 @@ beings:
     - Butterfly
     - Buttermilk
     - Caiman
-    - California
     - Camel
     - Campo
-    - Canada
-    - Canadian
-    - Cape
-    - Capped
     - Capuchin
     - Capybara
     - Caracal
@@ -265,6 +276,7 @@ beings:
     - Cordon
     - Corella
     - Cormorant
+    - Cosmos
     - Cottonmouth
     - Cottontail
     - Cougar
@@ -278,11 +290,12 @@ beings:
     - Crocodile
     - Crow
     - Crown
-    - Crowned
     - Cuis
     - Curlew
     - Currasow
+    - Daffodil
     - Dama
+    - Dandelion
     - Darwin
     - Dassie
     - Deer
@@ -296,7 +309,6 @@ beings:
     - Dingo
     - Dog
     - Dolphin
-    - Double
     - Dove
     - Downy
     - Dragon
@@ -342,6 +354,7 @@ beings:
     - Gazer
     - Gargoyle
     - Gecko
+    - Geek
     - Gelada
     - Gemsbok
     - Genet
@@ -475,6 +488,7 @@ beings:
     - Marmot
     - Marshbird
     - Marten
+    - Martian
     - Meadowlark
     - Meerkat
     - Melba
@@ -495,7 +509,7 @@ beings:
     - Mynah
     - Nelson
     - Neotrope
-    - Netted
+    - Nerd
     - Night
     - Nighthawk
     - Nile
@@ -553,6 +567,7 @@ beings:
     - Platypus
     - Plover
     - Pocket
+    - Pokemon
     - Polar
     - Polecat
     - Porcupine
@@ -597,7 +612,6 @@ beings:
     - Rumped
     - Russian
     - Sable
-    - Sacred
     - Saddle
     - Sage
     - Sally
@@ -640,7 +654,6 @@ beings:
     - South
     - Southern
     - Sparrow
-    - Spectacled
     - Spider
     - Spoonbill
     - Springbok
@@ -697,7 +710,6 @@ beings:
     - Trumpeter
     - Tsessebe
     - Turaco
-    - Turkey
     - Turtle
     - Tyrant
     - Uinta
@@ -716,8 +728,8 @@ beings:
     - Wapiti
     - Warthog
     - Wasp
-    - Water
     - Waterbuck
+    - Waterfall
     - Waxbill
     - Weaver
     - Weeper
@@ -786,7 +798,6 @@ colors:
     - Beige
     - Bell
     - Berry
-    - Big
     - Bill
     - Bisque
     - Bistre
@@ -894,7 +905,7 @@ colors:
     - Cornsilk
     - Cosmic
     - Cotton
-    - Coyote
+    - Coyotish
     - Cream
     - Crimson
     - Cultured
@@ -903,8 +914,6 @@ colors:
     - Cyber
     - Cyclamen
     - Cyclop
-    - Daffodil
-    - Dandelion
     - Dark
     - Deep
     - Desaturated
@@ -1378,7 +1387,6 @@ colors:
     - Verdigris
     - Vermilion
     - Vermillion
-    - Verte
     - Violet
     - Viridian
     - Volt
@@ -1401,6 +1409,7 @@ colors:
     - Yellow
     - Yonder
     - York
+    - Young
     - Zaffre
     - Zinnwaldite
     - Zomp
