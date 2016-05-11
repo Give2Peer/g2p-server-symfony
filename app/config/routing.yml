@@ -6,11 +6,15 @@
 #    prefix:   /
 
 # The released and publicized API, version 1.
-give2_peer_v1:
+give2peer_v1:
     resource: "@Give2PeerBundle/Resources/config/routing.yml"
     prefix:   /v1
 
-NelmioApiDocBundle:
+NelmioApiDocBundle_1:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /
-#    prefix:   /api/doc
+
+# Deprecated
+NelmioApiDocBundle_2:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc

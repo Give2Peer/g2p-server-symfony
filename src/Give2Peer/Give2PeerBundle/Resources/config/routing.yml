@@ -1,8 +1,10 @@
 # REMEMBER TO EDIT THE FIREWALL IN `app/config/security.yml` TOO
 
+## HOME ########################################################################
+
 # HOME
 # We show the generated documentation and sandbox.
-give2_peer_home:
+give2peer_home:
     path:     /
     defaults: { _controller: Give2PeerBundle:Rest:index }
 
@@ -11,7 +13,7 @@ give2_peer_home:
 # configure themselves, like :
 # - version number
 # - news ?
-give2_peer_hello:
+give2peer_hello:
     path:     /hello
     defaults: { _controller: Give2PeerBundle:Rest:ping, _format: json }
     methods:  [GET]
@@ -21,29 +23,36 @@ give2_peer_hello:
 # - credentials given in HTTPAuth
 # - that the server works
 # - nothing else for now
-give2_peer_authenticate:
+give2peer_authenticate:
     path:     /check
     defaults: { _controller: Give2PeerBundle:Rest:ping, _format: json }
+    methods:  [GET]
+
+## SYSTEM ######################################################################
+
+give2peer_cron:
+    path:     /cron/daily
+    defaults: { _controller: Give2PeerBundle:Cron:daily }
     methods:  [GET]
 
 ## USERS #######################################################################
 
 # Private profile of current user (may be changed to GET /user)
-give2_peer_profile:
+give2peer_profile:
     path:     /user
     defaults: { _controller: Give2PeerBundle:Rest/User:privateRead, _format: json }
     methods:  [GET]
 
 # We had `/register` for a while but...
 # I believe this is the correct REST route to create a new user
-give2_peer_register:
+give2peer_register:
     path:     /user
     defaults: { _controller: Give2PeerBundle:Rest/User:register, _format: json }
     methods:  [POST]
 
 
 # Public profile of user described by its `id`.
-give2_peer_get_user:
+give2peer_get_user:
     path:     /user/{id}
     defaults: { _controller: Give2PeerBundle:Rest/User:publicRead, _format: json }
     methods:  [GET]
@@ -53,41 +62,41 @@ give2_peer_get_user:
 # - email
 # - username
 # - password
-give2_peer_update_user:
+give2peer_update_user:
     path:     /user/{id}
     defaults: { _controller: Give2PeerBundle:Rest/User:edit, _format: json }
     methods:  [POST]
 
-give2_peer_update_user_email:
+give2peer_update_user_email:
     path:     /user/{id}/email
     defaults: { _controller: Give2PeerBundle:Rest/User:changeEmail, _format: json }
     methods:  [POST]
 
-give2_peer_update_user_username:
+give2peer_update_user_username:
     path:     /user/{id}/username
     defaults: { _controller: Give2PeerBundle:Rest/User:changeUsername, _format: json }
     methods:  [POST]
 
-give2_peer_update_user_password:
+give2peer_update_user_password:
     path:     /user/{id}/password
     defaults: { _controller: Give2PeerBundle:Rest/User:changePassword, _format: json }
     methods:  [POST]
 
 ## ITEMS #######################################################################
 
-give2_peer_item_add:
+give2peer_item_add:
     path:     /item
     defaults: { _controller: Give2PeerBundle:Rest:itemAdd, _format: json }
     methods:  [POST]
 
-give2_peer_item_delete:
+give2peer_item_delete:
     path:     /item/{id}
     defaults: { _controller: Give2PeerBundle:Rest:itemDelete, _format: json }
     methods:  [DELETE]
     requirements:
         id:   \d+
 
-give2_peer_picture_upload:
+give2peer_picture_upload:
     path:     /item/{id}/picture
     defaults: { _controller: Give2PeerBundle:Rest:itemPictureUpload, _format: json }
     methods:  [POST]
@@ -95,7 +104,7 @@ give2_peer_picture_upload:
         id:   \d+
 
 # There are other GET parameters allowed, to filter and paginate the request
-give2_peer_items_around:
+give2peer_items_around:
     path:     /items/around/{latitude}/{longitude}
     defaults: { _controller: Give2PeerBundle:Rest:itemsAround, _format: json }
     methods:  [GET]
@@ -105,19 +114,19 @@ give2_peer_items_around:
 
 ## SOCIAL ACTIONS ##############################################################
 
-give2_peer_thank_item:
+give2peer_thank_item:
     path:     /thank/item/{id}
     defaults: { _controller: Give2PeerBundle:Rest/Social:thankForItem, _format: json }
     methods:  [POST]
 
 ## GENERAL DATA COLLECTION #####################################################
 
-give2_peer_tags:
+give2peer_tags:
     path:     /tags
     defaults: { _controller: Give2PeerBundle:Rest\Data:tags, _format: json }
     methods:  [GET]
 
-give2_peer_stats:
+give2peer_stats:
     path:     /stats
     defaults: { _controller: Give2PeerBundle:Rest\Data:stats, _format: json }
     methods:  [GET]
