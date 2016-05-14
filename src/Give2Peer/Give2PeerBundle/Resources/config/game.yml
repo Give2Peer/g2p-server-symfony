@@ -14,7 +14,7 @@
 # Default usernames will be generated as follows :
 # <adjective1> <adjective2> <being>
 
-# Order of adjectives in english
+# Order of adjectives in english :
 # - Quantity or number
 # - Quality or opinion
 # - Size
@@ -83,7 +83,6 @@ quality:
     - Fast
     - Ferruginous
     - Fierce
-    - French
     - Fuliginous
     - Funny
     - Generic
@@ -847,6 +846,8 @@ origin:
     - Eastern
     - English
     - Egyptian
+    - French
+    - Martian
     - Turkish
 
 
