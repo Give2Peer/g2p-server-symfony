@@ -14,7 +14,7 @@ Background:
 Scenario: List all tags when there's none
    When I request the tags
    Then the request should be accepted
-    And there should be 0 items in the response
+    And there should be 0 tags in the response
 
 
 
@@ -25,7 +25,7 @@ Scenario: List all tags
     And there is a tag named "old"
    When I request the tags
    Then the request should be accepted
-    And there should be 3 items in the response
+    And there should be 3 tags in the response
     And I dump the response
     And the response should include :
 """

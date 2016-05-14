@@ -32,7 +32,7 @@ class UserController extends BaseController
     /**
      * Generate a username from dictionaries of words.
      * 
-     * <adjective>_<color>_<being>
+     * <adjective1>_<adjective2>_<being>
      *
      * @return String
      */
@@ -40,24 +40,49 @@ class UserController extends BaseController
     {
         $dir = "@Give2PeerBundle/Resources/config/";
         $path = $this->get('kernel')->locateResource($dir . 'game.yml');
-        $beings = Yaml::parse(file_get_contents($path))['beings'];
-        $colors = Yaml::parse(file_get_contents($path))['colors'];
-        $adjectives = Yaml::parse(file_get_contents($path))['adjectives'];
 
+        $words = Yaml::parse(file_get_contents($path));
 
-        $a = $adjectives[array_rand($adjectives)];
+        $adjectives = array_merge(
+             $words['quantity']
+            ,$words['quality']
+            ,$words['size']
+            ,$words['age']
+            ,$words['shape']
+            ,$words['color']
+            ,$words['origin']
+            ,$words['material']
+            ,$words['qualifier']
+        );
+        
+        $beings = $words['being'];
+
+        $a1 = $a2 = '';
+        $i = 0;
+        while ($a1 == $a2 && $i < 42) {
+            $i1 = array_rand($adjectives);
+            $i2 = array_rand($adjectives);
+            $a1 = $adjectives[min($i1, $i2)];
+            $a2 = $adjectives[max($i1, $i2)];
+            $i++;
+        }
+
+        if ($a1 == $a2) { // we have a lottery winner
+            $a1 = "Incredibly";
+            $a2 = "Unlucky";
+        }
+
         $b = $beings[array_rand($beings)];
-        $c = $colors[array_rand($colors)];
 
         $x = random_int(0, 9);
         $y = random_int(0, 9);
         $z = random_int(0, 9);
         
         // About 42 billion right now
-        //$nb = count($beings) * count($adjectives) * count($colors) * 1000;
+        //$nb = count($beings) * (count($adjectives) ** 2) * 1000;
         //print("Possibilities : $nb\n");
 
-        return "${a} ${c} ${b} ${x}${y}${z}";
+        return "${a1} ${a2} ${b} ${x}${y}${z}";
     }
 
 

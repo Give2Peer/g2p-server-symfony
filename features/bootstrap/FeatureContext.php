@@ -829,11 +829,33 @@ class FeatureContext extends    BaseContext
         }
 
         $response = $this->client->getResponse();
-        $actual = (array) json_decode($response->getContent());
+        $actual = json_decode($response->getContent());
+
+        if (count($actual->items) != $howMany) {
+            $this->fail(sprintf(
+                "The response sent %d item(s) back,\n" .
+                "Because the response provided:\n%s",
+                print_r(count($actual), true),
+                print_r($actual, true)
+            ));
+        }
+    }
+
+    /**
+     * @Then /^there should be (\d+) tags? in the response$/
+     */
+    public function thereShouldBeTagsInTheResponse($howMany)
+    {
+        if (empty($this->client)) {
+            throw new Exception("No client. Request something first.");
+        }
+
+        $response = $this->client->getResponse();
+        $actual = json_decode($response->getContent());
 
         if (count($actual) != $howMany) {
             $this->fail(sprintf(
-                "The response sent %d item(s) back,\n" .
+                "The response sent %d tags(s) back,\n" .
                 "Because the response provided:\n%s",
                 print_r(count($actual), true),
                 print_r($actual, true)
