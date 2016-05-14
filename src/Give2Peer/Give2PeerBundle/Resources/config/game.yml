@@ -13,6 +13,21 @@
 # Default usernames will be generated as follows :
 # <adjective> <color> <being>
 
+# Ideally, <adjective> and <color> should be renamed because they are
+# badly named. There are other qualifiers than colors that make sense to
+# be close to the noun (the being).
+
+# List of adjective subtypes, not very helpful
+# - attributive adjective
+# - extensional adjective
+# - intensional adjective
+# - intersective adjective
+# - predicative adjective
+# - relational adjective
+# - subsective adjective
+
+# We should maybe use only one big list of adjectives and pick two in it ?
+
 adjectives:
     - Absolute
     - Acid
@@ -21,6 +36,7 @@ adjectives:
     - African
     - Agile
     - Alien
+    - Amenable
     - American
     - Anonymous
     - Antic
@@ -32,6 +48,7 @@ adjectives:
     - Australian
     - Bald
     - Beautiful
+    - Belgian
     - Big
     - Blind
     - Brave
@@ -40,7 +57,9 @@ adjectives:
     - Caribbean
     - Caucasian
     - Chinese
+    - Clever
     - Common
+    - Confident
     - Cool
     - Cosmic
     - Crazy
@@ -52,10 +71,12 @@ adjectives:
     - Deaf
     - Deep
     - Devilish
+    - Docile
     - Double
     - Dreamy
     - Dutch
     - Eastern
+    - English
     - Egyptian
     - Ethereal
     - Epic
@@ -71,6 +92,7 @@ adjectives:
     - German
     - Ghastly
     - Grumpy
+    - Helpful
     - Humble
     - Huge
     - Hybrid
@@ -93,6 +115,8 @@ adjectives:
     - Open
     - Pacific
     - Pensive
+    - Persian
+    - Peruvian
     - Poor
     - Princess
     - Prussian
@@ -103,8 +127,11 @@ adjectives:
     - Raw
     - Relative
     - Relaxed
+    - Relentless
     - Romantic
+    - Royal
     - Rich
+    - Ruthless
     - Sacred
     - Sad
     - Sensible
@@ -133,6 +160,7 @@ adjectives:
     - Virulent
     - Vivid
     - Western
+    - Whistling
     - Wild
     - Winged
     - Wise
@@ -290,11 +318,11 @@ beings:
     - Crocodile
     - Crow
     - Crown
-    - Cuis
     - Curlew
     - Currasow
     - Daffodil
     - Dama
+    - Damselfly
     - Dandelion
     - Darwin
     - Dassie
@@ -405,6 +433,7 @@ beings:
     - Hoopoe
     - Hornbill
     - Horned
+    - Horse
     - Hottentot
     - House
     - Howler
@@ -495,6 +524,7 @@ beings:
     - Miners
     - Mockingbird
     - Mongoose
+    - Monk
     - Monkey
     - Monster
     - Moorhen
@@ -590,7 +620,6 @@ beings:
     - Rat
     - Rattlesnake
     - Raven
-    - Red
     - Reedbuck
     - Reindeer
     - Rhea
@@ -607,9 +636,6 @@ beings:
     - Rose
     - Roseat
     - Roseate
-    - Royal
-    - Rufous
-    - Rumped
     - Russian
     - Sable
     - Saddle
@@ -736,7 +762,6 @@ beings:
     - Western
     - Whale
     - Whip
-    - Whistling
     - White
     - Wildebeest
     - Wolf
@@ -793,7 +818,6 @@ colors:
     - Bdazzled
     - Bean
     - Beau
-    - Beaver
     - Begonia
     - Beige
     - Bell
@@ -822,7 +846,7 @@ colors:
     - Bondi
     - Bone
     - Booger
-    - Bottle
+    - Bottled
     - Boysenberry
     - Brandeis
     - Brass
@@ -1116,7 +1140,8 @@ colors:
     - May
     - Maya
     - Meadow
-    - Meat
+    - Meaty
+    - Mechanical
     - Medium
     - Mellow
     - Melon
@@ -1135,7 +1160,7 @@ colors:
     - Misty
     - Mix
     - Moccasin
-    - Mode
+    - Mole
     - Moonstone
     - Mortuum
     - Moss
@@ -1195,9 +1220,7 @@ colors:
     - Perfume
     - Peridot
     - Periwinkle
-    - Persian
     - Persimmon
-    - Peru
     - Phlox
     - Phthalo
     - Picton
@@ -1207,6 +1230,7 @@ colors:
     - Pineapple
     - Pink
     - Pistachio
+    - Pirate
     - Pixie
     - Pizzazz
     - Platinum
@@ -1329,7 +1353,6 @@ colors:
     - Steel
     - Stizza
     - Storm
-    - Stormcloud
     - Straw
     - Strawberry
     - Sugar
