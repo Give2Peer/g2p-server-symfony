@@ -19,7 +19,6 @@ use Give2Peer\Give2PeerBundle\Entity\User;
  */
 class ItemRepository extends EntityRepository
 {
-    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * Counts all items.
@@ -97,6 +96,8 @@ class ItemRepository extends EntityRepository
      */
     public function getAddItemsCurrentQuota(User $user)
     {
+        $total = $user->getAddItemsDailyQuota();
+
         $duration = new \DateInterval("P1D"); // 24h
         $since = (new \DateTime())->sub($duration);
         $filters = $this->getEntityManager()->getFilters();
@@ -104,9 +105,41 @@ class ItemRepository extends EntityRepository
         $filters->disable('softdeleteable');
         $used = $this->countAuthoredBy($user, $since);
         $filters->enable('softdeleteable');
-        $total = $user->getAddItemsDailyQuota();
 
         return max(0, $total - $used);
+    }
+
+    /**
+     * Computes what's left of the daily quota of the provided $user.
+     * May be zero, but must never be negative.
+     *
+     * Disables the `softdeleteable` filter so as to take into account deleted
+     * items.
+     *
+     * @param  int $olderThan Expected lifetime in seconds of items
+     * @return int
+     */
+    public function hardDeleteOldItems($olderThan)
+    {
+        $duration = new \DateInterval("PT${olderThan}S");
+        $since = (new \DateTime())->sub($duration);
+
+        $filters = $this->getEntityManager()->getFilters();
+        $filters->disable('softdeleteable');
+        $before = $this->countItems();
+
+        $this->getEntityManager()
+            ->createQueryBuilder()
+            ->delete($this->getEntityName(), 'i')
+            ->andWhere('i.deletedAt <= :since')
+            ->setParameter('since', $since)
+            ->getQuery()->execute()
+        ;
+
+        $after = $this->countItems();
+        $filters->enable('softdeleteable');
+
+        return $before - $after;
     }
 
     /**
@@ -127,7 +160,6 @@ class ItemRepository extends EntityRepository
                                $maxDistance=0, $maxResults=64)
     {
         $items = [];
-        /** @var Item[] $rows */
         $rows = $this->findAroundQB($latitude, $longitude, $skipTheFirstN,
             $maxDistance, $maxResults)
             ->getQuery()
