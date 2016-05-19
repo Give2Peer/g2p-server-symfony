@@ -110,22 +110,58 @@ class ItemRepository extends EntityRepository
     }
 
     /**
-     * Computes what's left of the daily quota of the provided $user.
-     * May be zero, but must never be negative.
+     * Soft delete the items that exceeded their lifespan in $seconds.
      *
-     * Disables the `softdeleteable` filter so as to take into account deleted
-     * items.
-     *
-     * @param  int $olderThan Expected lifetime in seconds of items
-     * @return int
+     * @param  int $seconds Expected life duration in seconds of items
+     * @return int Count of soft deleted items
      */
-    public function hardDeleteOldItems($olderThan)
+    public function softDeleteOldItems($seconds)
     {
-        $duration = new \DateInterval("PT${olderThan}S");
+        $duration = new \DateInterval("PT${seconds}S");
+        $since = (new \DateTime())->sub($duration);
+
+        // What we should do instead :
+        // 1. Select the item IDs
+        // 2. Delete the items
+        // 3. Return the IDs
+
+        $before = $this->countItems();
+
+        $this->getEntityManager()
+            ->createQueryBuilder()
+            ->delete($this->getEntityName(), 'i')
+            ->andWhere('i.updatedAt <= :since')
+            ->setParameter('since', $since)
+            ->getQuery()->execute()
+        ;
+
+        $after = $this->countItems();
+
+        return $before - $after;
+    }
+
+    /**
+     * Really and definitely delete from the database the items that were
+     * soft-deleted more than $seconds ago.
+     *
+     * Disables the `softdeleteable` filter, obviously.
+     *
+     * @param  int $seconds Expected afterlife duration in seconds of items
+     * @return int Count of hard deleted items
+     */
+    public function hardDeleteOldItems($seconds)
+    {
+        $duration = new \DateInterval("PT${seconds}S");
         $since = (new \DateTime())->sub($duration);
 
         $filters = $this->getEntityManager()->getFilters();
         $filters->disable('softdeleteable');
+
+        // What we should do instead :
+        // 1. Select the item IDs
+        // 2. Delete the items
+        // 3. Return the IDs
+
         $before = $this->countItems();
 
         $this->getEntityManager()

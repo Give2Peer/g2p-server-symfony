@@ -94,8 +94,8 @@ class RestController extends BaseController
      *
      * Only the `location` of the item is mandatory.
      *
-     * This creates an Item with the appropriate attributes, stores it and
-     * sends it back as JSON, along with the experience gained.
+     * This creates an item with the appropriate attributes, stores it and
+     * sends it back as JSON, along with the karma gained.
      *
      * @ApiDoc(
      *   parameters = {
@@ -171,9 +171,8 @@ class RestController extends BaseController
 
         // Add the item to database
         $em->persist($item);
-
-        // fixme: test
-//        $em->persist($user);
+        // Not needed because item is owning side of relationship. Good design ?
+        // $em->persist($user);
 
         // Compute how much karma the user gains and then give it
         // 3 points for giving, plus one point for a title, and one for tags.
@@ -323,7 +322,7 @@ class RestController extends BaseController
             $this->generateSquareThumb(
                 $publicPath . DIRECTORY_SEPARATOR . $filename,
                 $publicPath . DIRECTORY_SEPARATOR . 'thumb.jpg',
-                200 // todo: move thumb size in pixels to configuration
+                240 // todo: move thumb size in pixels to configuration
             );
         } catch (\Exception $e) {
             return new ErrorJsonResponse(
@@ -460,7 +459,7 @@ class RestController extends BaseController
         }
         $this->getEntityManager()->flush();
 
-        return new JsonResponse($items);
+        return new JsonResponse(['items'=>$items]);
     }
 
     /**
