@@ -27,7 +27,7 @@ ENDSSH
 # RETRIEVE THE SQL DUMP ########################################################
 
 echo "Retrieving the SQL dump..."
-scp web@web.qrok.me:${REMOTE_DIR}/${SQL_FILE} ${SQL_FILE}
+scp $USER@$SERVER:${REMOTE_DIR}/${SQL_FILE} ${SQL_FILE}
 if [ -f ${SQL_FILE} ]
 then
     echo "Retrieved the dump from ${REMOTE_DIR}/${SQL_FILE}"
