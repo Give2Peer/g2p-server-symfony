@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# CONFIGURATION ################################################################
+
+USER=web
+SERVER=web.qrok.me
+REMOTE_DIR=/home/web/g2p.give2peer.org
+
+DATETIME=$(date +"%Y%m%d%H%M%S")
+SQL_FILE="g2p_dump_${DATETIME}.sql"
+
+
+# MAKE THE DUMP ################################################################
+
+ssh $USER@$SERVER <<-ENDSSH
+
+    # Commands to run on remote host
+    cd ${REMOTE_DIR}
+    PWD=$(pwd)
+    echo "Moved to ${PWD}."
+    echo "Dumping the database to ${SQL_FILE}..."
+    pg_dump give2peer > ${SQL_FILE}
+
+ENDSSH
+
+
+# RETRIEVE THE SQL DUMP ########################################################
+
+echo "Retrieving the SQL dump..."
+scp web@web.qrok.me:${REMOTE_DIR}/${SQL_FILE} ${SQL_FILE}
+if [ -f ${SQL_FILE} ]
+then
+    echo "Retrieved the dump from ${REMOTE_DIR}/${SQL_FILE}"
+else
+    echo "FAILED to recover the dump to ${REMOTE_DIR}/${SQL_FILE} !"
+fi
+
+echo "Done !"
+
+
+# GRANT ENOUGH PERMISSIONS TO YOUR USER TO DUMP ################################
+
+<<"COMMENT"
+
+GRANT ALL PRIVILEGES ON DATABASE give2peer to web;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO web;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO web;
+
+But this only does it for existing tables !
+
+A more robust way :
+
+GRANT CONNECT
+ON DATABASE give2peer
+TO web;
+
+ALTER DEFAULT PRIVILEGES
+FOR USER web
+IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO web;
+
+ALTER DEFAULT PRIVILEGES
+FOR USER web
+IN SCHEMA public
+GRANT ALL PRIVILEGES ON SEQUENCES TO web;
+
+
+Still not enough ?!
+ERREUR:  droit refusé pour la relation item_id_seq
+But I GRANTed ALL to sequences ?!?
+
+The following works, but it's overkill :
+
+ALTER USER web WITH SUPERUSER;
+
+
+COMMENT
