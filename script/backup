@@ -144,6 +144,8 @@ then
 
 sudo su ${LOCAL_PG_USER} <<-ENDPSQL
 
+    echo -e "${Yellow}Dropping and re-creating database...${Off}"
+
     dropdb --if-exists ${LOCAL_PG_DATABASE}
     createdb ${LOCAL_PG_DATABASE}
     pg_restore --no-privileges --single-transaction --dbname=${LOCAL_PG_DATABASE} ${DUMP_FILE}
@@ -152,8 +154,10 @@ sudo su ${LOCAL_PG_USER} <<-ENDPSQL
 
     # Not sure this works. Maybe because of the HEREDOC ?
     # Nah, it's probably because of pg_restore
-    if [ $? -ne 0 ]
+    if [ $? -eq 0 ]
     then
+        echo -e "Restored the database."
+    else
         echo -e "${BRed}Failed with status code ${?}.${Off}"
         exit
     fi
