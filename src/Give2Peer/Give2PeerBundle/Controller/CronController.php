@@ -2,25 +2,14 @@
 
 namespace Give2Peer\Give2PeerBundle\Controller;
 
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\PersistentCollection;
-use Symfony\Component\BrowserKit\Response;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Give2Peer\Give2PeerBundle\Controller\ErrorCode as Error;
-use Give2Peer\Give2PeerBundle\Entity\Item;
-use Give2Peer\Give2PeerBundle\Entity\User;
-use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
-use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Where we define our routinely run tasks.
  *
- * CRON handles launching daily from command-line `cron/daily.php` which in turn
- * asks for the route `/v1/cron/daily` which asks this controller `dailyAction`.
+ * CRON handles launching daily from command-line `php cron/cron.php daily`
+ * which in turn asks for the route `/v1/cron/daily` which asks this controller
+ * `dailyAction`.
  * 
  * CRON configuration is available in `cron/`.
  * You need to symlink it to the right place with `script/setup_cron`.
@@ -52,7 +41,6 @@ class CronController extends BaseController
      *   24h because of the daily karma and daily quotas.
      * - soft delete non soft-deleted items whose last update is older than
      *   their lifespan.
-     *   days.
      *
      */
     public function dailyAction()
