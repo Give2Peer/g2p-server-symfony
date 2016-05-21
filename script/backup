@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script relies heavily on local database configuration.
+# It should not be committed ; just forget you ever saw this file.
+
 # CONFIGURATION ################################################################
 
 USER=web
@@ -7,7 +10,7 @@ SERVER=web.qrok.me
 REMOTE_DIR=/home/web/g2p.give2peer.org
 
 DATETIME=$(date +"%Y%m%d%H%M%S")
-SQL_FILE="g2p_dump_${DATETIME}.pgdump"
+DUMP_FILE="g2p_dump_${DATETIME}.pgdump"
 
 # when you also want to restore the backup locally
 LOCAL_PG_USER=give2peer
@@ -92,14 +95,13 @@ On_IWhite='\033[0;107m'   # White
 # MAKE THE DUMP ################################################################
 
 echo -e "${Yellow}Asking the server to dump the SQL...${Off}"
-ssh $USER@$SERVER <<-ENDSSH
+ssh ${USER}@${SERVER} <<-ENDSSH
 
     # Commands to run on remote host
     cd ${REMOTE_DIR}
-    PWD=$(pwd)
-    echo "Moved to ${PWD}."
-    echo "Dumping the database to ${SQL_FILE}..."
-    pg_dump -Fc give2peer > ${SQL_FILE}
+    echo "Moved to $(pwd)."
+    echo "Dumping the database to ${DUMP_FILE}..."
+    pg_dump -Fc give2peer > ${DUMP_FILE}
 
 ENDSSH
 
@@ -107,47 +109,53 @@ ENDSSH
 # RETRIEVE THE SQL DUMP ########################################################
 
 echo -e "${Yellow}Retrieving the SQL dump...${Off}"
-scp $USER@$SERVER:${REMOTE_DIR}/${SQL_FILE} ${SQL_FILE}
-if [ -f ${SQL_FILE} ]
+scp ${USER}@${SERVER}:${REMOTE_DIR}/${DUMP_FILE} ${DUMP_FILE}
+if [ -f ${DUMP_FILE} ]
 then
-    echo "Retrieved the dump from ${REMOTE_DIR}/${SQL_FILE}"
+    echo -e "Retrieved the dump from ${REMOTE_DIR}/${DUMP_FILE}"
 else
-    echo -e "${BRed}Failed to retrieve the dump from ${REMOTE_DIR}/${SQL_FILE} !${Off}"
+    echo -e "${BRed}Failed to retrieve the dump from ${REMOTE_DIR}/${DUMP_FILE} !${Off}"
     exit
 fi
+
+
+# DELETE THE REMOTE SQL DUMP ###################################################
+
+echo -e "${Yellow}Deleting the remote SQL dump...${Off}"
+ssh ${USER}@${SERVER} "rm ${REMOTE_DIR}/${DUMP_FILE}"
 
 
 # INSTALL THE SQL DUMP IN THE LOCAL DATABASE ###################################
 
 # Only if the user wants to : default means no, timeout (5s) means no.
-# I get that this script relies heavily on local database configuration.
-# It should not be commited ; just forget you ever saw this file.
 
 INSTALL_HERE=y  # don't get fooled, the default value is No
 [[ -t 0 ]] && {
     echo -e "${Yellow}Restore the dump locally?${Off}"
-    echo -e "${Red}This will drop your ${LOCAL_PG_DATABASE} database!${Off}"
+    echo -e "${Red}Will DROP your local ${LOCAL_PG_DATABASE} database!${Off}"
     echo -e "${BGreen}(y/N)${Off}"
     read -t 5 -n 1 -p $'' INSTALL_HERE || INSTALL_HERE=n ;
 }
 echo -e ""  # new line
-if [[ $INSTALL_HERE =~ ^(y|Y)$ ]]
+if [[ ${INSTALL_HERE} =~ ^(y|Y)$ ]]
 then
-    echo -e "${Yellow}Installing here...${Off}"
+    echo -e "${Yellow}Restoring the dump locally...${Off}"
     echo -e "Connecting as local user ${LOCAL_PG_USER}..."
 
 sudo su ${LOCAL_PG_USER} <<-ENDPSQL
 
     dropdb --if-exists ${LOCAL_PG_DATABASE}
     createdb ${LOCAL_PG_DATABASE}
-    pg_restore --no-privileges --single-transaction --dbname=${LOCAL_PG_DATABASE}hg ${SQL_FILE}
+    pg_restore --no-privileges --single-transaction --dbname=${LOCAL_PG_DATABASE} ${DUMP_FILE}
 
-    # psql --set ON_ERROR_STOP=on --single-transaction ${LOCAL_PG_DATABASE} < ${SQL_FILE}
+    # psql --set ON_ERROR_STOP=on --single-transaction ${LOCAL_PG_DATABASE} < ${DUMP_FILE}
 
-    # not sure this works. Maybe because of the HEREDOC ?
-    if [ $? -ne 0 ]  # fixme
+    # Not sure this works. Maybe because of the HEREDOC ?
+    # Nah, it's probably because of pg_restore
+    if [ $? -ne 0 ]
     then
-        echo -e "${BRed}Failed with status code ${nok}.${Off}"
+        echo -e "${BRed}Failed with status code ${?}.${Off}"
+        exit
     fi
 
 ENDPSQL
