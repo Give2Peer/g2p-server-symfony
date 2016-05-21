@@ -127,11 +127,23 @@ class ItemRepository extends EntityRepository
 
         $before = $this->countItems();
 
+        // This hard deletes, as the softdeleteable filter is not THAT advanced.
+//        $this->getEntityManager()
+//            ->createQueryBuilder()
+//            ->delete($this->getEntityName(), 'i')
+//            ->andWhere('i.updatedAt <= :since')
+//            ->setParameter('since', $since)
+//            ->getQuery()->execute()
+//        ;
+
+        // Instead we use this
         $this->getEntityManager()
             ->createQueryBuilder()
-            ->delete($this->getEntityName(), 'i')
+            ->update($this->getEntityName(), 'i')
+            ->set('i.deletedAt', ':now')
             ->andWhere('i.updatedAt <= :since')
             ->setParameter('since', $since)
+            ->setParameter('now', new \DateTime())
             ->getQuery()->execute()
         ;
 
@@ -144,7 +156,8 @@ class ItemRepository extends EntityRepository
      * Really and definitely delete from the database the items that were
      * soft-deleted more than $seconds ago.
      *
-     * Disables the `softdeleteable` filter, obviously.
+     * Disables the `softdeleteable` filter, obviously, even if it seems to not
+     * hook the delete statement, which always hard-deletes. (bug ?)
      *
      * @param  int $seconds Expected afterlife duration in seconds of items
      * @return int Count of hard deleted items
