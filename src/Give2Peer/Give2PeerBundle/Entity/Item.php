@@ -7,8 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Geocoder\Result\Geocoded;
-use Give2Peer\Give2PeerBundle\Provider\LatitudeLongitudeProvider;
 use Give2Peer\Give2PeerBundle\Entity\User;
 
 /**
