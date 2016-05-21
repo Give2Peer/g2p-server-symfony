@@ -24,9 +24,6 @@ class LoadTagsData extends DataFixture
         $em = $this->get('doctrine.orm.entity_manager');
 
         $tags = "
-- gift
-- moop
-- lost
 - broken
 - dirty
         ";

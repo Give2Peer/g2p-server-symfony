@@ -30,7 +30,9 @@ class LoadFakeData extends DataFixture
         $em = $this->get('doctrine.orm.entity_manager');
 
         $userNames = [
+            "Anonymous",
             "Goutte",
+            "Kiouze",
             "Shibby",
             "Gizko",
             "Didi",
@@ -69,17 +71,24 @@ class LoadFakeData extends DataFixture
         $maxLatitudeDiff  = 4.0;
         $maxLongitudeDiff = 3.3;
 
-        $total = 10101;
+        $total = 8888;
         
         $itemTypes = array(Item::TYPE_MOOP, Item::TYPE_GIFT, Item::TYPE_LOST);
         
         // Let's create a bunch of items scattered through france
         for ($i=1; $i<=$total; $i++) {
-            // Pick a location
-            $latitude  = $centerLatitude  - $maxLatitudeDiff
-                       + rand()/getrandmax() * $maxLatitudeDiff * 2;
-            $longitude = $centerLongitude - $maxLongitudeDiff
-                       + rand()/getrandmax() * $maxLongitudeDiff * 2;
+
+            if ($i > $total * 0.8) {
+                // Anywhere in the world
+                $latitude = $this->faker->latitude;
+                $longitude = $this->faker->longitude;
+            } else {
+                // In france (/!\ BUGGY, needs to be redone)
+                $latitude  = $centerLatitude  - $maxLatitudeDiff
+                    + rand()/getrandmax() * $maxLatitudeDiff * 2;
+                $longitude = $centerLongitude - $maxLongitudeDiff
+                    + rand()/getrandmax() * $maxLongitudeDiff * 2;
+            }
 
             // Create the item
             $item = new Item();
