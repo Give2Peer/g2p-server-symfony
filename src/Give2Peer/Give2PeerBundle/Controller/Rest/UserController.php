@@ -78,9 +78,9 @@ class UserController extends BaseController
         $y = random_int(0, 9);
         $z = random_int(0, 9);
         
-        // About 42 billion right now
-        //$nb = count($beings) * (count($adjectives) ** 2) * 1000;
-        //print("Possibilities : $nb\n");
+        // About 406 billion right now
+        // $nb = count($beings) * (count($adjectives) ** 2) * 1000;
+        // print("Possibilities : $nb\n");
 
         return "${a1} ${a2} ${b} ${x}${y}${z}";
     }

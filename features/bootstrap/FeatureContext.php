@@ -941,12 +941,12 @@ class FeatureContext extends    BaseContext
     public function theUzerShouldHaveKarmaPoints($username, $karma)
     {
         if ( $username == "I") {
-            $uzer = $this->getI();
+            $user = $this->getI();
         } else {
-            $uzer = $this->getUser($username);
+            $user = $this->getUser($username);
         }
 
-        $this->assertEquals($karma, $uzer->getKarma());
+        $this->assertEquals($karma, $user->getKarma());
     }
 
     /**
