@@ -5,10 +5,10 @@ security:
     encoders:
         # We still need this or some command-lines will fail
         Symfony\Component\Security\Core\User\User: plaintext
-        # The "real" encoder is that one :
+        # The "real" encoder is that one, the usual bcrypt
         Give2Peer\Give2PeerBundle\Entity\User:
             algorithm: bcrypt
-            cost: 13
+            cost: 11
 
     # http://symfony.com/doc/current/book/security.html#hierarchical-roles
     role_hierarchy:
@@ -40,11 +40,6 @@ security:
             pattern:  ^(/v[\d]+)?/hello$
             security: false
         # The registration
-        # paper cut: this does not but *should* only allow POST through
-        # we'll put a 404 on GET /users for now
-        # it's no big matter anyway if our user list is public,
-        # as long as it's censored of private informations, which it should be
-        # even if only our users may access it. Censorship... Obscenity...
         rest_register:
             pattern:  ^(/v[\d]+)?/user$
             methods: [POST]
@@ -54,12 +49,12 @@ security:
             pattern:  ^/(v[\d]+)?$
             security: false
         # The CRON tasks
-        # These are run by the webserver itself
-        # /v1/cron/daily every day
+        # These are run automatically by the webserver itself
+        # eg: /v1/cron/daily every day
         rest_cron:
             pattern:  ^/?(v[\d]+)?/cron/(monkey|hourly|daily|weekly|monthly)$
             security: false
-        # The private API (everything else ?)
+        # The private API (everything else)
         rest_api:
             pattern:   ^/(v[\d]+)
             stateless: true

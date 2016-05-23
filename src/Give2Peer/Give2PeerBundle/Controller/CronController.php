@@ -46,7 +46,7 @@ class CronController extends BaseController
     {
         $content = "Oooooooook?\n";
 
-        $this->cryptPasswords();
+        //$this->cryptPasswords();
 
         $response = new Response($content);
         return $response;

@@ -58,7 +58,7 @@ On_White='\033[47m'       # White
 # LOCAL CLEANUP ################################################################
 
 # Clear the local cache, no need to upload it
-echo -e "${Yellow}Cleaning local files...${Off}"
+echo -e "${Green}Cleaning local files...${Off}"
 app/console cache:clear --env=prod
 app/console cache:clear --env=dev
 app/console cache:clear --env=test
@@ -68,7 +68,7 @@ app/console cache:clear --env=test
 
 # Delete is dangerous, as we're caching item pictures, so we need to exclude the
 # directories in which they are uploaded.
-echo -e "${Yellow}Uploading files...${Off}"
+echo -e "${Green}Uploading files...${Off}"
 rsync -r --delete \
     --exclude .git \
     --exclude .idea \
@@ -82,16 +82,16 @@ rsync -r --delete \
 # REMOTE CLEANUP ###############################################################
 
 # Run some scripts on the server, now
-echo -e "${Yellow}Cleaning remote files...${Off}"
-ssh ${USER}@${SERVER} <<-ENDSSH
-    # Commands to run on remote host
+echo -e "${Green}Cleaning remote files...${Off}"
+ssh -t -t ${USER}@${SERVER} <<-ENDSSH
     cd ${REMOTE_DIR}
-    app/console cache:clear --env=prod
-    app/console cache:clear --env=dev
-    app/console cache:warmup --env=prod
-    app/console cache:warmup --env=dev
-    app/console doctrine:schema:update --force
+    sudo -u www-data app/console cache:clear --env=prod
+    sudo -u www-data app/console cache:clear --env=dev
+    sudo -u www-data app/console doctrine:schema:update --force
     app/console assets:install --symlink
+    sudo -u www-data app/console cache:warmup --env=prod
+    sudo -u www-data app/console cache:warmup --env=dev
+    exit
 ENDSSH
 
 echo -e "${BGreen}Done !${Off}"
