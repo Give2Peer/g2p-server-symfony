@@ -34,6 +34,21 @@ class CronController extends BaseController
     const ITEM_DEFAULT_LIFETIME = 60 * 60 * 24 * 15;
 
     /**
+     * This should always do absolutely nothing.
+     * I'm using this to easily monkey-patch the database sometimes.
+     *
+     * I used it to :
+     * 1. encrypt the passwords (my bad, forgot the plaintext before release)
+     * 2. <nothing else yet>
+     */
+    public function monkeyAction()
+    {
+        $content = "Oooooooook?";
+        $response = new Response($content);
+        return $response;
+    }
+
+    /**
      * Run the daily CRON task.
      *
      * - hard delete items that were soft deleted more than 7 days ago

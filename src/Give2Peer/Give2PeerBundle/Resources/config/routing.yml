@@ -1,4 +1,7 @@
+
+
 # REMEMBER TO EDIT THE FIREWALL IN `app/config/security.yml` TOO
+
 
 ## HOME ########################################################################
 
@@ -28,12 +31,19 @@ give2peer_authenticate:
     defaults: { _controller: Give2PeerBundle:Rest:ping, _format: json }
     methods:  [GET]
 
+
 ## SYSTEM ######################################################################
 
-give2peer_cron:
+give2peer_cron_monkey:
+    path:     /cron/monkey
+    defaults: { _controller: Give2PeerBundle:Cron:monkey }
+    methods:  [GET]
+
+give2peer_cron_daily:
     path:     /cron/daily
     defaults: { _controller: Give2PeerBundle:Cron:daily }
     methods:  [GET]
+
 
 ## USERS #######################################################################
 
@@ -82,6 +92,7 @@ give2peer_update_user_password:
     defaults: { _controller: Give2PeerBundle:Rest/User:changePassword, _format: json }
     methods:  [POST]
 
+
 ## ITEMS #######################################################################
 
 give2peer_item_add:
@@ -112,12 +123,14 @@ give2peer_items_around:
         latitude:   "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
         longitude:  "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
 
+
 ## SOCIAL ACTIONS ##############################################################
 
 give2peer_thank_item:
     path:     /thank/item/{id}
     defaults: { _controller: Give2PeerBundle:Rest/Social:thankForItem, _format: json }
     methods:  [POST]
+
 
 ## GENERAL DATA COLLECTION #####################################################
 
