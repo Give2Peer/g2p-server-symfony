@@ -2,6 +2,7 @@
 
 namespace Give2Peer\Give2PeerBundle\Controller;
 
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -43,7 +44,10 @@ class CronController extends BaseController
      */
     public function monkeyAction()
     {
-        $content = "Oooooooook?";
+        $content = "Oooooooook?\n";
+
+        $this->cryptPasswords();
+
         $response = new Response($content);
         return $response;
     }
@@ -78,6 +82,35 @@ class CronController extends BaseController
         $response = new Response($content);
 
         return $response;
+    }
+
+
+    protected function cryptPasswords()
+    {
+        $um = $this->getUserManager();
+        $qb = $this
+            ->getUserRepository()
+            ->createQueryBuilder('u')
+            ->select('u.id, u.password');
+        $rows = $qb->getQuery()->execute();
+        foreach ($rows as $row) {
+            $id = $row['id'];
+            $m = array();
+            if (preg_match('/^([^{]+)\{.+\}$/', $row['password'], $m)) {
+                $pw = $m[1];
+            } else {
+                throw new Exception("Oooook?!? ".$row['password']);
+            }
+
+            print("$id : '$pw' ");
+
+            $user = $um->findUserBy(array('id'=>$id));
+            $user->setPlainPassword($pw);
+            $um->updateUser($user);
+
+            $epw = $user->getPassword();
+            print("became '$epw'\n");
+        }
     }
 
 }
