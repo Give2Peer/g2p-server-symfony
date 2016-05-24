@@ -3,3 +3,14 @@ A bunch of handy scripts.
 The `script/behat` script should be symlinked to `bin/behat`.
 Use `script/setup_behat` to that effect.
 
+    
+SSL KEYS
+--------
+
+    openssl req -x509 -nodes -days 1095 -newkey rsa:2048 -out /etc/apache2/ssl/give2peer.org.crt -keyout /etc/apache2/ssl/give2peer.org.key
+
+=> self-signed
+
+We tried the tool of letsencrypt too, but we're not using it for now.
+
+

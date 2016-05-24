@@ -10,11 +10,14 @@ give2peer_v1:
     resource: "@Give2PeerBundle/Resources/config/routing.yml"
     prefix:   /v1
 
-NelmioApiDocBundle_1:
-    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
-    prefix:   /
 
 # Deprecated
+# Actually this does not even work ? It's overwriten by NelmioApiDocBundle_1
+# Why ? Why !? WHY !?
 NelmioApiDocBundle_2:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
+
+NelmioApiDocBundle_1:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /

@@ -62,7 +62,9 @@ quality:
     - Brave
     - Brutal
     - Classic
+    - Clawed
     - Clever
+    - Clueless
     - Common
     - Confident
     - Cool
@@ -864,12 +866,13 @@ material:
 
 
 qualifier:
-    - Boat
     - Cosmic
     - Cyclop
     - Earth
     - Forest
     - Island
+    - Nile
+    - Oceanic
     - Savannah
     - Sea
     - Sky
@@ -996,13 +999,10 @@ being:
     - Chuckwalla
     - Civet
     - Clarks
-    - Clawed
-    - Clawless
     - Cliffchat
     - Coatimundi
     - Cobra
     - Cockatoo
-    - Cokes
     - Collared
     - Colobus
     - Columbian
@@ -1252,7 +1252,6 @@ being:
     - Nerd
     - Night
     - Nighthawk
-    - Nile
     - Nilgai
     - Nosed
     - Numbat
@@ -1260,7 +1259,6 @@ being:
     - Nuthatch
     - Nyala
     - Ocelot
-    - Olive
     - Onager
     - Openbill
     - Opossum
