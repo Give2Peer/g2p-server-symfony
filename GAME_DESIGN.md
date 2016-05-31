@@ -37,13 +37,16 @@ Abilities
 ---------
 
 Here are the unlocked abilities, per level.
+They may also be called _privileges_. _Abilities_ is a bit too much.
 
-Level 000 : look at the map, add new items
+Level 000 : look at items
+Level 000 : add new items
 Level 002 : access statistics activity (todo)
 Level 005 : delete own items (todo)
 Level 0?? : delete others items (todo) (requires some form of moderation)
 Level 0?? : suggest a new tag
 Level 0?? : create a new tag
+Level 0?? : add a second picture
 
 
 Quotas

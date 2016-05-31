@@ -8,7 +8,7 @@ Feature: Deleting items
 
 
 Scenario: Delete my own item
-  Given I am the registered user named "Lucie"
+  Given I am the registered user named Lucie
     And I am level 3
     And my quota for adding items is 8
     And I gave the following item :

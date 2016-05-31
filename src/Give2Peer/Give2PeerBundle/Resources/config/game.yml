@@ -1,5 +1,6 @@
 # todo: a proper script to uniquify and sort this
 # todo: fix inconsistencies and add more words
+# todo: do the same in french, belle marquise !
 
 # collected at first from wikipedia pages with
 # var s=""; $("table.wikitable tr a").each(function(t, e){s+="- "+$(e).text()+"\n"}); s;

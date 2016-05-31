@@ -102,7 +102,7 @@ ChangeLog
 - [x] Find items by closeness to lat/lng coordinates
 - [x] List tags
 - [x] Geolocation through third-party services
-- [x] HTTP Auth authentication and registration
+- [x] HTTP Auth authentication and registration a
 - [x] Create, store and serve 200x200 thumbnails
 - [x] Karma points and levels
 - [x] API auto-generated documentation (NelmioApiBundle)

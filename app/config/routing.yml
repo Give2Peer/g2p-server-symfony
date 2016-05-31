@@ -1,7 +1,7 @@
 # We keep that one for now, but should we ?
 # Don't advertise it, as it may disappear in the future.
 # Note : we cannot activate BOTH ? WTF ?
-#give2_peer:
+#give2peer_root:
 #    resource: "@Give2PeerBundle/Resources/config/routing.yml"
 #    prefix:   /
 
@@ -13,7 +13,7 @@ give2peer_v1:
 
 # Deprecated
 # Actually this does not even work ? It's overwriten by NelmioApiDocBundle_1
-# Why ? Why !? WHY !?
+# Why ? Why !? WHY !? @lutangar
 NelmioApiDocBundle_2:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
