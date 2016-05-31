@@ -1,19 +1,8 @@
 Give2Peer PHP server
 ====================
 
-
 What
 ====
-
-A Symfony project created on April 1, 2015, which makes use of only one small
-custom bundle, the `Give2PeerBundle`, and a lot of vendor bundles, blessed be
-the community ; we love you.
-
-This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org).
-
-It will provide a server for [Karma](http://www.give2peer.org), the Android app.
-
-It is extensively [behavior-tested](/features) with features such as this one :
 
 ``` gherkin
 Feature: Geotagging items
@@ -44,6 +33,12 @@ Scenario: Matter Out Of Place (MOOP)
     And the MOOP should be added to the MOOP bag
 ```
 
+The full list of behaviors is available in [`features/`](/features).
+
+This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org).
+
+It will provide a server for [Karma](http://www.give2peer.org), the Android app.
+
 
 Why
 ===
@@ -65,6 +60,15 @@ How about sharing pictures and credits instead with the people that gave you
 the materials you needed for that awesome creation you just made ?
 
 
+How
+===
+
+A [Symfony2] project created on April 1, 2015, which makes use of only one small
+custom bundle, the `Give2PeerBundle`, and a lot of vendor bundles, blessed be
+the community ; we love you.
+
+The chosen database is [pgSQL], because we need some of its extensions.
+
 
 A Work in Progress
 ==================
@@ -73,20 +77,20 @@ RoadMap
 -------
 
 ### 1.1
+
 - [ ] RESTful routes for Tags
-- [ ] Provide basic stats
+- [ ] Provide stats about the total number of items
+- [ ] a sandbox version of this server to test-drive clients with
+
 
 ### 1.0
-- [x] Provide basic stats
-- [x] a versioned API (starting with prefixing `v1/` in the URLs)
-- [ ] RESTful routes for Users
-- [ ] RESTful routes for Items
-- [ ] move scattered bundle configuration to project config files
-- [ ] a sandbox version of this server to test-drive clients with
-- [ ] https support
 
-Right now, the database online is filled with fake/test data, so that we may
-easily test the client while developing it.
+- [x] Provide stats about the current number of items and users
+- [x] Version the API (starting with prefixing `v1/` in the URLs)
+- [x] Enable https support (somewhat)
+- [ ] Move scattered bundle configuration to project config files
+- [ ] More RESTful routes for Users
+- [ ] More RESTful routes for Items
 
 
 ChangeLog
@@ -163,14 +167,19 @@ Alternatively, [Composer] is also available as a Debian package :
 
 Then look at and run the setup scripts as-needed in `script/`.
 
+You should probably install the `fortune` package too, but it's not mandatory.
+Neither is fun, think about it.
 
 
-Blackboard
-==========
 
-All of the REST API is done "by hand", and supports only JSON and HTTP auth.
-We should probably move to a better way of doing APIs, like using :
-https://github.com/dunglas/DunglasApiBundle
-or
-https://github.com/api-platform/api-platform (<3)
+Licence
+=======
+
+Everything is public domain, unless specified otherwise in the file.
+
+We should collect the various licences of the third-party libs we use,
+and make a proper `LICENCE.md` file that we can display in the clients.
+
+They are all public-domain-like, but they have their little quirks, and
+besides it's like saying thanks !
 

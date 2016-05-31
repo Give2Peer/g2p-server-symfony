@@ -27,6 +27,7 @@ Anyhow, right now, karma is gained by using the service :
 - Query the service (1 point per day)
 - Publish an item (3 points)  <-- that's a lot, maybe 2 ?
   - with a title (1 extra point)
+  - with a description (1 extra point)
   - with tags (1 extra point)
 
 _(many more things!)_
@@ -39,7 +40,7 @@ Here are the unlocked abilities, per level.
 
 Level 000 : look at the map, add new items
 Level 002 : access statistics activity (todo)
-Level 005 : delete own items (todo) (as-is, can be abused to gain karma fast)
+Level 005 : delete own items (todo)
 Level 0?? : delete others items (todo) (requires some form of moderation)
 Level 0?? : suggest a new tag
 Level 0?? : create a new tag
