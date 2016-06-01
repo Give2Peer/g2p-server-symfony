@@ -5,7 +5,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 
 // The net says this is the best place to call configuration functions like this
-// I don't believe it, but who cares ? It works !
+// I don't believe it, but who cares ? It works ! @lutangar : comments ?
 mb_internal_encoding("UTF-8");
 //date_default_timezone_set("Europe/Paris"); // let php.ini take care of that ?
 
