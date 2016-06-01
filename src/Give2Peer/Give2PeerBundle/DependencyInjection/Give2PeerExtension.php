@@ -31,15 +31,10 @@ class Give2PeerExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        // fixme
-//        array_walk_recursive(, )
-        $container->setParameter(
-            'give2peer.pictures.directory',
-            $config['pictures']['directory']
-        );
+        // Bulk add all configuration as container parameters
+        $this->setParameters($config, $container);
 
-        //// THE SERVICES
-
+        // Load the services we want to register
         $loader = new Loader\YamlFileLoader(
             $container,
             new FileLocator(__DIR__.'/../Resources/config')
@@ -64,12 +59,54 @@ class Give2PeerExtension extends Extension
     /**
      * Set all leaf values of the $config array as parameters in the $container.
      *
+     * For example, a config such as this for the alias give2peer :
+     *
+     * ``` yaml
+     * give2peer:
+     *   enabled: true
+     *   cache:
+     *      directory: "%kernel.root_dir%/tmp"
+     *   things:
+     *      - first
+     *      - second
+     * ```
+     *
+     * would yield the following :
+     *
+     * getParameter('give2peer.enabled') === true
+     * getParameter('give2peer.cache') ---> InvalidArgumentException
+     * getParameter('give2peer.cache.directory') == "/var/www/g2p/tmp"
+     * getParameter('give2peer.things') == array('first', 'second')
+     *
+     * It will resolve `%` variables like it normally would.
+     * This is simply a convenience method to add the whole array.
+     *
      * @param array $config
      * @param ContainerBuilder $container
+     * @param string $namespace The parameter prefix, the alias by default.
+     *                          Don't use this, it's for recursion.
      */
-    protected function setParameters(array $config, ContainerBuilder $container)
+    protected function setParameters(array $config, ContainerBuilder $container,
+                                     $namespace = null)
     {
-        // fixme
+        $namespace = (null === $namespace) ? $this->getAlias() : $namespace;
+
+        // Is the config array associative or empty ?
+        if (array_keys($config) !== range(0, count($config) - 1)) {
+            foreach ($config as $k => $v) {
+                $current = $namespace . '.' . $k;
+                if (is_array($v)) {
+                    // Another array, let's use recursion
+                    $this->setParameters($v, $container, $current);
+                } else {
+                    // It's a leaf, let's add it.
+                    $container->setParameter($current, $v);
+                }
+            }
+        } else {
+            // It is a sequential array, let's consider it as a leaf.
+            $container->setParameter($namespace, $config);
+        }
     }
 
 }
