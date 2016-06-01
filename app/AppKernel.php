@@ -3,12 +3,17 @@
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
+
+// The net says this is the best place to call configuration functions like this
+// I don't believe it, but who cares ? It works !
+mb_internal_encoding("UTF-8");
+//date_default_timezone_set("Europe/Paris"); // let php.ini take care of that ?
+
+
 class AppKernel extends Kernel
 {
     public function registerBundles()
     {
-        mb_internal_encoding("UTF-8"); // fixme: NO NO NO NO MUCH TOO HACKY
-
         $bundles = array(
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
@@ -19,10 +24,9 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new Give2Peer\Give2PeerBundle\Give2PeerBundle(),
-            // is the order important ? otherwise, put our bundle at the bottom?
             new FOS\UserBundle\FOSUserBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
+            new Give2Peer\Give2PeerBundle\Give2PeerBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
