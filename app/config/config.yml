@@ -29,9 +29,11 @@ framework:
 # Our very own configuration
 # Note that sf2 wanted the root node to be called give2_peer, so we hacked
 # around to get it to alias it as `give2peer` instead.
-#give2_peer:
-#    pictures:
-#        directory: "%kernel.root_dir%/../web/pictures"
+give2peer:
+    pictures:
+        directory: "%kernel.root_dir%/../web/pictures"
+        # In pixels, the side size of the square thumbnail.
+        size: 240
 
 # Twig is the Template Engine
 twig:

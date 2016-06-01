@@ -318,10 +318,11 @@ class RestController extends BaseController
 
         // Create a square thumbnail
         try {
+            $thumbSize = $this->getParameter('give2peer.pictures.size');
             $this->generateSquareThumb(
                 $publicPath . DIRECTORY_SEPARATOR . $filename,
                 $publicPath . DIRECTORY_SEPARATOR . 'thumb.jpg',
-                240 // todo: move thumb size in pixels to configuration
+                $thumbSize
             );
         } catch (\Exception $e) {
             return new ErrorJsonResponse(

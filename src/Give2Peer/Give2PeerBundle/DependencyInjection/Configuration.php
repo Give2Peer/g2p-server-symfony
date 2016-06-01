@@ -33,6 +33,11 @@ class Configuration implements ConfigurationInterface
                             ->info("The directory where to store the uploaded pictures.")
                             ->defaultValue($defaultPicturesDirectory)
                         ->end()
+                        ->integerNode('size')
+                            ->example("240")
+                            ->info("The size in pixels of the side of the square thumbnail.")
+                            ->defaultValue(240)
+                        ->end()
                     ->end()
                 ->end() // pictures
             ->end()

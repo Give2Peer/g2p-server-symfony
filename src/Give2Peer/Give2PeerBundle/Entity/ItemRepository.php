@@ -43,12 +43,17 @@ class ItemRepository extends EntityRepository
      */
     public function totalItems()
     {
-        return $this->createQueryBuilder('i')
+        $total = $this->createQueryBuilder('i')
             ->select('MAX(i.id)') // replaces previous select in parent
             ->getQuery()
             ->execute()
             [0][1] // first column of first row holds the MAX
             ;
+        if (empty($total)) {
+            $total = 0;
+        }
+
+        return $total;
     }
 
     /**
