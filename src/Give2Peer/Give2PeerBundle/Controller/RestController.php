@@ -43,51 +43,49 @@ class RestController extends BaseController
     }
 
     /**
-     * This exists because sometimes clients want to check their connectivity
-     * and credentials by "pinging" the server.
-     * 
-     * This should return useful information about the server.
+     * For clients that want to check their connectivity to the server.
+     *
+     * The response of this should be unmistakable of a server supporting the
+     * give2peer ~protocol, and should provide some public information about the
+     * server and API and maybe even some very basic stats, or metadata.
+     *
+     * This action is not protected by the firewall and therefore does not
+     * require credentials. This should be the only API action that is so.
+     *
+     * fixme: This should return useful information about the server.
+     *
+     * ... then we'll be able to enable
+     * ApiDoc()
      *
      * @return JsonResponse
      */
-    public function pingAction()
+    public function helloAction()
     {
         return new JsonResponse("pong");
     }
 
     /**
-     * A Giver is the legal owner of the item.
+     * For clients that want to check both their connectivity and credentials
+     * with the server.
      *
-     * Item attributes can be provided as POST variables :
-     *   - location (mandatory)
-     *   - title
-     *   - description
+     * The response of this should be unmistakable of a server supporting the
+     * give2peer ~protocol, and should provide some public information about the
+     * server and API and maybe even some very basic stats, or metadata.
      *
-     * @deprecated
-     * @param Request $request
+     * This action is not protected by the firewall and therefore does not
+     * require credentials. This should be the only API action that is so.
+     *
+     * fixme: This should return useful information about the server.
+     *
+     * ... then we'll be able to enable
+     * ApiDoc()
+     *
      * @return JsonResponse
      */
-//    public function giveAction(Request $request)
-//    {
-//        $request->attributes->set('gift', 'true');
-//        return $this->itemAddAction($request);
-//    }
-
-    /**
-     * A Spotter does not own the Item, which is probably just lying around in
-     * public space.
-     *
-     * See `give`.
-     *
-     * @deprecated
-     * @param Request $request
-     * @return JsonResponse
-     */
-//    public function spotAction(Request $request)
-//    {
-//        $request->attributes->set('gift', 'false');
-//        return $this->itemAddAction($request);
-//    }
+    public function checkAction()
+    {
+        return new JsonResponse("pong");
+    }
 
     /**
      * Publish a new item.
@@ -192,7 +190,7 @@ class RestController extends BaseController
     }
 
     /**
-     *
+     * fixme
      *
      * @param Request $request
      * @param $id
@@ -246,8 +244,8 @@ class RestController extends BaseController
      */
     public function itemPictureUploadAction(Request $request, $id)
     {
-        // Recover the user data and check if we're the giver or the spotter
-        // Later on we'll add authorization through spending NRG points.
+        // Recover the user data and check if we're the giver or the spotter.
+        // Later on we'll add authorization through karma levels ?
         $user = $this->getUser();
 
         $item = $this->getItem($id);
@@ -264,8 +262,8 @@ class RestController extends BaseController
             );
         }
         
-        // todo: move `web/pictures` to configuration
-        $publicPath = $this->get('kernel')->getRootDir() . '/../web/pictures';
+        // We have different configurations for prod and test environments.
+        $publicPath = $this->getParameter('give2peer.pictures.directory');
         $publicPath .= DIRECTORY_SEPARATOR . (string) intval($id);
 
         if (empty($request->files)) {
@@ -466,8 +464,8 @@ class RestController extends BaseController
      * Find items by increasing distance to the specified coordinates.
      *
      * Return a list of at most 64 Items, sorted by increasing distance to the
-     * center of the circle described by `latitude`, `longitude`, and `radius`.
-     * Note that the `radius` is curved along the great circles of Earth.
+     * center of the circle described by $latitude, $longitude, and $radius.
+     * Note that the $radius is curved along the great circles of Earth.
      *
      * You can skip the first `skip` items if you already have them.
      *
@@ -497,6 +495,7 @@ class RestController extends BaseController
 
         // Register our DISTANCE function, that only pgSQL can understand
         // Move this into a kernel hook ? or a more specific hook, maybe ?
+        // Meh. Just move it to its own method when we'll need to.
         if ($conn->getDatabasePlatform() instanceof PostgreSqlPlatform) {
             // We need to be ABSOLUTELY SURE we don't do this twice !
             if (null == $conf->getCustomNumericFunction('DISTANCE')) {
@@ -506,6 +505,7 @@ class RestController extends BaseController
                 );
             } else {
                 // Do not hesitate to remove this, it's just a ~sanity check.
+                // Actually, if this happens, you've probably been naughty.
                 return new ErrorJsonResponse(
                     'Ran findAroundCoordinates twice', Error::SYSTEM_ERROR, 500
                 );
@@ -516,7 +516,7 @@ class RestController extends BaseController
             );
         }
 
-        // Ask the repository to do the pgSQL-optimized query for us
+        // Ask the item repository to execute the pgSQL-optimized query for us.
         $repo = $this->getItemRepository();
         $results = $repo->findAround(
             $latitude, $longitude, $skip, $radius, $maxResults

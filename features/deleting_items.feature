@@ -31,5 +31,5 @@ description: |
    And there should be 0 items titled "Paroles de l'âme au vent"
    But I should be the author of 0 item
 # ... a good luck spell
-   And I am level 5
+   And I am level 111
    And I blaze through darkness and light alike

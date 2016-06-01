@@ -26,19 +26,19 @@ framework:
     fragments:       ~
     http_method_override: true
 
-# Easier REST routes, we can DRY the conversion of $id into Item or User
-# This are the defaults (it's already enabled)
-#sensio_framework_extra:
-#    request:
-#        converters: true
-#        auto_convert: true
+# Our very own configuration
+# Note that sf2 wanted the root node to be called give2_peer, so we hacked
+# around to get it to alias it as `give2peer` instead.
+#give2_peer:
+#    pictures:
+#        directory: "%kernel.root_dir%/../web/pictures"
 
-# Twig Configuration
+# Twig is the Template Engine
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
 
-# Assetic Configuration
+# Assetic is the Assets Manager
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
@@ -51,7 +51,7 @@ assetic:
         #yui_css:
         #    jar: "%kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar"
 
-# Doctrine Configuration
+# Doctrine is both the Database Abstraction Layer and Object Relational Mapping
 doctrine:
     dbal:
         driver:   "%database_driver%"
@@ -80,7 +80,7 @@ doctrine:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
                 enabled: true
 
-# Some More Doctrine Configuration
+# Some More Doctrine Configuration -- we also use deleteable
 stof_doctrine_extensions:
     default_locale: "%loc_le%"
     orm:
@@ -88,7 +88,7 @@ stof_doctrine_extensions:
             timestampable: true
 
 
-# Swiftmailer Configuration
+# Swiftmailer is a Mailer Service
 swiftmailer:
     transport: "%mailer_transport%"
     host:      "%mailer_host%"
@@ -104,7 +104,7 @@ fos_user:
     service:
         user_manager: g2p.user_manager
 
-# API Doc Generator
+# API Doc Generator with an interactive sandbox
 nelmio_api_doc:
     name: Give2Peer API Documentation
     motd: # Message Of The Day (in the masthead)

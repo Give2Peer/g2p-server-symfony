@@ -85,10 +85,11 @@ RoadMap
 
 ### 1.0
 
-- [x] Provide stats about the current number of items and users
-- [x] Version the API (starting with prefixing `v1/` in the URLs)
-- [x] Enable https support (somewhat)
-- [ ] Move scattered bundle configuration to project config files
+- [x] Feature: Stats about the current number of items and users
+- [x] Setting: Version the API (ie: prefix with `v1/` in the URLs)
+- [x] Setting: Optional HTTPS (somewhat, we're still self-signed)
+- [x] Setting: Semantic bundle configuration
+- [ ] Freeze the API
 - [ ] More RESTful routes for Users
 - [ ] More RESTful routes for Items
 
@@ -98,14 +99,14 @@ ChangeLog
 
 ### 0.4
 
-- [x] Item location, title, type, description, tags, images
-- [x] Find items by closeness to lat/lng coordinates
-- [x] List tags
-- [x] Geolocation through third-party services
-- [x] HTTP Auth authentication and registration a
-- [x] Create, store and serve 200x200 thumbnails
-- [x] Karma points and levels
-- [x] API auto-generated documentation (NelmioApiBundle)
+- [x] Feature: Item location, title, type, description, tags, images
+- [x] Feature: Find items by closeness to lat/lng coordinates
+- [x] Feature: List tags
+- [x] Feature: Geolocation through third-party services
+- [x] Setting: HTTP Auth authentication and easy registration
+- [x] Feature: Create, store and serve 240x240 thumbnails
+- [x] Feature: Karma points and levels
+- [x] Feature: API auto-generated documentation (NelmioApiBundle)
 
 
 

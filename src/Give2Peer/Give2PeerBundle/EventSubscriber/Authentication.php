@@ -2,10 +2,6 @@
 
 namespace Give2Peer\Give2PeerBundle\EventSubscriber;
 
-//use FOS\UserBundle\Event\FilterUserResponseEvent;
-//use FOS\UserBundle\Event\FormEvent;
-//use FOS\UserBundle\Event\UserEvent;
-//use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Model\UserManager;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,12 +13,21 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
- * THIS IS NOT USED RIGHT NOW. (it's registered, but does nothing)
+ * 
+ * 
+ * 
+ * THIS IS NOT USED RIGHT NOW.
+ * 
+ * 
  *
  * Hooks the authentication process to try to authenticate the User from the
  * name/restToken pair if he provided it. If they're invalid, 501.
  *
  * This'll be probably rewritten in the future, as Symfony evolves.
+ * 
+ * We changed our strategy and made a very smart registration API instead.
+ * 
+ * I keep this as a snippet for future kernel event hooking usage lookup.
  */
 class Authentication implements EventSubscriberInterface
 {

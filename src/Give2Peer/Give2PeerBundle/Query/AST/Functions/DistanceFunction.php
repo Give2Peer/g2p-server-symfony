@@ -12,6 +12,7 @@ use Doctrine\ORM\Query\AST\PathExpression;
  * DQL function for calculating distances in meters between two points A and B.
  *
  * This only works with postgreSQL.
+ * It is lazily added, because we don't always need it.
  *
  * DISTANCE(:latitudeA, :longitudeA, :latitudeB, :longitudeB)
  */

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Not mandatory, but useful if like me your cache cleaner whines
-# It it also done on `web\` because we write the item's images there.
+# Not mandatory, but useful if like me your cache cleaner whines.
+# It it also done on `web\` because we write the item's pictures there.
 
 # Change to project directory
 SCRIPT=$(readlink -f $0)

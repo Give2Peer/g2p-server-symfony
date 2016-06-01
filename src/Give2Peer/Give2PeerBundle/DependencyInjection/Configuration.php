@@ -18,11 +18,29 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('give2_peer');
+        $rootNode = $treeBuilder->root('give2peer');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        // This requires DIC access...
+        // $defaultPicturesDirectory = $this->get('kernel')->getRootDir() . '/../web/pictures';
+        // ... but this actually works ! % variables are replaced ! \o/
+        $defaultPicturesDirectory = "%kernel.root_dir%/../web/pictures";
+
+        $rootNode
+            ->children()
+                ->arrayNode('pictures')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('directory')
+                            ->example("%kernel.root_dir%/../web/pictures")
+                            ->info("The directory where to store the uploaded pictures.")
+                            ->defaultValue($defaultPicturesDirectory)
+                        ->end()
+                    ->end()
+                ->end() // pictures
+            ->end()
+        ;
+
+
 
         return $treeBuilder;
     }

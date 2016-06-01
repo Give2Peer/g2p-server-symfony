@@ -1,6 +1,14 @@
 imports:
     - { resource: config_dev.yml }
 
+# We want the tests to use another directory when uploading files,
+# so that we can wipe it safely between each scenario.
+give2peer:
+    pictures:
+        # You should never EVER remove this line and then run the feature suite,
+        # because the suite runner removes this directory before each scenario.
+        directory: "%kernel.root_dir%/../web/pictures_test"
+
 framework:
     test: ~
     session:
@@ -8,20 +16,24 @@ framework:
     profiler:
         collect: false
 
+# We're using a headless browser (Goutte :3) for our integration tests,
+# so we don't need the developer toolbar.
 web_profiler:
     toolbar: false
     intercept_redirects: false
 
+# We're not sending any email at all, but we might in the future.
 swiftmailer:
     disable_delivery: true
 
+# We can't use a dummy sqlite database because we NEED pgSQL.
+# The script setup_pgsql takes care of creating another database for tests too.
 doctrine:
     dbal:
         default_connection: default
         connections:
             default:
-                dbname:   "%database_name%_test"
-                #driver:   pdo_sqlite
-                #path:     %kernel.cache_dir%/test.db
+                dbname: "%database_name%_test"
 
+# No idea why this is here. Does it even activate anything ?
 liip_functional_test: ~

@@ -18,7 +18,7 @@ give2peer_home:
 # - news ?
 give2peer_hello:
     path:     /hello
-    defaults: { _controller: Give2PeerBundle:Rest:ping, _format: json }
+    defaults: { _controller: Give2PeerBundle:Rest:hello, _format: json }
     methods:  [GET]
 
 # Like 'hello', but to check if credentials pass through the firewall.
@@ -28,7 +28,7 @@ give2peer_hello:
 # - nothing else for now
 give2peer_authenticate:
     path:     /check
-    defaults: { _controller: Give2PeerBundle:Rest:ping, _format: json }
+    defaults: { _controller: Give2PeerBundle:Rest:check, _format: json }
     methods:  [GET]
 
 

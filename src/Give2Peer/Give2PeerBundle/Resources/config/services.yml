@@ -1,15 +1,20 @@
+# This is loaded by our DependencyInjection\Give2PeerExtension
 # List of tags : http://symfony.com/doc/current/reference/dic_tags.html
 
 services:
-    #
-    g2p.event_subscriber_authentication:
-        class: Give2Peer\Give2PeerBundle\EventSubscriber\Authentication
-        arguments:
-            - @security.token_storage
-            - @fos_user.user_manager
-        tags:
-            - { name: kernel.event_subscriber }
 
+    # Register a subscriber on every request, that authenticates if need be.
+    # We've disabled this "feature" for now.
+    # The registration API with /register should be easy enough for clients.
+#    g2p.event_subscriber_authentication:
+#        class: Give2Peer\Give2PeerBundle\EventSubscriber\Authentication
+#        arguments:
+#            - @security.token_storage
+#            - @fos_user.user_manager
+#        tags:
+#            - { name: kernel.event_subscriber }
+
+    # We roll our own user manager, with username generation and so on.
     g2p.user_manager:
         class: Give2Peer\Give2PeerBundle\Entity\UserManager
         arguments:
@@ -19,9 +24,11 @@ services:
             - @fos_user.entity_manager
             - Give2Peer\Give2PeerBundle\Entity\User
 
-    # Register the ... what ? the annotations reader ?
+    # Register the SoftDeleteableListener to doctrine events,
+    # and make sure to inject an annotaions reader into it.
     # The softdeletable filter itself is enabled in config.yml.
     # Why do I even need this ? These are defaults, no ?
+    # Why does the SoftDeleteable bundle not handle this !?
     gedmo.listener.softdeleteable:
         class: Gedmo\SoftDeleteable\SoftDeleteableListener
         tags:

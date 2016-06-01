@@ -48,6 +48,20 @@ abstract class BaseContext extends WebTestCase
     }
 
     /**
+     * Gets a parameter.
+     *
+     * @param string $name The parameter name
+     *
+     * @return mixed The parameter value
+     *
+     * @throws InvalidArgumentException if the parameter is not defined
+     */
+    protected function getParameter($name)
+    {
+        return $this->getContainer()->getParameter($name);
+    }
+
+    /**
      * Get service by id.
      *
      * @param string $id
@@ -83,6 +97,30 @@ abstract class BaseContext extends WebTestCase
     protected function fromYaml($pystring)
     {
         return Yaml::parse($pystring, true, true);
+    }
+
+    /**
+     * Recursively removes the $directory and all its contents.
+     * If $directory does not exist, silently ignore when not $strict.
+     * 
+     * This actually should be a global function, PHP-style, I guess...
+     *
+     * @param string $directory
+     * @param bool $strict
+     * @throws Exception
+     */
+    protected static function removeDirectory($directory, $strict = true)
+    {
+        if (is_dir($directory)) {
+            foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $path) {
+                $path->isDir() && !$path->isLink() ? rmdir($path->getPathname()) : unlink($path->getPathname());
+            }
+            rmdir($directory);
+        } else {
+            if ($strict) {
+                throw new Exception("Directory '$directory' does not exist.");
+            }
+        }
     }
     
     

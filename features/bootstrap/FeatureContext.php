@@ -183,13 +183,12 @@ class FeatureContext extends    BaseContext
         // Loading an empty array still truncates all tables.
         $this->loadFixtures(array());
 
-        // Empty the public directory where pictures are -- todo
-        // THIS IS DANGEROUS !
-        // It means that this test suite can never EVER be run on the prod server
-        // This is BAD.
-        // So, no. I'll move some things to configuration, and we'll try again.
-        // Meanwhile, just delete by hand the files created in web/pictures
+        // Empty the public directory where pictures are -- depends on env !
+        $pictures_dir = $this->getParameter('give2peer.pictures.directory');
+        $this->removeDirectory($pictures_dir, false);
+        //print("Removed directory $pictures_dir");
     }
+
 
     /**
      * To train our inner pigeon into enjoying Feature-Driven Development...
@@ -348,7 +347,8 @@ class FeatureContext extends    BaseContext
     {
         $user = $this->getI()->setPlainPassword($password);
         $this->getUserManager()->updateUser($user);
-//        $this->getEntityManager()->flush();
+        // Flushing was already done by the user manager.
+        //$this->getEntityManager()->flush();
 
         $this->password = $password;
     }
