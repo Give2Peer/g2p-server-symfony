@@ -11,8 +11,22 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\TagRepository")
  */
-class Tag
+class Tag implements \JsonSerializable
 {
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id'   => $this->getId(),
+            'name' => $this->getName(),
+        ];
+    }
+
     /**
      * @var integer
      *
@@ -25,7 +39,7 @@ class Tag
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=16)
+     * @ORM\Column(name="name", type="string", length=16, unique=true)
      */
     private $name;
 

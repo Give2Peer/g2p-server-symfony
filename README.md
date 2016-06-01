@@ -78,8 +78,9 @@ RoadMap
 
 ### 1.1
 
-- [ ] RESTful routes for Tags
-- [ ] Provide stats about the total number of items
+- [ ] More RESTful routes for Users
+- [ ] More RESTful routes for Items
+- [ ] More RESTful routes for Tags
 - [ ] a sandbox version of this server to test-drive clients with
 
 
@@ -89,9 +90,8 @@ RoadMap
 - [x] Setting: Version the API (ie: prefix with `v1/` in the URLs)
 - [x] Setting: Optional HTTPS (somewhat, we're still self-signed)
 - [x] Setting: Semantic bundle configuration
+- [x] Provide stats about the total number of items
 - [ ] Freeze the API
-- [ ] More RESTful routes for Users
-- [ ] More RESTful routes for Items
 
 
 ChangeLog

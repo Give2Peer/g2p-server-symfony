@@ -29,6 +29,7 @@ Scenario: Attach a JPG picture
 
 
 @tobreak
+# Right now no client tries to upload PNG files, but they will, they will...
 Scenario: Do not attach a PNG picture (for now)
    When I POST to /item/1/picture the file features/assets/trollface.png
    Then the request should be denied

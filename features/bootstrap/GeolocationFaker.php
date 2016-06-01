@@ -16,4 +16,12 @@ class GeolocationFaker extends \Faker\Provider\Base
     {
         return rand(-180000, 180000) / 1000;
     }
+    public function lat()
+    {
+        return $this->latitude();
+    }
+    public function lng()
+    {
+        return $this->longitude();
+    }
 }

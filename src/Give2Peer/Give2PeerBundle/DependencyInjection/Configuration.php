@@ -20,9 +20,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('give2peer');
 
-        // This requires DIC access...
-        // $defaultPicturesDirectory = $this->get('kernel')->getRootDir() . '/../web/pictures';
-        // ... but this actually works ! % variables are replaced ! \o/
+        // This actually works, as % variables are replaced ! \o/
         $defaultPicturesDirectory = "%kernel.root_dir%/../web/pictures";
 
         $rootNode

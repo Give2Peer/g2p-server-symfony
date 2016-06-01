@@ -10,6 +10,7 @@ Background:
   Given I am the registered user named Goutte
 
 
+
 # This is a dummy scenario : there should always be tags in the database.
 Scenario: List all tags when there's none
    When I request the tags
@@ -18,25 +19,25 @@ Scenario: List all tags when there's none
 
 
 
-# fixme: make it more flexible (array of Tags with a "name" property) BEFORE FREEZING THE API
 Scenario: List all tags
   Given there is a tag named "dirty"
     And there is a tag named "wet"
-    And there is a tag named "old"
+    And there is a tag named "broken"
    When I request the tags
    Then the request should be accepted
     And there should be 3 tags in the response
-    And I dump the response
+    #And I dump the response
     And the response should include :
 """
-- dirty
-- wet
-- old
+tags:
+  - name: broken
+  - name: dirty
+  - name: wet
 """
     And the response should not include :
 """
-- nope
-- carrots
+tags:
+  - name: nope
 """
 
 

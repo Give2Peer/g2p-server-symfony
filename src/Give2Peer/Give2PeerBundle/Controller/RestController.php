@@ -16,8 +16,7 @@ use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
 
 /**
- * todo:
- * - continue moving methods out of this file and into controllers in `Rest/`.
+ * todo: continue moving methods out of this file and into controllers in `Rest/`.
  * 
  * Routes are configured in YAML, in `Resources/config/routing.yml`.
  * ApiDoc's documentation can be found at :
@@ -217,7 +216,9 @@ class RestController extends BaseController
 
         $this->getEntityManager()->flush();
 
-        return new JsonResponse(['item'=>$item]);
+        return new JsonResponse([
+            'item' => $item
+        ]);
     }
 
     /**
@@ -340,7 +341,9 @@ class RestController extends BaseController
         // Flush our changes to the item to the database
         $this->getEntityManager()->flush();
 
-        return new JsonResponse(['item'=>$item]);
+        return new JsonResponse([
+            'item' => $item
+        ]);
     }
 
     /**

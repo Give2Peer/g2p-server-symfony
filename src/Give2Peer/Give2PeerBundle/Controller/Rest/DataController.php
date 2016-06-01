@@ -15,34 +15,41 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc; // used
 class DataController extends BaseController
 {
     /**
-     * Return all available tags, as a JSONed array.
+     * Return all available tags sorted alphabetically.
      *
      * @ApiDoc()
      * @return JsonResponse
      */
     public function tagsAction()
     {
-        $tags = $this->getTagRepository()->getTagNames();
+        $tags = $this->getTagRepository()->findBy([], ['name'=>'ASC']);
 
-        return new JsonResponse($tags);
+        return new JsonResponse([
+            'tags' => $tags
+        ]);
     }
 
     /**
      * Get statistics about the service.
+     *
+     * - users_count: number of registered users.
+     * - items_count: number of published items right now.
+     * - items_total: number of published items since the beginning.
      *
      * @ApiDoc()
      * @return JsonResponse
      */
     public function statsAction()
     {
-        // Number of registered users
         $usersCount = $this->getUserRepository()->countUsers();
-        // Number of published items
         $itemsCount = $this->getItemRepository()->countItems();
+        $itemsTotal = $this->getItemRepository()->totalItems();
+        
 
         return new JsonResponse([
             'users_count' => $usersCount,
             'items_count' => $itemsCount,
+            'items_total' => $itemsTotal,
         ]);
     }
 }

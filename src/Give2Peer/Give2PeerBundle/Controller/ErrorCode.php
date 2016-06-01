@@ -5,8 +5,6 @@ namespace Give2Peer\Give2PeerBundle\Controller;
 /**
  * Error codes returned by the REST API when something fishy happens.
  *
- * fixme: sort the error codes before releasing
- *
  * Class ErrorCode
  * @package Give2Peer\Give2PeerBundle\Controller
  */

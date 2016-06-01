@@ -21,7 +21,7 @@ class ItemRepository extends EntityRepository
 {
 
     /**
-     * Counts all items.
+     * Counts the items that are currently published.
      *
      * @return int
      */
@@ -32,6 +32,22 @@ class ItemRepository extends EntityRepository
             ->getQuery()
             ->execute()
             [0][1] // first column of first row holds the COUNT
+            ;
+    }
+
+    /**
+     * Counts all the items that were published since the beginning, even the
+     * ones that were deleted.
+     *
+     * @return int
+     */
+    public function totalItems()
+    {
+        return $this->createQueryBuilder('i')
+            ->select('MAX(i.id)') // replaces previous select in parent
+            ->getQuery()
+            ->execute()
+            [0][1] // first column of first row holds the MAX
             ;
     }
 

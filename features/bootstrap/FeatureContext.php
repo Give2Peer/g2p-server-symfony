@@ -555,6 +555,17 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * @Given /^I (?:try to )?g[ai]ve an item titled "?(.+?)"?$/
+     */
+    public function iGiveAnItemTitled($title)
+    {
+        $location = sprintf("%s/%s", $this->faker->lat, $this->faker->lng);
+        $pystring  = "location: $location\n";
+        $pystring .= "title: $title\n";
+        $this->iPost('item', $pystring);
+    }
+
+    /**
      * WARNING :
      * THIS WILL NOT INCREMENT THE AUTHOR'S KARMA
      * AND IT BYPASSES THE QUOTA SYSTEM (it will never fail)
@@ -596,11 +607,14 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @When /^I (?:try to )?delete the item titled "(.+)"$/
+     * @When /^I (?:try to )?deleted? the item titled "(.+)"$/
      */
     public function iDeleteTheItemTitled($title)
     {
         $item = $this->getItemRepository()->findOneBy(['title' => $title]);
+        if (null == $item) {
+            $this->fail(sprintf("There is no item by the name '%s'", $title));
+        }
 
         $this->iDelete('item/'.$item->getId());
     }
@@ -611,9 +625,8 @@ class FeatureContext extends    BaseContext
     public function iThankTheAuthorOfItemTitled($title)
     {
         $item = $this->getItemRepository()->findOneBy(['title' => $title]);
-
         if (null == $item) {
-            $this->fail("Nooooope.");
+            $this->fail(sprintf("There is no item by the name '%s'", $title));
         }
 
         $id = $item->getId();
@@ -853,7 +866,7 @@ class FeatureContext extends    BaseContext
         $response = $this->client->getResponse();
         $actual = json_decode($response->getContent());
 
-        if (count($actual) != $howMany) {
+        if (count($actual->tags) != $howMany) {
             $this->fail(sprintf(
                 "The response sent %d tags(s) back,\n" .
                 "Because the response provided:\n%s",
