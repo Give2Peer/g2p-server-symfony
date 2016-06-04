@@ -42,6 +42,14 @@ Scenario: Attach a GIF picture to an item
     And there should be a file at web/pictures_test/1/thumb.jpg
 
 
+# Nope ; my PHP 5.6 does not have imagecreatefromwebp, which is weird.
+#Scenario: Attach a WebP picture to an item
+#   When I POST to /item/1/picture the file features/assets/dummy.webp
+#   Then the request should be accepted
+#    And there should be a file at web/pictures_test/1/1.webp
+#    And there should be a file at web/pictures_test/1/thumb.jpg
+
+
 Scenario: Fail to attach a picture to a non-existent item
    When I POST to /item/42/picture the file features/assets/old_bike.jpg
    Then the request should be denied

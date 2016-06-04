@@ -162,7 +162,7 @@ class ItemController extends BaseController
      * 
      * You need to be the author of the item.
      *
-     * We support `JPG` and `PNG` files.
+     * We support `JPG`, `PNG` and 'GIF` files.
      * 
      * Ideas :
      * - Allow uploading more than one picture for one item, since level ???
@@ -172,8 +172,8 @@ class ItemController extends BaseController
      *   parameters = {
      *     {
      *       "name"="picture", "dataType"="file",
-     *       "required"=true, "format"="jpg",
-     *       "description"="Picture file to attach to the item. JPG only for now."
+     *       "required"=true, "format"="jpg|png|gif|webp",
+     *       "description"="Picture file to attach to the item."
      *     }
      *   }
      * )
@@ -233,7 +233,7 @@ class ItemController extends BaseController
         $allowedExtensions = [ 'jpg', 'jpeg', 'png', 'gif' ];
 
         //$actualExtension = $file->getExtension(); // NO, tmp files have no extension
-        $actualExtension = $file->getClientOriginalExtension();
+        $actualExtension = strtolower($file->getClientOriginalExtension());
         if ( ! in_array($actualExtension, $allowedExtensions)) {
             return new ErrorJsonResponse(sprintf(
                 "Extension '%s' unsupported. Supported extensions : %s",
@@ -298,21 +298,31 @@ class ItemController extends BaseController
      * @param $source
      * @param $destination
      * @param $sideLength
-     * @param $extension
+     * @param string $subtype the image mime subtype of the source.
      * @throws \Exception
      */
-    function generateSquareThumb($source, $destination, $sideLength, $extension)
+    function generateSquareThumb($source, $destination, $sideLength, $subtype)
     {
         // Read the source image
-        if (in_array($extension, array('jpg', 'jpeg'))) {
-            $sourceImage = imagecreatefromjpeg($source);
-        } elseif (in_array($extension, array('png'))) {
-            $sourceImage = imagecreatefrompng($source);
-        } elseif (in_array($extension, array('gif'))) {
-            $sourceImage = imagecreatefromgif($source);
-        } else {
-            throw new \Exception("Unsupported image format: '$extension'.");
+        switch ($subtype) {
+            case 'jpg';
+            case 'jpeg';
+                $sourceImage = imagecreatefromjpeg($source);
+                break;
+            case 'png';
+                $sourceImage = imagecreatefrompng($source);
+                break;
+            case 'gif';
+                $sourceImage = imagecreatefromgif($source);
+                break;
+//            case 'webp';
+//                $sourceImage = imagecreatefromwebp($source);
+//                break;
+            default:
+                throw new \Exception("Unsupported image subtype: '$subtype'.");
+
         }
+
         $width  = imagesx($sourceImage);
         $height = imagesy($sourceImage);
 
