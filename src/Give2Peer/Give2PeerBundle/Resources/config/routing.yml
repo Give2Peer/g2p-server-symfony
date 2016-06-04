@@ -2,6 +2,9 @@
 
 # REMEMBER TO EDIT THE FIREWALL IN `app/config/security.yml` TOO
 
+# Now that we have an API documentation generator, I'm not sure that this YAML
+# configuration is the best way to go. We might move to annotations someday.
+
 
 ## HOME ########################################################################
 
@@ -97,19 +100,19 @@ give2peer_update_user_password:
 
 give2peer_item_add:
     path:     /item
-    defaults: { _controller: Give2PeerBundle:Rest:itemAdd, _format: json }
+    defaults: { _controller: Give2PeerBundle:Rest/Item:itemAdd, _format: json }
     methods:  [POST]
 
 give2peer_item_delete:
     path:     /item/{id}
-    defaults: { _controller: Give2PeerBundle:Rest:itemDelete, _format: json }
+    defaults: { _controller: Give2PeerBundle:Rest/Item:itemDelete, _format: json }
     methods:  [DELETE]
     requirements:
         id:   \d+
 
 give2peer_picture_upload:
     path:     /item/{id}/picture
-    defaults: { _controller: Give2PeerBundle:Rest:itemPictureUpload, _format: json }
+    defaults: { _controller: Give2PeerBundle:Rest/Item:itemPictureUpload, _format: json }
     methods:  [POST]
     requirements:
         id:   \d+
@@ -117,11 +120,19 @@ give2peer_picture_upload:
 # There are other GET parameters allowed, to filter and paginate the request
 give2peer_items_around:
     path:     /items/around/{latitude}/{longitude}
-    defaults: { _controller: Give2PeerBundle:Rest:itemsAround, _format: json }
+    defaults: { _controller: Give2PeerBundle:Rest/Item:itemsAround, _format: json }
     methods:  [GET]
     requirements:
         latitude:   "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
         longitude:  "[+-]?\d+(?:[.,]\d*)?|[+-]?[.,]\d+"
+
+
+## TAGS ########################################################################
+
+give2peer_tags:
+    path:     /tags
+    defaults: { _controller: Give2PeerBundle:Rest/Tag:indexAlphabetically, _format: json }
+    methods:  [GET]
 
 
 ## SOCIAL ACTIONS ##############################################################
@@ -132,14 +143,9 @@ give2peer_thank_item:
     methods:  [POST]
 
 
-## GENERAL DATA COLLECTION #####################################################
-
-give2peer_tags:
-    path:     /tags
-    defaults: { _controller: Give2PeerBundle:Rest\Data:tags, _format: json }
-    methods:  [GET]
+## STATISTICS ##################################################################
 
 give2peer_stats:
     path:     /stats
-    defaults: { _controller: Give2PeerBundle:Rest\Data:stats, _format: json }
+    defaults: { _controller: Give2PeerBundle:Rest/Stat:all, _format: json }
     methods:  [GET]

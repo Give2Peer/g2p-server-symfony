@@ -21,30 +21,37 @@ Background:
 
 
 
-Scenario: Attach a JPG picture
-   When I POST to /item/1/picture the file features/assets/1.jpg
+Scenario: Attach a JPG picture to an item
+   When I POST to /item/1/picture the file features/assets/old_bike.jpg
    Then the request should be accepted
     And there should be a file at web/pictures_test/1/1.jpg
     And there should be a file at web/pictures_test/1/thumb.jpg
 
 
-@tobreak
-# Right now no client tries to upload PNG files, but they will, they will...
-Scenario: Do not attach a PNG picture (for now)
+Scenario: Attach a PNG picture to an item
    When I POST to /item/1/picture the file features/assets/trollface.png
-   Then the request should be denied
-    And there should not be a file at web/pictures_test/1/1.png
-    And there should not be a file at web/pictures_test/1/trollface.png
+   Then the request should be accepted
+    And there should be a file at web/pictures_test/1/1.png
+    And there should be a file at web/pictures_test/1/thumb.jpg
+
+
+Scenario: Attach a GIF picture to an item
+   When I POST to /item/1/picture the file features/assets/dummy.gif
+   Then the request should be accepted
+    And there should be a file at web/pictures_test/1/1.gif
+    And there should be a file at web/pictures_test/1/thumb.jpg
 
 
 Scenario: Fail to attach a picture to a non-existent item
-   When I POST to /item/42/picture the file features/assets/1.jpg
+   When I POST to /item/42/picture the file features/assets/old_bike.jpg
    Then the request should be denied
+    And I dump the response
     And there should not be a file at web/pictures_test/1/1.jpg
 
 
 Scenario: Fail to attach a picture to a non-authorized item
-   When I POST to /item/2/picture the file features/assets/2.jpg
+   When I POST to /item/2/picture the file features/assets/old_bike.jpg
    Then the request should be denied
-    And there should not be a file at web/pictures_test/2/2.jpg
+    And I dump the response
+    And there should not be a file at web/pictures_test/2/1.jpg
 

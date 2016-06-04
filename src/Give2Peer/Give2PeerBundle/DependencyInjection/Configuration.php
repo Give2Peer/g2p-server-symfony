@@ -17,13 +17,12 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('give2peer');
-
         // This actually works, as % variables are replaced ! \o/
         $defaultPicturesDirectory = "%kernel.root_dir%/../web/pictures";
 
-        $rootNode
+        $treeBuilder = new TreeBuilder();
+        $treeBuilder
+            ->root('give2peer')
             ->children()
                 ->arrayNode('pictures')
                     ->addDefaultsIfNotSet()
@@ -39,11 +38,19 @@ class Configuration implements ConfigurationInterface
                             ->defaultValue(240)
                         ->end()
                     ->end()
-                ->end() // pictures
+                ->end()
+                ->arrayNode('items')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->integerNode('max_per_page')
+                            ->example("64")
+                            ->info("The maximum number of items per page of results.")
+                            ->defaultValue(64)
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
-
-
 
         return $treeBuilder;
     }

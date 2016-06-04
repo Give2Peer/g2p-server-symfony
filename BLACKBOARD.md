@@ -24,7 +24,7 @@ Ideas:
 RueCup
 ======
 
-Contacted them. No answer yet. Maybe I was too hyped ?
+Contacted them. No answer yet, a week later. Maybe I was too hyped ?
 Should've waited a few hours at least for excitement to power down...
 
 Anyhow that's what they're using:
@@ -46,3 +46,5 @@ Categories
 Every single person I've told this about told me that we should handle
 more than just repairable fixtures. But it's a great name and a great
 community, and it's specialized ! We really need to chaaaaaaaaaaaaat !
+
+I'm so forever alone :/

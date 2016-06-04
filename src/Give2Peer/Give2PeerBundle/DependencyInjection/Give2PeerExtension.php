@@ -104,7 +104,7 @@ class Give2PeerExtension extends Extension
                 }
             }
         } else {
-            // It is a sequential array, let's consider it as a leaf.
+            // It is a sequential array, let's handle it like a leaf.
             $container->setParameter($namespace, $config);
         }
     }

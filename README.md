@@ -1,15 +1,39 @@
-Give2Peer PHP server
-====================
+Give2Peer API for Karma ☯
+=========================
 
 What
 ====
 
+The server-side of mobile apps such as _Karma_, for features such as :
+
 ``` gherkin
+Feature: Find an item I lost
+  In order to find something I lost
+  As a sentient and connected being
+  I want to look for lost items
+
+Feature: Find repairable furniture
+  In order to add fixtures to my home
+  As a sentient and connected being
+  I want to repair discarded furniture
+
+Feature: Find materials
+  In order to craft something awesome
+  As a sentient and connected being
+  I want to find discarded materials
+
+
 Feature: Geotagging items
-  In order to bring joy
+  In order to bring joy to all of the above
   As a nice, sentient, and connected being
   I want to geotag items in public places
 
+Scenario: Lost & Found
+  Given I am strolling in Paris
+   When I geotag a lost glove below the Eiffel Tower
+   Then I should win some karma
+    And the glove should be added to the map of lost items
+    And glove lookers in the vicinity should be alerted
 
 Scenario: Donation
   Given I am moving out
@@ -18,13 +42,6 @@ Scenario: Donation
    Then I should win some karma
     And the furniture should be added to the map of donations
     And gatherers in the vicinity should be alerted
-
-Scenario: Lost & Found
-  Given I am strolling in Paris
-   When I geotag a lost glove below the Eiffel Tower
-   Then I should win some karma
-    And the glove should be added to the map of lost items
-    And glove lookers in the vicinity should be alerted
 
 Scenario: Matter Out Of Place (MOOP)
   Given I am a nobody
@@ -81,7 +98,8 @@ RoadMap
 - [ ] More RESTful routes for Users
 - [ ] More RESTful routes for Items
 - [ ] More RESTful routes for Tags
-- [ ] a sandbox version of this server to test-drive clients with
+- [ ] Feature: API XML Responses
+- [ ] Testing: a sandbox version of this server to test-drive clients
 
 
 ### 1.0
@@ -91,6 +109,8 @@ RoadMap
 - [x] Setting: Optional HTTPS (somewhat, we're still self-signed)
 - [x] Setting: Semantic bundle configuration
 - [x] Provide stats about the total number of items
+- [x] Feature: Attach a PNG picture to an item
+- [x] Feature: Attach a GIF picture to an item
 - [ ] Freeze the API
 
 
@@ -184,3 +204,8 @@ and make a proper `LICENCE.md` file that we can display in the clients.
 They are all public-domain-like, but they have their little quirks, and
 besides it's like saying thanks !
 
+
+
+[Symfony2]: https://symfony.com/
+[pgSQL]: https://www.postgresql.org/
+[Composer]: https://getcomposer.org/

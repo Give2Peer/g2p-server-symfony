@@ -7,30 +7,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc; // used
 
 /**
- * Contains only GET routes that do not need an authenticated user to work.
- * (later) Errr... I'm pretty sure this is behind a firewall.
- * 
- * Let's say this is for routes that do not deserve their own controller.
+ * Get statistics about the service.
  */
-class DataController extends BaseController
+class StatController extends BaseController
 {
     /**
-     * Return all available tags sorted alphabetically.
-     *
-     * @ApiDoc()
-     * @return JsonResponse
-     */
-    public function tagsAction()
-    {
-        $tags = $this->getTagRepository()->findBy([], ['name'=>'ASC']);
-
-        return new JsonResponse([
-            'tags' => $tags
-        ]);
-    }
-
-    /**
-     * Get statistics about the service.
+     * Get a compilation of all statistics about the service.
      *
      * - users_count: number of registered users.
      * - items_count: number of published items right now.
@@ -39,7 +21,7 @@ class DataController extends BaseController
      * @ApiDoc()
      * @return JsonResponse
      */
-    public function statsAction()
+    public function allAction()
     {
         $usersCount = $this->getUserRepository()->countUsers();
         $itemsCount = $this->getItemRepository()->countItems();

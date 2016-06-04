@@ -34,6 +34,8 @@ give2peer:
         directory: "%kernel.root_dir%/../web/pictures"
         # In pixels, the side size of the square thumbnail.
         size: 240
+    items:
+        max_per_page: 64
 
 # Twig is the Template Engine
 twig:
