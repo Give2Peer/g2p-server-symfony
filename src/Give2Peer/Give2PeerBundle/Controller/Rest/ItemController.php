@@ -227,12 +227,13 @@ class ItemController extends BaseController
         }
 
         // Check extension
-        // This should be improved later -- hi, you, future self ! Remember me ?
+        // Note that mime-types can be forged too, so extension is good enough.
+        // This may be improved further -- hi, you, future self ! Remember me ?
         // Remember to update the `generateSquareThumb` method, too !
         // Later: I remember you, past me, I remember. I <3 u, my only friend !
-        $allowedExtensions = [ 'jpg', 'jpeg', 'png', 'gif' ];
+        $allowedExtensions = [ 'jpg', 'jpeg', 'png', 'gif', 'webp' ];
 
-        //$actualExtension = $file->getExtension(); // NO, tmp files have no extension
+        //$actualExtension = $file->getExtension(); // NO, tmp files have no ext
         $actualExtension = strtolower($file->getClientOriginalExtension());
         if ( ! in_array($actualExtension, $allowedExtensions)) {
             return new ErrorJsonResponse(sprintf(
@@ -249,7 +250,7 @@ class ItemController extends BaseController
             $file->move($publicPath, $filename);
         } catch (\Exception $e) {
             return new ErrorJsonResponse(
-                sprintf("Picture unrecognized : %s", $e->getMessage()),
+                sprintf("Failed to copy the picture : %s", $e->getMessage()),
                 Error::UNSUPPORTED_FILE
             );
         }
@@ -263,6 +264,10 @@ class ItemController extends BaseController
                 $thumbSize, $actualExtension
             );
         } catch (\Exception $e) {
+            // As the mime-type and/or extension can be forged, we use EAFP on
+            // the thumbnail generation, so we need to delete the uploaded file.
+            // I'm not sure how secure imagecreatefrom*** functions are, though.
+            unlink($publicPath . DIRECTORY_SEPARATOR . $filename);
             return new ErrorJsonResponse(
                 sprintf("Thumbnail creation failed : %s", $e->getMessage()),
                 Error::UNSUPPORTED_FILE
@@ -315,9 +320,10 @@ class ItemController extends BaseController
             case 'gif';
                 $sourceImage = imagecreatefromgif($source);
                 break;
-//            case 'webp';
-//                $sourceImage = imagecreatefromwebp($source);
-//                break;
+            case 'webp';
+                // I have 'undefined function' in my IDE ?! ; it works, though.
+                $sourceImage = imagecreatefromwebp($source);
+                break;
             default:
                 throw new \Exception("Unsupported image subtype: '$subtype'.");
 

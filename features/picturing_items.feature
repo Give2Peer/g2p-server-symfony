@@ -22,14 +22,14 @@ Background:
 
 
 Scenario: Attach a JPG picture to an item
-   When I POST to /item/1/picture the file features/assets/old_bike.jpg
+   When I POST to /item/1/picture the file features/assets/dummy.jpg
    Then the request should be accepted
     And there should be a file at web/pictures_test/1/1.jpg
     And there should be a file at web/pictures_test/1/thumb.jpg
 
 
 Scenario: Attach a PNG picture to an item
-   When I POST to /item/1/picture the file features/assets/trollface.png
+   When I POST to /item/1/picture the file features/assets/dummy.png
    Then the request should be accepted
     And there should be a file at web/pictures_test/1/1.png
     And there should be a file at web/pictures_test/1/thumb.jpg
@@ -42,23 +42,34 @@ Scenario: Attach a GIF picture to an item
     And there should be a file at web/pictures_test/1/thumb.jpg
 
 
-# Nope ; my PHP 5.6 does not have imagecreatefromwebp, which is weird.
-#Scenario: Attach a WebP picture to an item
-#   When I POST to /item/1/picture the file features/assets/dummy.webp
-#   Then the request should be accepted
-#    And there should be a file at web/pictures_test/1/1.webp
-#    And there should be a file at web/pictures_test/1/thumb.jpg
+# The generated thumbnail has wrong colors, though.
+# I guess PHP and/or GD is not WebP-ready yet.
+Scenario: Attach a WebP picture to an item (buggy)
+   When I POST to /item/1/picture the file features/assets/dummy.webp
+   Then the request should be accepted
+    And there should be a file at web/pictures_test/1/1.webp
+    And there should be a file at web/pictures_test/1/thumb.jpg
+
+
+# malicious.jpg contains PHP code, not image data
+# $ file --mime-type -b features/assets/malicious.jpg
+# text/x-php
+Scenario: Fail to attach a malicious JPG picture to an item
+   When I POST to /item/1/picture the file features/assets/malicious.jpg
+   Then the request should be denied
+    And I dump the response
+    And there should not be a file at web/pictures_test/1/1.jpg
 
 
 Scenario: Fail to attach a picture to a non-existent item
-   When I POST to /item/42/picture the file features/assets/old_bike.jpg
+   When I POST to /item/42/picture the file features/assets/dummy.jpg
    Then the request should be denied
     And I dump the response
     And there should not be a file at web/pictures_test/1/1.jpg
 
 
 Scenario: Fail to attach a picture to a non-authorized item
-   When I POST to /item/2/picture the file features/assets/old_bike.jpg
+   When I POST to /item/2/picture the file features/assets/dummy.jpg
    Then the request should be denied
     And I dump the response
     And there should not be a file at web/pictures_test/2/1.jpg
