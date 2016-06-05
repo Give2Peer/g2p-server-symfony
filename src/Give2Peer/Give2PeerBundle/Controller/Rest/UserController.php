@@ -146,20 +146,25 @@ class UserController extends BaseController
     }
     
     /**
-     * Get the (public) profile information of the given user.
+     * Get the (public) profile information of the user identifier by `id`.
      * 
-     * @ApiDoc()
+     * @ApiDoc(
+     *   requirements = {
+     *     {
+     *       "name"="id",
+     *       "requirement"="[0-9]+", "type"="integer",
+     *       "description"="The unique identifier of the user.",
+     *     }
+     *   }
+     * )
      *
      * @param  Request $request
      * @return ErrorJsonResponse|JsonResponse
-     *
-     * Milo : 0563764240
-     *
      */
     public function publicReadAction (Request $request, User $user)
     {
         if (empty($user)) {
-            return new ErrorJsonResponse("Bad username.", Error::BAD_USERNAME);
+            return new ErrorJsonResponse("Bad username.", Error::BAD_USER_ID);
         }
 
         return new JsonResponse([
@@ -170,7 +175,7 @@ class UserController extends BaseController
     /**
      * Change the authenticated user's password to the provided `password`.
      *
-     * If you need to change more than the password, POST `users/{id}`.
+     * If you need to change more than the password, use `POST user/{id}`.
      *
      * @ApiDoc(
      *   parameters = {
@@ -197,7 +202,7 @@ class UserController extends BaseController
     /**
      * Change the authenticated user's username to the provided `username`.
      *
-     * If you need to change more than the username, POST `users/{id}`.
+     * If you need to change more than the username, use `POST user/{id}`.
      *
      * @ApiDoc(
      *   parameters = {
@@ -224,7 +229,7 @@ class UserController extends BaseController
     /**
      * Change the authenticated user's email to the provided `email`.
      *
-     * If you need to change more than the email, POST `users/{id}`.
+     * If you need to change more than the email, use `POST user/{id}`.
      *
      * @ApiDoc(
      *   parameters = {
@@ -340,17 +345,17 @@ class UserController extends BaseController
     /**
      * Basic boring registration. (well... not really)
      * 
-     * If you don't provide a password, we'll generate one for you and give it
+     * If you don't provide a `password`, we'll generate one for you and give it
      * back to you in the response
      * 
-     * If you don't provide a username, we'll generate one for you and give it
+     * If you don't provide a `username`, we'll generate one for you and give it
      * back to you in the response.
      *
      * @ApiDoc(
      *   parameters = {
      *     { "name"="username", "dataType"="string", "required"=false },
      *     { "name"="password", "dataType"="string", "required"=false },
-     *     { "name"="email",    "dataType"="string", "required"=true  },
+     *     { "name"="email",    "dataType"="string", "required"=false },
      *   }
      * )
      * @param Request $request

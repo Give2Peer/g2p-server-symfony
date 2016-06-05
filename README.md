@@ -100,6 +100,8 @@ RoadMap
 - [ ] More RESTful routes for Tags
 - [ ] Feature: API XML Responses
 - [ ] Testing: a sandbox version of this server to test-drive clients
+- [ ] Setting: move route configuration to annotations
+
 
 
 ### 1.0
@@ -109,8 +111,9 @@ RoadMap
 - [x] Setting: Optional HTTPS (somewhat, we're still self-signed)
 - [x] Setting: Semantic bundle configuration
 - [x] Provide stats about the total number of items
-- [x] Feature: Attach a PNG picture to an item
-- [x] Feature: Attach a GIF picture to an item
+- [x] Feature: Attach a `png` picture to an item
+- [x] Feature: Attach a `gif` picture to an item
+- [x] Feature: Attach a `webp` picture to an item
 - [ ] Freeze the API
 
 
@@ -125,6 +128,7 @@ ChangeLog
 - [x] Feature: Geolocation through third-party services
 - [x] Setting: HTTP Auth authentication and easy registration
 - [x] Feature: Create, store and serve 240x240 thumbnails
+- [x] Feature: Attach a `jpg` picture to an item
 - [x] Feature: Karma points and levels
 - [x] Feature: API auto-generated documentation (NelmioApiBundle)
 

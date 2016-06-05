@@ -150,6 +150,7 @@ quality:
     - Snowy
     - Southern
     - Suave
+    - Super
     - Superb
     - Spanish
     - Spectacled
@@ -765,7 +766,6 @@ color:
     - Sunrise
     - Sunset
     - Sunshine
-    - Super
     - Surf
     - Tangelo
     - Tangerine
@@ -832,7 +832,7 @@ color:
     - Zinnwaldite
     - Zomp
 
-
+# So many words lacking here... Please contribute !
 origin:
     - Alien
     - Brazilian
@@ -863,17 +863,19 @@ material:
     - Iron
     - Plastic
     - Steel
+    - Stone
     - Wood
 
 
 qualifier:
     - Cosmic
-    - Cyclop
+    - Cyclop  # maybe a quality, not a qualifier ?
     - Earth
     - Forest
     - Island
     - Nile
     - Oceanic
+    - Pocket
     - Savannah
     - Sea
     - Sky
@@ -931,7 +933,6 @@ being:
     - Bird
     - Birds
     - Bison
-    - Black
     - Blackbird
     - Blackbuck
     - Blackish
@@ -1007,15 +1008,11 @@ being:
     - Collared
     - Colobus
     - Columbian
-    - Comb
-    - Constrictor
-    - Cooks
     - Coot
     - Coqui
     - Cordon
     - Corella
     - Cormorant
-    - Cosmos
     - Cottonmouth
     - Cottontail
     - Cougar
@@ -1305,7 +1302,6 @@ being:
     - Planet
     - Platypus
     - Plover
-    - Pocket
     - Pokemon
     - Polar
     - Polecat
@@ -1402,7 +1398,6 @@ being:
     - Steller
     - Stick
     - Stilt
-    - Stone
     - Stork
     - Sun
     - Sunbird
@@ -1463,10 +1458,8 @@ being:
     - Waxbill
     - Weaver
     - Weeper
-    - Western
     - Whale
     - Whip
-    - White
     - Wildebeest
     - Witch
     - Wizard
@@ -1481,5 +1474,6 @@ being:
     - Woylie
     - Yak
     - Zebra
+    - Zombie
     - Zorilla
     - Zorro
