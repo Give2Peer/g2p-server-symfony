@@ -141,7 +141,7 @@ class UserController extends BaseController
         return new JsonResponse([
             'user'  => $user,
             //'items' => $items, // /!\ PITFALL /!\ : parser thinks it's empty
-            'items' => $items->getValues(),
+            'items' => $items->getValues(), // <== do that instead
         ]);
     }
     

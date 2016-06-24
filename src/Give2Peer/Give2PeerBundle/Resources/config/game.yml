@@ -1,4 +1,4 @@
-# todo: a proper script to uniquify and sort this
+# todo: a script to uniquify and sort this ? (while keeping comments)
 # todo: fix inconsistencies and add more words
 # todo: do the same in french, belle marquise !
 
@@ -40,6 +40,7 @@ quantity:
 quality:
     - Absolute
     - Acid
+    - Adamant
     - Adorable
     - Aerial
     - African
@@ -91,7 +92,6 @@ quality:
     - Generic
     - Genial
     - Gentle
-    - German
     - Ghastly
     - Grumpy
     - Helpful
@@ -100,7 +100,6 @@ quality:
     - Hybrid
     - Indian
     - Intrepid
-    - Italian
     - Karmic
     - Killer
     - Laconic
@@ -110,6 +109,7 @@ quality:
     - Magical
     - Magnificent
     - Mellow
+    - Mercurial
     - Mongol
     - Mute
     - Mysterious
@@ -606,7 +606,6 @@ color:
     - Outrageous
     - Oxford
     - Pacific
-    - Pakistan
     - Palatinate
     - Pale
     - Palm
@@ -844,9 +843,12 @@ origin:
     - English
     - Egyptian
     - French
+    - German
     - Icelandic
+    - Italian
     - Martian
     - Northern
+    - Pakistani
     - Persian
     - Selenite
     - Southern
