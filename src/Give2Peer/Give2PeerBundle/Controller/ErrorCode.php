@@ -20,4 +20,5 @@ abstract class ErrorCode
     const EXCEEDED_QUOTA       =  8; // Users have daily quotas for some actions
     const BAD_USERNAME         =  9; // Provided username cannot be resolved
     const BAD_USER_ID          = 10; // Provided user id cannot be resolved
+    const BAD_ITEM_TYPE        = 11; // Provided item type is unhandled
 }

@@ -315,7 +315,7 @@ class Item implements \JsonSerializable
     {
         if ( ! in_array($type, array(
             self::TYPE_GIFT, self::TYPE_LOST, self::TYPE_MOOP
-        ))) throw new \InvalidArgumentException("Invalid type.");
+        ))) throw new \InvalidArgumentException("Unhandled type '$type'.");
 
         $this->type = $type;
 

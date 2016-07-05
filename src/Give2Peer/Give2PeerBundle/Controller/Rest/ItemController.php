@@ -41,6 +41,10 @@ class ItemController extends BaseController
      *       "name"="title", "dataType"="string", "required"=false,
      *       "description"="UTF-8 truncated to 32 characters."
      *     },
+     *     {
+     *       "name"="type", "dataType"="string", "required"=false,
+     *       "description"="Either 'gift', 'lost', or the default 'moop'."
+     *     },
      *   }
      * )
      * @param  Request $request
@@ -62,6 +66,7 @@ class ItemController extends BaseController
         // Note: some title sanitization happens in `Item::setTitle`
         $title = $request->get('title', '');
         $description = $request->get('description', '');
+        $type = $request->get('type', Item::TYPE_MOOP);
         $tagnames = $request->get('tags', []);
 
         // Fetch the Tags -- Ignore tags not found, for now.
@@ -92,6 +97,12 @@ class ItemController extends BaseController
         $item->setLatitude(floatval($coordinates[0]));
         $item->setLongitude(floatval($coordinates[1]));
         $item->setTitle($title);
+        try {
+            $item->setType($type);
+        } catch (\InvalidArgumentException $e) {
+            $msg = sprintf("Cannot set type: %s", $e->getMessage());
+            return new ErrorJsonResponse($msg, Error::BAD_ITEM_TYPE);
+        }
         $item->setDescription($description);
         foreach ($tags as $tag) {
             $item->addTag($tag);
