@@ -167,6 +167,7 @@ The error codes are available as constants in the class `Controller\ErrorCode`.
 007 UNAVAILABLE_EMAIL    Email already taken
 008 EXCEEDED_QUOTA       User daily quota for that action was exceeded
 009 BAD_USERNAME         Provided username could not be found
+010 BAD_ITEM_TYPE        Provided item type is unknown
 ```
 
 
