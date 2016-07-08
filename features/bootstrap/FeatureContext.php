@@ -358,7 +358,16 @@ class FeatureContext extends    BaseContext
      */
     public function iAmLevel($level)
     {
-        $this->getI()->setLevel(max(0, $level));
+        $this->someoneIsLevel($this->getI()->getUsername(), $level);
+    }
+
+    /**
+     * @Given /^"?(.+)"? is level (\d+) *$/
+     */
+    public function someoneIsLevel($someone, $level)
+    {
+        $user = $this->getUser($someone);
+        $user->setLevel(max(0, $level)); // negative levels ? Remove to handle.
         $this->getEntityManager()->flush();
     }
 
@@ -378,6 +387,15 @@ class FeatureContext extends    BaseContext
     public function thereIsAUserNamed($name)
     {
         $this->createUser($name);
+    }
+
+    /**
+     * @Given /^there is a user named "?(.+?)"? +of level (\d+)$/
+     */
+    public function thereIsAUserOfLevel($name, $level)
+    {
+        $this->thereIsAUserNamed($name);
+        $this->someoneIsLevel($name, $level);
     }
 
     /**
@@ -430,7 +448,7 @@ class FeatureContext extends    BaseContext
 
         if (null == $user) {
             $this->fail("User $user could not be found.");
-        } // refactor into getMandatoryUser() or getUser($user, require=true)
+        } // refactor into getMandatoryUser() or getUser($user, $require=true)
 
         $this->createItem($user, null, null, $title, null);
 
@@ -511,6 +529,21 @@ class FeatureContext extends    BaseContext
     {
         $this->request('GET', "items/around/$lat/$lng");
     }
+
+    /**
+     * @Then /^I should (?:still |now )?see (\d+) items?$/
+     */
+    public function iShouldSeeItems($itemsCount)
+    {
+        if ($itemsCount > 64) {
+            throw new Exception(
+                "This step does not support exceeding the item-finding limit."
+            );
+        }
+        $this->request('GET', "items/around/0.0/0.0");
+        $response = $this->getJsonResponse();
+        $this->assertEquals($itemsCount, count($response->items));
+    }
     
     /**
      * @When /^I (?:try to )?g[ai]ve the following(?: item)? ?:$/
@@ -543,14 +576,12 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^I (?:try to )?give an item at (-?\d+\.\d*) ?, ?(-?\d+\.\d*)$/
+     * @Given /^I (?:try to )?give an item at (-?\d+\.\d*) ?[,\/] ?(-?\d+\.\d*)$/
      */
     public function iGiveAnItemAt($latitude, $longitude)
     {
         $title = sprintf("%s %s", $this->faker->colorName, $this->faker->word);
         $pystring  = "location: $latitude, $longitude\n";
-//        $pystring .= "title: $title\n";
-//        $pystring .= "description: $title\n";
         $this->iPost('item', $pystring);
     }
 
@@ -572,7 +603,7 @@ class FeatureContext extends    BaseContext
      * -- THIS IS INTENTIONAL.
      * It does count for subsequent quota checks, which was the intent.
      *
-     * @Given /^I already gave (\d+) items? *(?:(.+) ago)? *$/
+     * @Given /^I already (?:gave|added) (\d+) items? *(?:(.+) ago)? *$/
      */
     public function iAlreadyGaveItemsBypassingQuotas($howMany, $when=null)
     {
@@ -632,6 +663,21 @@ class FeatureContext extends    BaseContext
         $id = $item->getId();
 
         $this->request('POST', "/thank/item/$id", []);
+    }
+
+    /**
+     * @When /^I (?:try to )?report the item titled "(.+)" as abusive$/
+     */
+    public function iReportTheItemAsAbusive($title)
+    {
+        $item = $this->getItemRepository()->findOneBy(['title' => $title]);
+        if (null == $item) {
+            $this->fail(sprintf("There is no item by the name '%s'", $title));
+        }
+
+        $id = $item->getId();
+
+        $this->request('POST', "/report/item/$id", []);
     }
 
     /**
@@ -741,6 +787,7 @@ class FeatureContext extends    BaseContext
         // It is a failure, we need to unlink later on. Can't do that here.
         // 3. (seconds later) We'll make copies in the cache directory, whatever
         // We probably don't need copies anymore ; ... ... ... ... ..... meh.
+        // 4. (some time later) If you read this, don't be afraid. All's well.
 
         $sInfo = new \SplFileInfo($filePath);
         $extension = $sInfo->getExtension();
@@ -777,7 +824,7 @@ class FeatureContext extends    BaseContext
     // RESPONSE STEPS //////////////////////////////////////////////////////////
     
     /**
-     * @Then /^the request should be (accepted|denied)$/
+     * @Then /^(?:the|my) request should be (accepted|denied)$/
      */
     public function theRequestShouldBeAcceptedOrDenied($which)
     {
@@ -951,7 +998,7 @@ class FeatureContext extends    BaseContext
     /**
      * @Then /^(?:the user )?(.+) should (?:still |now )?have (\d+) karma points?$/
      */
-    public function theUzerShouldHaveKarmaPoints($username, $karma)
+    public function theUziShouldHaveKarmaPoints($username, $karma)
     {
         if ( $username == "I") {
             $user = $this->getI();
@@ -996,7 +1043,7 @@ class FeatureContext extends    BaseContext
         $this->assertEquals($count, $actual, "Got $actual items !\n$s");
 
         // THAT ONE IS BROKEN OMG OMG OMG
-        // Our softdeleteable filter, Y U NO DO DIS ?
+        // SoftDeleteable filter, Y U NO DO DIS ?
 //        $actual = count($this->getI()->getItemsAuthored());
 //        $this->assertEquals($count, $actual, "Got $actual items !\n$s");
     }
@@ -1039,7 +1086,8 @@ class FeatureContext extends    BaseContext
     // UTILS ///////////////////////////////////////////////////////////////////
 
     /**
-     * Handy tool to hack Items `createdAt` field after adding them via the API.
+     * Handy tool to hack Items `createdAt` field after adding them via the API,
+     * so we can add them in the past, or even (gasp!) in the future.
      * Requires that a request to POST /item was made last.
      * We grab the item id from the response and tweak its creation date
      * directly in the database.
@@ -1111,7 +1159,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * Create a dummy user named $name with password $name
+     * Create a dummy user named $name with password $name.
      *
      * @param $name
      * @param string $email
@@ -1230,6 +1278,12 @@ class FeatureContext extends    BaseContext
             $server['PHP_AUTH_PW']   = $password;
         }
 
+        // Not actually used by server it seems, but still...
+        $server['CONTENT_TYPE'] = "application/json";
+        // Server understands that instead
+        //$parameters['_format'] = 'json';
+        $parameters['_format'] = 'txt'; // for readable error responses
+
         $this->crawler = $this->client->request(
             $method, $uri, $parameters, $files,
             $server, $content, $changeHistory
@@ -1237,6 +1291,12 @@ class FeatureContext extends    BaseContext
 
         return $this->crawler;
     }
+
+    public function getJsonResponse() {
+        $content = $this->client->getResponse()->getContent();
+        return json_decode($content);
+    }
+
 
 
     public function assertRequestSuccess()
