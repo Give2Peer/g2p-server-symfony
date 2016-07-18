@@ -142,7 +142,7 @@ class ItemController extends BaseController
         $em->flush();
 
         // Send the item and other action data as response
-        return new JsonResponse([
+        return $this->respond([
             'item'  => $item,
             'karma' => $karma,
         ]);
@@ -189,7 +189,7 @@ class ItemController extends BaseController
 
         $this->getEntityManager()->flush();
 
-        return new JsonResponse([
+        return $this->respond([
             'item' => $item
         ]);
     }
@@ -332,7 +332,7 @@ class ItemController extends BaseController
         // Flush our changes to the item into the database
         $this->getEntityManager()->flush();
 
-        return new JsonResponse([
+        return $this->respond([
             'item' => $item
         ]);
     }
@@ -411,7 +411,7 @@ class ItemController extends BaseController
         }
         $this->getEntityManager()->flush();
 
-        return new JsonResponse(['items'=>$items]);
+        return $this->respond(['items'=>$items]);
     }
 
     /**

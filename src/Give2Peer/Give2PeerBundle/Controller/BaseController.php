@@ -11,6 +11,8 @@ use Give2Peer\Give2PeerBundle\Entity\UserManager;
 use Give2Peer\Give2PeerBundle\Entity\UserRepository;
 use Give2Peer\Give2PeerBundle\Service\Geocoder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\SecurityContext;
 
 /**
@@ -104,6 +106,22 @@ abstract class BaseController extends Controller
      */
     protected function getGeocoder()
     {
+        // return $this->get('g2p.geocoder') // or a third party one if we can bridge ?
         return new Geocoder();
+    }
+
+
+    /**
+     * For future support of XML and text Responses.
+     * Something with the _format argument.
+     *
+     * @param $contents
+     * @param int $status
+     * @param array $headers
+     * @return JsonResponse|Response
+     */
+    protected function respond($contents, $status=200, $headers=array())
+    {
+        return new JsonResponse($contents, $status, $headers);
     }
 }

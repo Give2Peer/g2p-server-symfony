@@ -31,6 +31,8 @@ class UserController extends BaseController
 
     /**
      * Generate a username from dictionaries of words.
+     *
+     * Refactor this into a service ?!
      * 
      * <adjective1>_<adjective2>_<being>
      *
@@ -58,7 +60,7 @@ class UserController extends BaseController
         $beings = $words['being'];
 
         $a1 = $a2 = '';
-        $i = 0;
+        $i = 0; // BAD. pop out of $adjectives instead ?
         while ($a1 == $a2 && $i < 42) {
             $i1 = array_rand($adjectives);
             $i2 = array_rand($adjectives);
@@ -138,7 +140,7 @@ class UserController extends BaseController
         /** @var PersistentCollection $items */
         $items = $user->getItemsAuthored(); // not sure softdeletable is applied
 
-        return new JsonResponse([
+        return $this->respond([
             'user'  => $user,
             //'items' => $items, // /!\ PITFALL /!\ : parser thinks it's empty
             'items' => $items->getValues(), // <== do that instead
@@ -167,7 +169,7 @@ class UserController extends BaseController
             return new ErrorJsonResponse("Bad username.", Error::BAD_USER_ID);
         }
 
-        return new JsonResponse([
+        return $this->respond([
             'user' => $user->publicJsonSerialize(),
         ]);
     }
@@ -190,7 +192,7 @@ class UserController extends BaseController
     {
         $password = $request->get('password');
         if (null == $password) {
-            return new JsonResponse(["error"=>"No password provided."], 400);
+            return $this->respond(["error"=>"No password provided."], 400);
         }
 
         /** @var User $user */
@@ -217,7 +219,7 @@ class UserController extends BaseController
     {
         $username = $request->get('username');
         if (null == $username) {
-            return new JsonResponse(["error"=>"No username provided."], 400);
+            return $this->respond(["error"=>"No username provided."], 400);
         }
 
         /** @var User $user */
@@ -244,7 +246,7 @@ class UserController extends BaseController
     {
         $email = $request->get('email');
         if (null == $email) {
-            return new JsonResponse(["error"=>"No email provided."], 400);
+            return $this->respond(["error"=>"No email provided."], 400);
         }
 
         /** @var User $user */
@@ -255,6 +257,8 @@ class UserController extends BaseController
 
     /**
      * Change the system properties of the User described by its `id`.
+     *
+     * #### Restrictions
      *
      * You can only change the user you're authenticated with.
      *
@@ -291,7 +295,7 @@ class UserController extends BaseController
         $authenticatedUser = $this->getUser();
 
         if (null == $user || null == $authenticatedUser) {
-            return new JsonResponse(["error"=>"No user."], 400);
+            return $this->respond(["error"=>"No user."], 400);
         }
 
         if ($user->getId() != $authenticatedUser->getId()) {
@@ -340,7 +344,7 @@ class UserController extends BaseController
         $um->updateUser($user);
 
         // Send the user as response
-        return new JsonResponse(['user'=>$user]);
+        return $this->respond(['user'=>$user]);
     }
 
     /**
@@ -445,7 +449,7 @@ class UserController extends BaseController
         if (null != $password_generated) {
             $response['password'] = $password_generated;
         }
-        return new JsonResponse($response);
+        return $this->respond($response);
     }
 
 

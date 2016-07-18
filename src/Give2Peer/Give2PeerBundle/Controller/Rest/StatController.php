@@ -28,7 +28,7 @@ class StatController extends BaseController
         $itemsTotal = $this->getItemRepository()->totalItems();
         
 
-        return new JsonResponse([
+        return $this->respond([
             'users_count' => $usersCount,
             'items_count' => $itemsCount,
             'items_total' => $itemsTotal,

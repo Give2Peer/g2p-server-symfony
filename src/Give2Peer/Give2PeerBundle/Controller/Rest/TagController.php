@@ -21,7 +21,7 @@ class TagController extends BaseController
     {
         $tags = $this->getTagRepository()->findBy([], ['name'=>'ASC']);
 
-        return new JsonResponse([
+        return $this->respond([
             'tags' => $tags
         ]);
     }

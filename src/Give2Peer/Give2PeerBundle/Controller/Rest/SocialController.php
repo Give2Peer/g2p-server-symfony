@@ -83,7 +83,7 @@ class SocialController extends BaseController
         // lose your level.
         // Let's say for now the coefficient is the level, and users don't lose
         // karma. They will. Maybe even before release.
-        $karma_given = 0;
+        $karma_given = min( /* todo here ->*/ 0 /**/, $thanker->getKarmaProgress());
         $karma_received = $thanker->getLevel() + 1;
         ///
 
@@ -101,7 +101,7 @@ class SocialController extends BaseController
         $em->persist($thank);
         $em->flush();
         
-        return new JsonResponse([
+        return $this->respond([
             'thank'  => $thank,
         ]);
     }

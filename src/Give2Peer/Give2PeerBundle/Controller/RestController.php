@@ -37,6 +37,8 @@ class RestController extends BaseController
     }
 
     /**
+     * Check your connectivity to the server.
+     *
      * For clients that want to check their connectivity to the server.
      *
      * The response of this should be unmistakable of a server supporting the
@@ -55,19 +57,18 @@ class RestController extends BaseController
      */
     public function helloAction()
     {
-        return new JsonResponse("pong");
+        return $this->respond("pong");
     }
 
     /**
+     * Check your credentials on the server.
+     *
      * For clients that want to check both their connectivity and credentials
      * with the server.
      *
      * The response of this should be unmistakable of a server supporting the
      * give2peer ~protocol, and should provide some public information about the
      * server and API and maybe even some very basic stats, or metadata.
-     *
-     * This action is not protected by the firewall and therefore does not
-     * require credentials. This should be the only API action that is so.
      *
      * fixme: This should return useful information about the server.
      *
@@ -78,7 +79,7 @@ class RestController extends BaseController
      */
     public function checkAction()
     {
-        return new JsonResponse("pong");
+        return $this->respond("pong");
     }
 
 }

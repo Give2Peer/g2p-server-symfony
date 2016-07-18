@@ -24,7 +24,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  */
 class ModerationController extends BaseController
 {
-
     /**
      * Report the item `id` for abuse.
      *
@@ -77,9 +76,8 @@ class ModerationController extends BaseController
 
         $this->getEntityManager()->flush();
 
-        return new JsonResponse([
+        return $this->respond([
             'item' => $item
         ]);
     }
-    
 }
