@@ -118,9 +118,9 @@ RoadMap
 - [x] Feature: Attach a `png` picture to an item
 - [x] Feature: Attach a `gif` picture to an item
 - [x] Feature: Attach a `webp` picture to an item
+- [x] Feature: Delete my own items
 - [ ] Feature: Report an abusive item
-- [ ] Feature: Delete my own items
-- [ ] Freeze the API
+- [ ] Freeze the API: Pictures upload need work.
 
 
 ChangeLog

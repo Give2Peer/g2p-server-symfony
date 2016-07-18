@@ -136,7 +136,20 @@ class ItemController extends BaseController
     }
 
     /**
-     * fixme: document
+     * Delete the item `id`.
+     *
+     * #### Authorization
+     *
+     * This only works if you're the author of that item.
+     * There might be more complex deletion privileges in the future.
+     *
+     * #### Effects
+     *
+     * This marks the item as deleted, it does not immediately `DELETE` the item from the database.
+     * A maintenance (CRON) task will handle the actual deletion of stale soft-deleted items.
+     * The pictures associated to that item will be deleted as well by the maintenance (CRON) task.
+     *
+     * @ApiDoc()
      *
      * @param Request $request
      * @param int $id of the item to delete
