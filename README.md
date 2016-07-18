@@ -93,15 +93,19 @@ A Work in Progress
 RoadMap
 -------
 
+### Perhaps
+
+- [ ] Feature: API Text Responses
+- [ ] Feature: API XML Responses
+
+
 ### 1.1
 
 - [ ] More RESTful routes for Users
 - [ ] More RESTful routes for Items
 - [ ] More RESTful routes for Tags
-- [ ] Feature: API XML Responses
 - [ ] Testing: a sandbox version of this server to test-drive clients
 - [ ] Setting: move route configuration to annotations
-
 
 
 ### 1.0
@@ -114,6 +118,8 @@ RoadMap
 - [x] Feature: Attach a `png` picture to an item
 - [x] Feature: Attach a `gif` picture to an item
 - [x] Feature: Attach a `webp` picture to an item
+- [ ] Feature: Report an abusive item
+- [ ] Feature: Delete my own items
 - [ ] Freeze the API
 
 
@@ -175,7 +181,7 @@ The error codes are available as constants in the class `Controller\ErrorCode`.
 Install
 =======
 
-You'll need `php >= 5.4`.
+You'll need `php >= 5.6`.
 
 The vendor setup is pretty straightforward if you already have [Composer] :
 
