@@ -6,10 +6,11 @@ use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\PersistentCollection;
 use Give2Peer\Give2PeerBundle\Controller\BaseController;
+use Give2Peer\Give2PeerBundle\Service\Thumbnailer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc; // don't remove ; used as annotation in comments
 use Give2Peer\Give2PeerBundle\Controller\ErrorCode as Error;
 use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\User;
@@ -18,6 +19,10 @@ use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
 
 /**
  * Item CRUD, with level authorization, and item picture upload too.
+ *
+ * Routes are configured in YAML, in `Resources/config/routing.yml`.
+ * ApiDoc's documentation can be found at :
+ * https://github.com/nelmio/NelmioApiDocBundle/blob/master/Resources/doc/index.md
  */
 class ItemController extends BaseController
 {
@@ -27,8 +32,16 @@ class ItemController extends BaseController
      *
      * Only the `location` of the item is mandatory.
      *
-     * This creates an item with the appropriate attributes, stores it and
-     * sends it back as JSON, along with the karma gained.
+     * #### Authorization
+     *
+     * Any user can publish items, but it is subjected to daily quotas.
+     *
+     * `Daily Quota = 2 * ( User Level + 1 )`
+     *
+     * #### Effects
+     *
+     * This creates an item with the appropriate attributes,
+     * stores it and sends it back as JSON, along with the karma gained.
      *
      * @ApiDoc(
      *   parameters = {
@@ -152,7 +165,7 @@ class ItemController extends BaseController
      * @ApiDoc()
      *
      * @param Request $request
-     * @param int $id of the item to delete
+     * @param int $id Identifier of the item to delete
      * @return ErrorJsonResponse|JsonResponse
      */
     public function itemDeleteAction(Request $request, $id)
@@ -183,14 +196,22 @@ class ItemController extends BaseController
 
     /**
      * Upload a picture for the item `id`.
-     * 
-     * You need to be the author of the item.
      *
-     * We support `JPG`, `PNG` and 'GIF` files.
-     * 
-     * Ideas :
-     * - Allow uploading more than one picture for one item, since level ???
-     * - Allow uploading photos for others' items, since level ???
+     * #### Authorization
+     *
+     * You need to be the author of that item. This may evolve into a more complex rule in the future.
+     *
+     * #### Supports
+     *
+     *   - `JPG`, `JPEG`
+     *   - `PNG`
+     *   - `GIF`
+     *   - `WebP`
+     *
+     * #### Ideas
+     *
+     *   - Allow uploading more than one picture for one item, since level ???
+     *   - Allow uploading photos for others' items, since level ???
      *
      * @ApiDoc(
      *   parameters = {
@@ -282,7 +303,7 @@ class ItemController extends BaseController
         // Create a square thumbnail
         try {
             $thumbSize = $this->getParameter('give2peer.pictures.size');
-            $this->generateSquareThumb(
+            Thumbnailer::generateSquare(
                 $publicPath . DIRECTORY_SEPARATOR . $filename,
                 $publicPath . DIRECTORY_SEPARATOR . 'thumb.jpg',
                 $thumbSize, $actualExtension
@@ -314,68 +335,6 @@ class ItemController extends BaseController
         return new JsonResponse([
             'item' => $item
         ]);
-    }
-
-    /**
-     * Generates a JPG square thumbnail from the $source image.
-     * It will take the biggest square that fits in the center of the image.
-     * 
-     * Note: transparency will be cast to black.
-     *
-     * Should probably be moved to a thumb generation service or something.
-     *
-     * @param $source
-     * @param $destination
-     * @param $sideLength
-     * @param string $subtype the image mime subtype of the source.
-     * @throws \Exception
-     */
-    function generateSquareThumb($source, $destination, $sideLength, $subtype)
-    {
-        // Read the source image
-        switch ($subtype) {
-            case 'jpg';
-            case 'jpeg';
-                $sourceImage = imagecreatefromjpeg($source);
-                break;
-            case 'png';
-                $sourceImage = imagecreatefrompng($source);
-                break;
-            case 'gif';
-                $sourceImage = imagecreatefromgif($source);
-                break;
-            case 'webp';
-                // I have 'undefined function' in my IDE ?! ; it works, though.
-                $sourceImage = imagecreatefromwebp($source);
-                break;
-            default:
-                throw new \Exception("Unsupported image subtype: '$subtype'.");
-
-        }
-
-        $width  = imagesx($sourceImage);
-        $height = imagesy($sourceImage);
-
-        $smallestSide = min($width, $height);
-
-        $x = 0;
-        $y = 0;
-        if ($width < $height) {
-            $y = floor(($height - $smallestSide) / 2);
-        }
-        else if ($width > $height) {
-            $x = floor(($width - $smallestSide) / 2);
-        }
-
-        // Then, magic happens
-        $virtualImage = imagecreatetruecolor($sideLength, $sideLength);
-        imagecopyresampled(
-            $virtualImage, $sourceImage,
-            0, 0, $x, $y,
-            $sideLength, $sideLength,
-            $smallestSide, $smallestSide
-        );
-        imagejpeg($virtualImage, $destination);
     }
 
     /**
@@ -456,6 +415,8 @@ class ItemController extends BaseController
     }
 
     /**
+     * THIS (probably) BELONGS IN THE ITEM REPOSITORY
+     *
      * Find items by increasing distance to the specified coordinates.
      *
      * Return a list of at most %give2peer.items.max_per_page% Items, sorted
@@ -476,7 +437,7 @@ class ItemController extends BaseController
      * @param int   $skip      How many items to skip in the query.
      * @param float $maxDist   In meters, the max distance. Provide 0 to ignore.
      *
-     * @return Item[] Items matching the query, enhanced with their `distance`.
+     * @return ErrorJsonResponse|Item[] Items matching the query, enhanced with their `distance`.
      */
     public function findAround($latitude, $longitude, $maxDist, $skip)
     {
@@ -492,7 +453,7 @@ class ItemController extends BaseController
         $conf = $em->getConfiguration();
         $conn = $em->getConnection();
 
-        // Register our DISTANCE function, that only pgSQL can understand
+        // Register our DISTANCE function, that only pgSQL can understand.
         // Move this into a kernel hook ? or a more specific hook, maybe ?
         // Meh. No. Just move it to its own method when we'll need to.
         // Advisor pattern ? Hmm.
