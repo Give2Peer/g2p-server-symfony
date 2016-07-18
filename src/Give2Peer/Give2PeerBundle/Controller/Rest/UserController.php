@@ -255,11 +255,12 @@ class UserController extends BaseController
 
     /**
      * Change the system properties of the User described by its `id`.
+     *
      * You can only change the user you're authenticated with.
      *
-     * Ideally we'll make another route for more trivial profile preferences.
-     * Maybe ?
+     * #### Thoughts
      *
+     * Ideally we'd make another route for more trivial profile preferences.
      * The flow to change such important properties may be different. But how ?
      *
      * @ApiDoc(
@@ -270,7 +271,7 @@ class UserController extends BaseController
      *   }
      * )
      *
-     *
+     * The following annotation is useless. It is guessed automagically ?
      * ParamConverter("user", class="Give2PeerBundle:User")
      *
      * @param Request $request

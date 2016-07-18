@@ -27,11 +27,18 @@ class SocialController extends BaseController
 
     /**
      * Thank the author of the Item `id`.
+     *
      * You can only thank for a specific item once.
-     * 
-     * /!\
-     *   This will cost karma points to use.
-     *   (it does not, right now)
+     *
+     * You cannot thank yourself.
+     *
+     * #### Costs Karma
+     *
+     * This will cost karma points to use. _(it does not, right now)_
+     *
+     * #### Features
+     *
+     *   - [thanking_someone.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/thanking_someone.feature)
      *
      * @fixme: make thanking cost karma points
      * 
@@ -50,6 +57,10 @@ class SocialController extends BaseController
         }
 
         $thankee = $item->getAuthor();
+
+        if ($thanker == $thankee) {
+            return new ErrorJsonResponse("You can't thank yourself.", Error::NOT_AUTHORIZED);
+        }
 
         // Disallow thanking more than once for the same item
         $doneAlready = $this->getThankRepository()->findOneBy([

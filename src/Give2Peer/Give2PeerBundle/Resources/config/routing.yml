@@ -141,6 +141,18 @@ give2peer_thank_item:
     path:     /thank/item/{id}
     defaults: { _controller: Give2PeerBundle:Rest/Social:thankForItem, _format: json }
     methods:  [POST]
+    requirements:
+        id:   \d+
+
+
+## MODERATION ##################################################################
+
+give2peer_report_item:
+    path:     /report/item/{id}
+    defaults: { _controller: Give2PeerBundle:Rest/Moderation:reportItem, _format: json }
+    methods:  [POST]
+    requirements:
+        id:   \d+
 
 
 ## STATISTICS ##################################################################

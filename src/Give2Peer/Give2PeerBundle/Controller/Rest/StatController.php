@@ -14,9 +14,9 @@ class StatController extends BaseController
     /**
      * Get a compilation of all statistics about the service.
      *
-     * - users_count: number of registered users.
-     * - items_count: number of published items right now.
-     * - items_total: number of published items since the beginning.
+     * - `users_count`: number of registered users.
+     * - `items_count`: number of published items right now.
+     * - `items_total`: number of published items since the beginning.
      *
      * @ApiDoc()
      * @return JsonResponse
