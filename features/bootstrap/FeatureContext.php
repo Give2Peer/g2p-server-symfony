@@ -64,7 +64,7 @@ function array_diff_assoc_recursive($array1, $array2) {
  * This file is getting BIG.
  * Traits work well with FeatureContext.
  * 
- * Schedule a refactorization when this file gets more than 1111 lines !
+ * Schedule a refacto when this file gets more than 3333 lines !
  *
  * This prints a fortune cookie when it passes ; sugar for the mind.
  */
@@ -367,7 +367,7 @@ class FeatureContext extends    BaseContext
     public function someoneIsLevel($someone, $level)
     {
         $user = $this->getUser($someone);
-        $user->setLevel(max(0, $level)); // negative levels ? Remove to handle.
+        $user->setLevel($level);
         $this->getEntityManager()->flush();
     }
 
@@ -382,20 +382,12 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^there is a user named "?(.+?)"? *$/
+     * @Given /^there is a user named "?(.+?)"? *(?:of level (\d+))?$/
      */
-    public function thereIsAUserNamed($name)
+    public function thereIsANamedUserOfLevel($name, $level=null)
     {
         $this->createUser($name);
-    }
-
-    /**
-     * @Given /^there is a user named "?(.+?)"? +of level (\d+)$/
-     */
-    public function thereIsAUserOfLevel($name, $level)
-    {
-        $this->thereIsAUserNamed($name);
-        $this->someoneIsLevel($name, $level);
+        if (!empty($level)) $this->someoneIsLevel($name, $level);
     }
 
     /**
