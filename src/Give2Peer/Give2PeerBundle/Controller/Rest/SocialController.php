@@ -34,14 +34,16 @@ class SocialController extends BaseController
      *
      * #### Costs Karma
      *
-     * This will cost karma points to use. _(it does not, right now)_
+     * This action costs 1 karma point to use. If you just levelled up, it's free ; it can't make you lose a level.
+     *
+     * #### Effects
+     *
+     * The author of the item will receive as much karma as your karmic level plus one.
      *
      * #### Features
      *
      *   - [thanking_someone.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/thanking_someone.feature)
      *
-     * @fixme: make thanking cost karma points
-     * 
      * @ApiDoc()
      *
      * @param  Request $request
@@ -53,7 +55,7 @@ class SocialController extends BaseController
         $thanker = $this->getUser();
 
         if (empty($thanker)) {
-            return new ErrorJsonResponse("Nope.", Error::NOT_AUTHORIZED);
+            return new ErrorJsonResponse("No thanker provided.", Error::NOT_AUTHORIZED);
         }
 
         $thankee = $item->getAuthor();
@@ -74,18 +76,8 @@ class SocialController extends BaseController
             );
         }
 
-        // GAME DESIGN
-        // The idea is to give karma to make karma.
-        // Thanker should choose how much karma he gives,
-        // and it should be multiplied by a coefficient
-        // that depends on its level, and thankee should receive it all.
-        // But if you just levelled up you won't lose any karma so you can't
-        // lose your level.
-        // Let's say for now the coefficient is the level, and users don't lose
-        // karma. They will. Maybe even before release.
-        $karma_given = min( /* todo here ->*/ 0 /**/, $thanker->getKarmaProgress());
+        $karma_given = min(1, $thanker->getKarmaProgress());
         $karma_received = $thanker->getLevel() + 1;
-        ///
 
         $thanker->addKarma(-1 * $karma_given);
         $thankee->addKarma($karma_received);
