@@ -65,15 +65,8 @@ class SocialController extends BaseController
         }
 
         // Disallow thanking more than once for the same item
-        $doneAlready = $this->getThankRepository()->findOneBy([
-            'thanker' => $thanker,
-            'item' => $item,
-        ]);
-        if ($doneAlready) {
-            return new ErrorJsonResponse(
-                "One thanks per item only.",
-                Error::EXCEEDED_QUOTA
-            );
+        if ($this->getThankRepository()->hasUserThankedAlready($thanker, $item)) {
+            return new ErrorJsonResponse("One thanks per item only.", Error::EXCEEDED_QUOTA);
         }
 
         $karma_given = min(1, $thanker->getKarmaProgress());

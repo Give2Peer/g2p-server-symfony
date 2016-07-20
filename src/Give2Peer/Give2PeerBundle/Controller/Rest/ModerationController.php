@@ -72,7 +72,7 @@ class ModerationController extends BaseController
             );
         }
 
-        $item->markAsDeleted();
+        $item->markAsDeleted(); // brutality
 
         $this->getEntityManager()->flush();
 

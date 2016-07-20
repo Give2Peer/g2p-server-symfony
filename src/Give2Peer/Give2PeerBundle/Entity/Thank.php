@@ -8,7 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * Thank
+ * An action of thanks, by the thanker to the thankee, about an item.
+ * Some karma is involved : the thanker giveth, the thankee receiveth.
+ *
+ * The (thanker,item) tuple should be unique as per the specs : no thanking twice.
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\ThankRepository")
