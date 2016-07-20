@@ -71,3 +71,16 @@ Scenario: Item is deleted when you have waaay more karma than the author
    When I report the item titled "P0RN" as abusive
    Then my request should be accepted
     And I should now see 0 items
+
+
+Scenario: Cancel your report and the item deletion
+  Given I am the user named Superior Delator
+   Then I should see 1 item
+   When I report the item titled "P0RN" as abusive
+   Then my request should be accepted
+    And I should now see 0 items
+   When I cancel my report on the item titled "P0RN"
+   Then my request should be accepted
+    And I should now see 1 item
+
+
