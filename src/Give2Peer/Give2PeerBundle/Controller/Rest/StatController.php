@@ -26,7 +26,6 @@ class StatController extends BaseController
         $usersCount = $this->getUserRepository()->countUsers();
         $itemsCount = $this->getItemRepository()->countItems();
         $itemsTotal = $this->getItemRepository()->totalItems();
-        
 
         return $this->respond([
             'users_count' => $usersCount,

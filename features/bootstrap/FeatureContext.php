@@ -151,11 +151,13 @@ class FeatureContext extends    BaseContext
         static::bootKernel();
 
         // Empty the database by TRUNCATING the tables and RESETTING the indices
-        // This is more complicated than it should, because of pgSQL
+        // This is more complicated than it should, because of my noobish pgSQL-fu
         $tables = [
             'Peer', // User is named Peer in the database, as User is reserved
             'Item',
             'Tag',
+            'Thank',
+            'Report',
         ];
         // wip: Try to get the above list procedurally to avoid maintaining it ?
         // 1. Nope, TMI

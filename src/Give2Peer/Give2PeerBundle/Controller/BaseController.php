@@ -5,6 +5,7 @@ namespace Give2Peer\Give2PeerBundle\Controller;
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
+use Give2Peer\Give2PeerBundle\Entity\ReportRepository;
 use Give2Peer\Give2PeerBundle\Entity\TagRepository;
 use Give2Peer\Give2PeerBundle\Entity\ThankRepository;
 use Give2Peer\Give2PeerBundle\Entity\UserManager;
@@ -75,6 +76,14 @@ abstract class BaseController extends Controller
     protected function getThankRepository()
     {
         return $this->getEntityManager()->getRepository('Give2PeerBundle:Thank');
+    }
+
+    /**
+     * @return ReportRepository
+     */
+    protected function getReportRepository()
+    {
+        return $this->getEntityManager()->getRepository('Give2PeerBundle:Report');
     }
 
     /**

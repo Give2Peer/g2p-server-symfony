@@ -10,31 +10,41 @@ Feature: Reporting abuse
 # Scenario: Gain ability to report abuse at level ???
 
 Background:
-  Given there is a user named Inferior of level 1
-    And there is a user named Equal    of level 4
-    And there is a user named Superior of level 7
-    And there is a user named Abuser   of level 4
+  Given there is a user named Abuser of level 4
     And Abuser added without karma gain an item titled "P0RN"
+    And there is a user named Maybe Abuser's Bot of level 0
+    And there is a user named Inferior Delator A of level 3
+    And there is a user named Inferior Delator B of level 3
+    And there is a user named Inferior Delator C of level 3
+    And there is a user named Superior Delator   of level 7
 
 
-Scenario: Fail to report abuse when you have less karma than the author
-  Given I am the user named Inferior
+Scenario: Fail to report abuse when you are level 0
+  Given I am the user named Maybe Abuser's Bot
    Then I should see 1 item
    When I try to report the item titled "P0RN" as abusive
    Then my request should be denied
     And I should still see 1 item
 
 
-Scenario: Report abuse when you have the same karma as the author
-  Given I am the user named Equal
+Scenario: Item is deleted when multiple low-karma reports are made
+  Given I am the user named Inferior Delator A
    Then I should see 1 item
-   When I report the item titled "P0RN" as abusive
+   When I try to report the item titled "P0RN" as abusive
    Then my request should be accepted
-    And I should now see 0 items
+    But I should still see 1 item
+   When I am the user named Inferior Delator B
+    And I try to report the item titled "P0RN" as abusive
+   Then my request should be accepted
+    But I should still see 1 item
+   When I am the user named Inferior Delator C
+    And I try to report the item titled "P0RN" as abusive
+   Then my request should be accepted
+    And I should now see 0 item
 
 
-Scenario: Report abuse when you have more karma than the author
-  Given I am the user named Superior
+Scenario: Item is deleted when you have waaay more karma than the author
+  Given I am the user named Superior Delator
    Then I should see 1 item
    When I report the item titled "P0RN" as abusive
    Then my request should be accepted

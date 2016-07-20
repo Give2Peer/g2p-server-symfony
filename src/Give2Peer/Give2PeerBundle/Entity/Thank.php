@@ -53,7 +53,7 @@ class Thank implements \JsonSerializable
     private $id;
 
     /**
-     * The date and time (to the second) at which this thanks was infused.
+     * The date and time (to the second) at which this thanks was given.
      *
      * @var DateTime
      *
@@ -85,7 +85,7 @@ class Thank implements \JsonSerializable
     private $thankee;
 
     /**
-     * The user that was thanked for its item by the other user.
+     * The item that triggered this thanks action.
      *
      * @var Item
      *
@@ -128,9 +128,7 @@ class Thank implements \JsonSerializable
 
     ////////////////////////////////////////////////////////////////////////////
 
-    public function __construct() {
-        $this->items = new ArrayCollection();
-    }
+    //public function __construct() {}
 
     /**
      * Get the unique identifier of this thank action. Pretty useless.
@@ -191,6 +189,22 @@ class Thank implements \JsonSerializable
     }
 
     /**
+     * @return Item
+     */
+    public function getItem()
+    {
+        return $this->item;
+    }
+
+    /**
+     * @param Item $item
+     */
+    public function setItem($item)
+    {
+        $this->item = $item;
+    }
+
+    /**
      * @return string
      */
     public function getMessage()
@@ -236,22 +250,6 @@ class Thank implements \JsonSerializable
     public function setKarmaReceived($karma_received)
     {
         $this->karma_received = $karma_received;
-    }
-
-    /**
-     * @return Item
-     */
-    public function getItem()
-    {
-        return $this->item;
-    }
-
-    /**
-     * @param Item $item
-     */
-    public function setItem($item)
-    {
-        $this->item = $item;
     }
 
 }

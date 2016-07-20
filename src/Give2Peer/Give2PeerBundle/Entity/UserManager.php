@@ -11,7 +11,7 @@ class UserManager extends BaseUserManager
      *
      * @param $ip    string
      * @param $since \DateTime
-     * @return int
+     * @return int   Count of users that were created by the provided $ip, $since that time.
      */
     public function countUsersCreatedBy($ip, $since)
     {

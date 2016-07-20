@@ -28,17 +28,8 @@ if ((!$loader = includeIfExists(__DIR__.'/../vendor/autoload.php'))) {
     exit(1);
 }
 
-
-// Yeah... About that... Sorry ! If you're lucky I'll fix this someday.
-// It's TOO DANGEROUS to delete the files (for now), in case the suite is
-// (un)willingly run on the production server, and havoc ensues.
-// Ideally, the test env should use another upload dir that we can safely
-// overwrite and delete, and this would be solved.
-// And if you think writing these comments took longer than to fix, think again.
-// Or, hey, even better : prove it ! ;)
-// ... later ...
-// Wait. Didn't I solve this earlier in the big configuration refacto ? Yay ! \o/
-// echo "/!\\ WILL GENERATE A BUNCH OF DUMMY IMAGE FILES IN `web/pictures/`.\n";
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// This whole file (and the setup_behat script) exist just for these miserable hacks.
 
 // Hot fix to skip phpunit XML config and Other Trouble ©
 // May break at any given time, of course. Holler me if it does !
@@ -46,6 +37,8 @@ $_SERVER['KERNEL_DIR'] = 'app';
 
 // Doctrine and the documentation generator NEED annotations support
 AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Start Behat
 $factory = new \Behat\Behat\ApplicationFactory();

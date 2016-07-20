@@ -4,6 +4,7 @@ namespace Give2Peer\Give2PeerBundle\Controller\Rest;
 
 use Gedmo\Sluggable\Util\Urlizer;
 use Give2Peer\Give2PeerBundle\Controller\BaseController;
+use Give2Peer\Give2PeerBundle\Entity\Report;
 use Give2Peer\Give2PeerBundle\Entity\Thank;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,9 +28,15 @@ class ModerationController extends BaseController
     /**
      * Report the item `id` for abuse.
      *
-     * You can only report abuse for a specific item once.
+     * #### Restrictions
      *
-     * You cannot report for abuse items you authored yourself.
+     *   - You need to be at least level 1.
+     *   - You can only report abuse for a specific item once.
+     *   - You cannot report for abuse items you authored yourself.
+     *
+     * #### Effects
+     *
+     * When the sum of the reporters' karma exceed the item author's golden karma, the item is soft-deleted.
      *
      * #### Possibly Costs Karma
      *
@@ -48,7 +55,11 @@ class ModerationController extends BaseController
      */
     public function reportItemAction (Request $request, $id)
     {
+        // sum of reporters' karma must exceed buffed up author's karma
+        $defense_buff_factor = 1.618;
 
+        $em = $this->getEntityManager();
+        $rr = $this->getReportRepository();
         $user = $this->getUser();
         $item = $this->getItem($id);
 
@@ -66,15 +77,32 @@ class ModerationController extends BaseController
             );
         }
 
-        if ($thor->getLevel() > $user->getLevel()) {
+        if ($user->getLevel() < 1) {
             return new ErrorJsonResponse(
-                "Can't report holier author's item #$id.", Error::NOT_AUTHORIZED
+                "Level too low to report item #$id.", Error::NOT_AUTHORIZED
             );
         }
 
-        $item->markAsDeleted(); // brutality
+        if ($rr->hasUserReportedAlready($user, $item)) {
+            return new ErrorJsonResponse(
+                "Can't report twice item #$id.", Error::NOT_AUTHORIZED
+            );
+        }
 
-        $this->getEntityManager()->flush();
+        $thank = new Report(); // such neat, very POPO        wow
+        $thank->setItem($item);
+        $thank->setReporter($user);
+        $thank->setReportee($thor);
+        $em->persist($thank);
+        $em->flush();
+
+        $willAgainst = $rr->sumKarmicWillAgainstItem($item);
+
+        if ($willAgainst > $thor->getKarma() * $defense_buff_factor) {
+            $item->markAsDeleted(); // brutality
+        }
+
+        $em->flush();
 
         return $this->respond([
             'item' => $item
