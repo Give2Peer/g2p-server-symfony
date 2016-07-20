@@ -120,7 +120,8 @@ RoadMap
 - [x] Feature: Attach a `webp` picture to an item
 - [x] Feature: Delete my own items
 - [x] Feature: Report an abusive item (the irony of writing censorship software is not lost on me)
-- [ ] Freeze the API: Pictures upload need work.
+- [x] Feature: Cancel a report of an abusive item
+- [ ] Freeze the API. Picture upload needs work. Or does it ? Clients should use background tasks !
 
 
 ChangeLog
