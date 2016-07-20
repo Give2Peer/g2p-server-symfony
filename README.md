@@ -119,7 +119,7 @@ RoadMap
 - [x] Feature: Attach a `gif` picture to an item
 - [x] Feature: Attach a `webp` picture to an item
 - [x] Feature: Delete my own items
-- [ ] Feature: Report an abusive item
+- [x] Feature: Report an abusive item (the irony of writing censorship software is not lost on me)
 - [ ] Freeze the API: Pictures upload need work.
 
 
