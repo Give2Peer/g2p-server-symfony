@@ -72,7 +72,7 @@ Scenario: Item is deleted when you have waaay more karma than the author
    Then my request should be accepted
     And I should now see 0 items
 
-
+@wip
 Scenario: Cancel your report and the item deletion
   Given I am the user named Superior Delator
    Then I should see 1 item

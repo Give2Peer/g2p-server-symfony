@@ -61,7 +61,14 @@ class ModerationController extends BaseController
         $em = $this->getEntityManager();
         $rr = $this->getReportRepository();
         $user = $this->getUser();
-        $item = $this->getItem($id);
+
+        $cancel = $request->get("cancel", false);
+
+        if ($cancel) {
+            $item = $this->getItemIncludingDeleted($id);
+        } else {
+            $item = $this->getItem($id);
+        }
 
         if (null == $item) {
             return new ErrorJsonResponse(
@@ -83,23 +90,39 @@ class ModerationController extends BaseController
             );
         }
 
-        if ($rr->hasUserReportedAlready($user, $item)) {
-            return new ErrorJsonResponse(
-                "Can't report twice item #$id.", Error::NOT_AUTHORIZED
-            );
+        if ($cancel) {
+            // We're canceling a previous report
+            $report = $rr->findOneByUserAndItem($user, $item);
+            if ( ! $report) {
+                return new ErrorJsonResponse(
+                    "Can't cancel a report never made on item #$id.", Error::NOT_AUTHORIZED
+                );
+            }
+
+            $em->remove($report);
+
+        } else {
+            // We're making a new report
+            if ($rr->hasUserReportedAlready($user, $item)) {
+                return new ErrorJsonResponse(
+                    "Can't report twice item #$id.", Error::NOT_AUTHORIZED
+                );
+            }
+
+            $report = new Report(); // such neat, very POPO        wow
+            $report->setItem($item);
+            $report->setReporter($user);
+            $report->setReportee($thor);
+            $em->persist($report);
         }
 
-        $thank = new Report(); // such neat, very POPO        wow
-        $thank->setItem($item);
-        $thank->setReporter($user);
-        $thank->setReportee($thor);
-        $em->persist($thank);
-        $em->flush();
-
+        $em->flush(); // important: flush before next line !
         $willAgainst = $rr->sumKarmicWillAgainstItem($item);
 
         if ($willAgainst > $thor->getKarma() * $defense_buff_factor) {
             $item->markAsDeleted(); // brutality
+        } else {
+            $item->unmarkAsDeleted();
         }
 
         $em->flush();

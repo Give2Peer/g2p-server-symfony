@@ -108,6 +108,29 @@ abstract class BaseController extends Controller
     }
 
     /**
+     * Sugary extra layer to `find()` and sanitize input `$id`, and disable the soft-deletion filter.
+     *
+     * Return `null` when no item by that id could be found.
+     *
+     * We could use type converters and not this method, but that way we can
+     * more easily and more finely control the 404 error response.
+     * If you can figure out how to finely control the error responses, use type
+     * converters instead !
+     *
+     * @param $id
+     * @return null|Item
+     */
+    protected function getItemIncludingDeleted($id)
+    {
+        $filters = $this->getEntityManager()->getFilters();
+        $filters->disable('softdeleteable');
+        $item = $this->getItem($id);
+        $filters->enable('softdeleteable');
+
+        return $item;
+    }
+
+    /**
      * Should ask a service instead of making an instance.
      * Should handle locale and region, too.
      *

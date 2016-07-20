@@ -445,8 +445,6 @@ class FeatureContext extends    BaseContext
         } // refactor into getMandatoryUser() or getUser($user, $require=true)
 
         $this->createItem($user, null, null, $title, null);
-
-//        $item = $this->getItemRepository()->findOneBy(['title' => $title]);
     }
 
 
@@ -636,11 +634,7 @@ class FeatureContext extends    BaseContext
      */
     public function iDeleteTheItemTitled($title)
     {
-        $item = $this->getItemRepository()->findOneBy(['title' => $title]);
-        if (null == $item) {
-            $this->fail(sprintf("There is no item by the name '%s'", $title));
-        }
-
+        $item = $this->getItemByTitle($title);
         $this->iDelete('item/'.$item->getId());
     }
 
@@ -649,14 +643,8 @@ class FeatureContext extends    BaseContext
      */
     public function iThankTheAuthorOfItemTitled($title)
     {
-        $item = $this->getItemRepository()->findOneBy(['title' => $title]);
-        if (null == $item) {
-            $this->fail(sprintf("There is no item by the name '%s'", $title));
-        }
-
-        $id = $item->getId();
-
-        $this->request('POST', "/thank/item/$id", []);
+        $item = $this->getItemByTitle($title);
+        $this->request('POST', "/thank/item/".$item->getId(), []);
     }
 
     /**
@@ -664,14 +652,24 @@ class FeatureContext extends    BaseContext
      */
     public function iReportTheItemAsAbusive($title)
     {
-        $item = $this->getItemRepository()->findOneBy(['title' => $title]);
-        if (null == $item) {
-            $this->fail(sprintf("There is no item by the name '%s'", $title));
-        }
+        $item = $this->getItemByTitle($title);
+        $this->request('POST', "/report/item/".$item->getId(), []);
+    }
 
-        $id = $item->getId();
+    /**
+     * Will find soft-deleted items too.
+     *
+     * @When /^I cancel my report on the item titled "(.+)" *$/
+     */
+    public function iCancelMyReportOnTheItem($title)
+    {
+        // We want to find amongst the deleted items too
+        $filters = $this->getEntityManager()->getFilters();
+        $filters->disable('softdeleteable');
+        $item = $this->getItemByTitle($title);
+        $filters->enable('softdeleteable');
 
-        $this->request('POST', "/report/item/$id", []);
+        $this->request('POST', "/report/item/".$item->getId(), ['cancel'=>true]);
     }
 
     /**
@@ -938,9 +936,6 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * /!\ Will count items marked for deletion too !
-     *     Will it anymore ? To test, we upgraded to softdeletable since.
-     *
      * @Then /^there should (?:still )?be (\d+) items? (?:[ie]n)?titled "(.+)"$/
      */
     public function thereShouldBeAnItemTitled($count, $title)
@@ -1127,6 +1122,23 @@ class FeatureContext extends    BaseContext
         return $this->getEntityManager()
             ->getRepository("Give2PeerBundle:User")
             ->findOneBy(['username'=>$username]);
+    }
+
+    /**
+     * Get the item from its unique title, or fail.
+     *
+     * @param String $title
+     * @return Item
+     */
+    protected function getItemByTitle($title)
+    {
+        /** @var Item $item */
+        $item = $this->getItemRepository()->findOneBy(['title' => $title]);
+        if (null == $item) {
+            $this->fail(sprintf("There is no item entitled '%s'", $title));
+        }
+
+        return $item;
     }
 
     /**

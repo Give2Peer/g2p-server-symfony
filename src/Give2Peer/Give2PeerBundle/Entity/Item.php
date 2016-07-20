@@ -552,4 +552,14 @@ class Item implements \JsonSerializable
     {
         return $this->setDeletedAt(new \DateTime());
     }
+
+    /**
+     * Sets deletedAt to null.
+     *
+     * @return Item
+     */
+    public function unmarkAsDeleted()
+    {
+        return $this->setDeletedAt(null);
+    }
 }
