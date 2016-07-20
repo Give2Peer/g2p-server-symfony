@@ -16,6 +16,7 @@ use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Item CRUD, with level authorization, and item picture upload too.
@@ -32,9 +33,9 @@ class ItemController extends BaseController
      *
      * Only the `location` of the item is mandatory.
      *
-     * #### Authorization
+     * #### Restrictions
      *
-     * Any user can publish items, but it is subjected to daily quotas.
+     * Any user can publish items, but one is subjected to daily quotas.
      *
      * `Daily Quota = 2 * ( User Level + 1 )`
      *
@@ -42,6 +43,10 @@ class ItemController extends BaseController
      *
      * This creates an item with the appropriate attributes,
      * stores it and sends it back as JSON, along with the karma gained.
+     *
+     * #### Features
+     *
+     *   - [giving_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/giving_items.feature)
      *
      * @ApiDoc(
      *   parameters = {
@@ -151,7 +156,7 @@ class ItemController extends BaseController
     /**
      * Delete the item `id`.
      *
-     * #### Authorization
+     * #### Restrictions
      *
      * This only works if you're the author of that item.
      * There might be more complex deletion privileges in the future.
@@ -161,6 +166,11 @@ class ItemController extends BaseController
      * This marks the item as deleted, it does not immediately `DELETE` the item from the database.
      * A maintenance (CRON) task will handle the actual deletion of stale soft-deleted items.
      * The pictures associated to that item will be deleted as well by the maintenance (CRON) task.
+     *
+     * #### Features
+     *
+     *   - [deleting_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/deleting_items.feature)
+     *
      *
      * @ApiDoc()
      *
@@ -195,9 +205,9 @@ class ItemController extends BaseController
     }
 
     /**
-     * Upload a picture for the item `id`.
+     * Upload and attach a picture to the item `id`.
      *
-     * #### Authorization
+     * #### Restrictions
      *
      * You need to be the author of that item. This may evolve into a more complex rule in the future.
      *
@@ -208,10 +218,15 @@ class ItemController extends BaseController
      *   - `GIF`
      *   - `WebP`
      *
+     * #### Features
+     *
+     *   - [picturing_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/picturing_items.feature)
+     *
      * #### Ideas
      *
      *   - Allow uploading more than one picture for one item, since level ???
-     *   - Allow uploading photos for others' items, since level ???
+     *   - Allow uploading pictures for others' items, since level ???
+     *
      *
      * @ApiDoc(
      *   parameters = {
@@ -222,9 +237,9 @@ class ItemController extends BaseController
      *     }
      *   }
      * )
-     * @param Request $request
-     * @param int     $id of the Item to upload the picture for.
-     * @return JsonResponse|ErrorJsonResponse
+     * @param  Request  $request
+     * @param  int      $id      Id of the Item to upload the picture for.
+     * @return Response
      */
     public function itemPictureUploadAction(Request $request, $id)
     {

@@ -49,7 +49,7 @@ Scenario: Fail to report abuse twice for the same item
 
 
 Scenario: Item is deleted when multiple low-karma reports are made
-        # and the summed karmic will against the item exceeds the author's karma
+        # and the summed karmic will against the item exceeds the author's golden karma
   Given I am the user named Inferior Delator A
    Then I should see 1 item
    When I try to report the item titled "P0RN" as abusive

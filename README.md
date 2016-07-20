@@ -97,6 +97,8 @@ RoadMap
 
 - [ ] Feature: API Text Responses
 - [ ] Feature: API XML Responses
+- [ ] Testing: a sandbox version of this server to test-drive clients
+- [ ] Setting: move route configuration to annotations
 
 
 ### 1.1
@@ -104,8 +106,6 @@ RoadMap
 - [ ] More RESTful routes for Users
 - [ ] More RESTful routes for Items
 - [ ] More RESTful routes for Tags
-- [ ] Testing: a sandbox version of this server to test-drive clients
-- [ ] Setting: move route configuration to annotations
 
 
 ### 1.0

@@ -6,10 +6,8 @@ Feature: Providing statistics
   I need to collect and provide statistics
 
 
-
 Background:
-  Given I am the registered user named Goutte
-
+  Given I am the registered user named Watson
 
 
 Scenario: Get initial statistics
@@ -21,7 +19,6 @@ users_count: 1
 items_count: 0
 items_total: 0
 """
-
 
 
 Scenario: Get updated statistics
