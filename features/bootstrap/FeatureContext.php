@@ -999,7 +999,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Then /^my quota for adding items (?:is|should (?:still )?be) (\d+)$/
+     * @Then /^my quota for adding items (?:is|should (?:still )?be) ([0-9]+)$/
      */
     public function myQuotaForAddingItemsShouldBe($quota)
     {
