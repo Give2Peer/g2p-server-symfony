@@ -56,6 +56,7 @@ quality:
     - Asiatic
     - Atomic
     - Australian
+    - Awesome
     - Bald
     - Beautiful
     - Bearded
@@ -98,6 +99,7 @@ quality:
     - Humble
     - Huge
     - Hybrid
+    - Hypnotic
     - Indian
     - Intrepid
     - Karmic
@@ -110,20 +112,16 @@ quality:
     - Magnificent
     - Mellow
     - Mercurial
-    - Mongol
     - Mute
     - Mysterious
     - Native
     - New
-    - Northern
     - Open
-    - Pacific
     - Pensive
     - Perfumed
     - Peruvian
     - Poor
     - Princess
-    - Prussian
     - Psychedelic
     - Quantic
     - Radiant
@@ -133,6 +131,7 @@ quality:
     - Relaxed
     - Relentless
     - Romantic
+    - Rogue
     - Royal
     - Rich
     - Ruthless
@@ -141,6 +140,7 @@ quality:
     - Scaly
     - Sensible
     - Sensitive
+    - Sociable
     - Shiny
     - Sick
     - Skilled
@@ -159,6 +159,7 @@ quality:
     - Swift
     - Tropical
     - Unhinged
+    - Unmellow
     - Vague
     - Vehement
     - Veteran
@@ -295,7 +296,6 @@ color:
     - Carolina
     - Carrot
     - Castleton
-    - Catalina
     - Catawba
     - Cedar
     - Celadon
@@ -604,15 +604,12 @@ color:
     - Otter
     - Outer
     - Outrageous
-    - Oxford
-    - Pacific
     - Palatinate
     - Pale
     - Palm
     - Pansy
     - Papaya
     - Paradise
-    - Paris
     - Parrot
     - Pastel
     - Patriarch
@@ -709,12 +706,9 @@ color:
     - Saurus
     - Scarlet
     - Schauss
-    - School
-    - Screamin
     - Sea
     - Seashell
     - Seaweed
-    - Selective
     - Sepia
     - Shadow
     - Shampoo
@@ -722,8 +716,6 @@ color:
     - Sherbet
     - Shimmering
     - Shiny
-    - Shocking
-    - Shy
     - Sienna
     - Silk
     - Silver
@@ -778,7 +770,6 @@ color:
     - Tickle
     - Tiffany
     - Tiger
-    - Titanium
     - Tomato
     - Toolbox
     - Topaz
@@ -799,7 +790,6 @@ color:
     - Ultramarine
     - Umber
     - Unbleached
-    - Unmellow
     - Upsdell
     - Urobilin
     - Vale
@@ -836,6 +826,7 @@ origin:
     - Brazilian
     - Canadian
     - Caribbean
+    - Catalina
     - Caucasian
     - Chinese
     - Dutch
@@ -846,10 +837,14 @@ origin:
     - German
     - Icelandic
     - Italian
+    - Irish
     - Martian
+    - Mongol
     - Northern
     - Pakistani
+    - Pacific
     - Persian
+    - Prussian
     - Selenite
     - Southern
     - Turkish
@@ -866,6 +861,7 @@ material:
     - Plastic
     - Steel
     - Stone
+    - Titanium
     - Wood
 
 
@@ -874,6 +870,7 @@ qualifier:
     - Cyclop  # maybe a quality, not a qualifier ?
     - Earth
     - Forest
+    - Grassland
     - Island
     - Nile
     - Oceanic
@@ -1377,7 +1374,6 @@ being:
     - Skunk
     - Sloth
     - Snake
-    - Sociable
     - Sockeye
     - South
     - Southern
