@@ -644,7 +644,7 @@ class FeatureContext extends    BaseContext
     public function iThankTheAuthorOfItemTitled($title)
     {
         $item = $this->getItemByTitle($title);
-        $this->request('POST', "/thank/item/".$item->getId(), []);
+        $this->request('POST', "/item/".$item->getId()."/thank", []);
     }
 
     /**
@@ -653,7 +653,7 @@ class FeatureContext extends    BaseContext
     public function iReportTheItemAsAbusive($title)
     {
         $item = $this->getItemByTitle($title);
-        $this->request('POST', "/report/item/".$item->getId(), []);
+        $this->request('POST', "/item/".$item->getId()."/report", []);
     }
 
     /**
@@ -669,7 +669,7 @@ class FeatureContext extends    BaseContext
         $item = $this->getItemByTitle($title);
         $filters->enable('softdeleteable');
 
-        $this->request('POST', "/report/item/".$item->getId(), ['cancel'=>true]);
+        $this->request('POST', "/item/".$item->getId()."/report", ['cancel'=>true]);
     }
 
     /**

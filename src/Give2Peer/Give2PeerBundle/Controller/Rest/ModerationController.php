@@ -119,8 +119,10 @@ class ModerationController extends BaseController
         $em->flush(); // important: flush before next line !
         $willAgainst = $rr->sumKarmicWillAgainstItem($item);
 
+        $didWeDeleteSomething = false;
         if ($willAgainst > $thor->getKarma() * $defense_buff_factor) {
             $item->markAsDeleted(); // brutality
+            $didWeDeleteSomething = true;
         } else {
             $item->unmarkAsDeleted();
         }
@@ -128,7 +130,9 @@ class ModerationController extends BaseController
         $em->flush();
 
         return $this->respond([
-            'item' => $item
+            'item'         => $item,
+            'item_deleted' => $didWeDeleteSomething,
+            // possible author_deleted in the future
         ]);
     }
 }
