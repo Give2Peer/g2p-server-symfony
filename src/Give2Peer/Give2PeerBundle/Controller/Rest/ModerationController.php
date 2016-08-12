@@ -31,7 +31,7 @@ class ModerationController extends BaseController
      * #### Restrictions
      *
      *   - You need to be at least level 1.
-     *   - You can only report abuse for a specific item once.
+     *   - You can only report abuse once per item.
      *   - You cannot report for abuse items you authored yourself.
      *
      * #### Effects
@@ -46,7 +46,6 @@ class ModerationController extends BaseController
      *
      *   - [reporting_abuse.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/reporting_abuse.feature)
      *
-     * @fixme: _make reporting cost karma points_ ?
      * 
      * @ApiDoc()
      *
@@ -55,7 +54,7 @@ class ModerationController extends BaseController
      */
     public function reportItemAction (Request $request, $id)
     {
-        // sum of reporters' karma must exceed buffed up author's karma
+        // sum of reporters' karma must exceed the author's golden karma
         $defense_buff_factor = 1.618;
 
         $em = $this->getEntityManager();
@@ -86,7 +85,7 @@ class ModerationController extends BaseController
 
         if ($user->getLevel() < 1) {
             return new ErrorJsonResponse(
-                "Level too low to report item #$id.", Error::NOT_AUTHORIZED
+                "Level too low to report item #$id.", Error::LEVEL_TOO_LOW
             );
         }
 
@@ -102,14 +101,14 @@ class ModerationController extends BaseController
             $em->remove($report);
 
         } else {
-            // We're making a new report
+            // We're making a new report only if one does not exist yet
             if ($rr->hasUserReportedAlready($user, $item)) {
                 return new ErrorJsonResponse(
-                    "Can't report twice item #$id.", Error::NOT_AUTHORIZED
+                    "Can't report twice item #$id.", Error::ALREADY_DONE
                 );
             }
 
-            $report = new Report(); // such neat, very POPO        wow
+            $report = new Report(); // such neat, very POPO     --   wow
             $report->setItem($item);
             $report->setReporter($user);
             $report->setReportee($thor);

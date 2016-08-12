@@ -4,9 +4,11 @@ namespace Give2Peer\Give2PeerBundle\Controller;
 
 /**
  * Error codes returned by the REST API when something fishy happens.
- *
- * Class ErrorCode
- * @package Give2Peer\Give2PeerBundle\Controller
+ * 
+ * The response will usually have an HTTP error code (4XX), the following error
+ * codes will be in the content, under the `code` key, such as :
+ * 
+ * { "code": 8, ... }
  */
 abstract class ErrorCode
 {
@@ -21,4 +23,6 @@ abstract class ErrorCode
     const BAD_USERNAME         =  9; // Provided username cannot be resolved
     const BAD_USER_ID          = 10; // Provided user id cannot be resolved
     const BAD_ITEM_TYPE        = 11; // Provided item type is unhandled
+    const LEVEL_TOO_LOW        = 12; // User level is too low 
+    const ALREADY_DONE         = 13; // Action could only be done once
 }
