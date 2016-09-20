@@ -153,6 +153,7 @@ See [the bundle's README](src/Give2Peer/Give2PeerBundle/README.md).
 
 
 
+
 REST API
 ========
 
@@ -182,39 +183,41 @@ The error codes are available as constants in the class `Controller\ErrorCode`.
 Install
 =======
 
-You'll need `php >= 5.6`.
+Vendors
+-------
 
-The vendor setup is pretty straightforward if you already have [Composer] :
+You'll need `php >= 5.6`. Here are the packages you'll need at first on Debian-based systems :
+
+    apt install php php-xml php-mbstring php-curl composer
+
+The vendor setup is pretty straightforward if you get [Composer] that way :
 
     composer install
 
-Otherwise, here's how to get [Composer] and install :
 
-    curl -s https://getcomposer.org/installer | php
-    php composer.phar install
+Database and Testing
+--------------------
 
-Alternatively, [Composer] is also available as a Debian package :
-
-    apt-get install composer
-
-
-Then look at and run the setup scripts as-needed in `script/`.
+Then look at and run the `setup_` scripts as-needed in `script/`.
+They're made for Debian, you're welcome to add your own.
 
 You should probably install the `fortune` package too, but it's not mandatory.
 Neither is fun, think about it.
+
+    apt install fortunes
+
 
 
 
 Licence
 =======
 
-Everything is public domain, unless specified otherwise in the file.
+Everything is public domain, unless specified otherwise in the file trunk.
 
-We should collect the various licences of the third-party libs we use,
-and make a proper `LICENCE.md` file that we can display in the clients.
+See `LICENCE.md`.
 
-They are all public-domain-like, but they have their little quirks, and
-besides it's like saying thanks !
+
+
 
 
 
