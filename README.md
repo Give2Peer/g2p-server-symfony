@@ -99,13 +99,7 @@ RoadMap
 - [ ] Feature: API XML Responses
 - [ ] Testing: a sandbox version of this server to test-drive clients
 - [ ] Setting: move route configuration to annotations
-
-
-### 1.1
-
-- [ ] More RESTful routes for Users
-- [ ] More RESTful routes for Items
-- [ ] More RESTful routes for Tags
+- [ ] Ensure perfection of RESTfulness
 
 
 ### 1.0
@@ -114,14 +108,13 @@ RoadMap
 - [x] Setting: Version the API (ie: prefix with `v1/` in the URLs)
 - [x] Setting: Optional HTTPS (somewhat, we're still self-signed)
 - [x] Setting: Semantic bundle configuration
-- [x] Provide stats about the total number of items
-- [x] Feature: Attach a `png` picture to an item
-- [x] Feature: Attach a `gif` picture to an item
-- [x] Feature: Attach a `webp` picture to an item
+- [x] Feature: Stats about the total number of items and users
+- [x] Feature: Attach a `png`, `gif` or `webp` picture to an item
 - [x] Feature: Delete my own items
-- [x] Feature: Report an abusive item (the irony of writing censorship software is not lost on me)
+- [x] Feature: Report an abusive item (the irony of me writing censorship software is not lost on me)
 - [x] Feature: Cancel a report of an abusive item
-- [ ] Freeze the API. Picture upload needs work. Or does it ? Clients should use background tasks !
+- [x] Licence: Public domain and vendors' libre licences
+- [ ] Setting: Freeze the API and release
 
 
 ChangeLog
@@ -212,7 +205,7 @@ Neither is fun, think about it.
 Licence
 =======
 
-Everything is public domain, unless specified otherwise in the file trunk.
+Everything here is _public domain_, unless specified otherwise in the file trunk.
 
 See `LICENCE.md`.
 

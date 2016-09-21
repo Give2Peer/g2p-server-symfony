@@ -6,6 +6,13 @@ We should probably move to a better way of doing APIs, like using :
 https://github.com/dunglas/DunglasApiBundle
 or
 https://github.com/api-platform/api-platform (<3)
+It MUST be compatible with our sandbox generator (NelmioAPIBundle) though.
+
+
+Things That Suck
+================
+
+- composer.json should be a YAML file, but ... opinions, laziness, fear.
 
 
 Optimizations
@@ -43,8 +50,4 @@ Categories
 - Réparable
 - Inconnu
 
-Every single person I've told this about told me that we should handle
-more than just repairable fixtures. But it's a great name and a great
-community, and it's specialized ! We really need to chaaaaaaaaaaaaat !
-
-I'm so forever alone :/
+They're still not responding to my emails... I'm so forever alone :/
