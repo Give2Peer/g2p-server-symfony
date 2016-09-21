@@ -191,7 +191,7 @@ class ItemRepository extends EntityRepository
         $filters = $this->getEntityManager()->getFilters();
         $filters->disable('softdeleteable');
 
-        // What we should do instead :
+        // What we should probably do instead :
         // 1. Select the item IDs
         // 2. Delete the items
         // 3. Return the IDs
@@ -210,6 +210,30 @@ class ItemRepository extends EntityRepository
         $filters->enable('softdeleteable');
 
         return $before - $after;
+    }
+
+    /**
+     * Really and definitely delete from the database the provided item.
+     *
+     * Disables the `softdeleteable` filter, obviously, even if it seems to not
+     * hook the delete statement, which always hard-deletes. (bug ?)
+     */
+    public function hardDeleteItem(Item $item)
+    {
+        $filters = $this->getEntityManager()->getFilters();
+        $filters->disable('softdeleteable');
+
+        $result = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->delete($this->getEntityName(), 'i')
+            ->andWhere('i.id <= :id')
+            ->setParameter('id', $item->getId())
+            ->getQuery()->execute()
+        ;
+
+        $filters->enable('softdeleteable');
+
+        return $result;
     }
 
     /**

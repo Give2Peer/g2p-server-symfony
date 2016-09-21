@@ -328,16 +328,15 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^I am (?:the|a)(?: registered)? user named "?(.*?)"? *$/
+     * @Given /^I am (?:the|a)(?: registered)? user named "?(.*?)"? *(?:of level (\d+))? *$/
      */
-    public function iAmTheRegisteredUserNamed($name)
+    public function iAmTheRegisteredUserNamed($name, $level=null)
     {
         $um = $this->getUserManager();
         $user = $um->findUserByUsername($name);
 
-        if (empty($user)) {
-            $user = $this->createUser($name);
-        }
+        if (empty($user)) $user = $this->createUser($name);
+        if (null !== $level) $this->someoneIsLevel($name, $level);
 
         $this->user = $user;
     }
@@ -389,7 +388,7 @@ class FeatureContext extends    BaseContext
     public function thereIsANamedUserOfLevel($name, $level=null)
     {
         $this->createUser($name);
-        if (!empty($level)) $this->someoneIsLevel($name, $level);
+        if (null !== $level) $this->someoneIsLevel($name, $level);
     }
 
     /**
@@ -445,6 +444,22 @@ class FeatureContext extends    BaseContext
         } // refactor into getMandatoryUser() or getUser($user, $require=true)
 
         $this->createItem($user, null, null, $title, null);
+    }
+
+    /**
+     * Will find soft-deleted items too.
+     *
+     * @When /^the item titled "(.+)" is hard deleted *$/
+     */
+    public function theItemIsHardDeleted($title)
+    {
+        // We want to find amongst the soft-deleted items too
+        $filters = $this->getEntityManager()->getFilters();
+        $filters->disable('softdeleteable');
+        $item = $this->getItemByTitle($title);
+        $filters->enable('softdeleteable');
+
+        $this->getItemRepository()->hardDeleteItem($item);
     }
 
 
@@ -1046,6 +1061,22 @@ class FeatureContext extends    BaseContext
             ->countAuthoredBy($this->getI());
 
         $this->assertEquals($count, $actual);
+    }
+
+    /**
+     * @Then /^(?:(my) report|the report of (.+)) on the item titled "(.+)" should be deleted(?: too)?$/
+     */
+    public function theReportShouldBeDeleted($name, $title)
+    {
+        if ($name == "my") {
+            $user = $this->getI();
+        } else {
+            $user = $this->getUser($name);
+        }
+        $item = $this->getItemByTitle($title);
+
+        $report = $this->getReportRepository()->findOneByUserAndItem($user, $item);
+        $this->assertEmpty($report);
     }
 
     /**

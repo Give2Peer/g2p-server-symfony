@@ -3,6 +3,7 @@
 
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
+use Give2Peer\Give2PeerBundle\Entity\ReportRepository;
 use Give2Peer\Give2PeerBundle\Entity\UserManager;
 use Liip\FunctionalTestBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -134,6 +135,16 @@ abstract class BaseContext extends WebTestCase
     protected function getItemRepository()
     {
         return $this->getEntityManager()->getRepository("Give2PeerBundle:Item");
+    }
+
+    /**
+     * Get the report repository.
+     *
+     * @return ReportRepository
+     */
+    protected function getReportRepository()
+    {
+        return $this->getEntityManager()->getRepository("Give2PeerBundle:Report");
     }
 
 }

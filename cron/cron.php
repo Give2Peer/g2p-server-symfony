@@ -12,7 +12,7 @@
 #
 
 // For every line in this config there must exist respective routes and
-// controller actions.
+// controller actions in CronController.
 $freqs = array(
     'monkey',
     'daily',
