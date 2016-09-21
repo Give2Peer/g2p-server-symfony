@@ -248,6 +248,11 @@ class FeatureContext extends    BaseContext
     public function iBlazeThroughDarknessAndLightAlike() {}
 
     /**
+     * @Then it should not raise an exception
+     */
+    public function itShouldNotRaiseAnException() {}
+
+    /**
      * @Given I print :arg1
      */
     public function iPrint($arg1) { print($arg1); }
@@ -1061,22 +1066,6 @@ class FeatureContext extends    BaseContext
             ->countAuthoredBy($this->getI());
 
         $this->assertEquals($count, $actual);
-    }
-
-    /**
-     * @Then /^(?:(my) report|the report of (.+)) on the item titled "(.+)" should be deleted(?: too)?$/
-     */
-    public function theReportShouldBeDeleted($name, $title)
-    {
-        if ($name == "my") {
-            $user = $this->getI();
-        } else {
-            $user = $this->getUser($name);
-        }
-        $item = $this->getItemByTitle($title);
-
-        $report = $this->getReportRepository()->findOneByUserAndItem($user, $item);
-        $this->assertEmpty($report);
     }
 
     /**

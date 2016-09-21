@@ -9,6 +9,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * An action of report, by the reporter on the reportee, about an item.
+ * Censorship is therefore applied by the users themselves.
  *
  * The (reporter,item) tuple should be unique as per the specs : no reporting twice.
  *
@@ -57,44 +58,44 @@ class Report implements \JsonSerializable
 
     /**
      * The user that reported the other user for its item.
+     * If the reporter is deleted, this report will be deleted too.
      *
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="reportsMade")
-     * (this JoinColumn is unnecessary as those are the default values)
-     * @ORM\JoinColumn(name="reporter_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="reporter_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $reporter;
 
     /**
      * The user that was reported for its item by the other user.
+     * If the reportee is deleted, this report will be deleted too.
      *
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", inversedBy="reportsReceived")
-     * (this JoinColumn is unnecessary as those are the default values)
-     * @ORM\JoinColumn(name="reportee_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="reportee_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $reportee;
 
     /**
      * The (probably irrelevant) item that triggered this report.
+     * When the item is deleted, this report will be deleted too.
      *
      * @var Item
      *
      * @ORM\ManyToOne(targetEntity="Item", inversedBy="reportsReceived")
-     * (this JoinColumn is unnecessary as those are the default values)
-     * @ORM\JoinColumn(name="item_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="item_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $item;
 
 
-    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //public function __construct() {}
 
     /**
-     * Get the unique identifier of this thank action. Pretty useless.
+     * Get the unique identifier of this report action. Pretty useless.
      *
      * @return integer 
      */

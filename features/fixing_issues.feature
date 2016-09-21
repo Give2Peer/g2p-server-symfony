@@ -12,4 +12,4 @@ Scenario: Cascade delete reports when the related item is deleted
     And I report the item titled "SGB" as abusive
    Then my request should be accepted
    When the item titled "SGB" is hard deleted
-   Then the report of Goutte on the item titled "SGB" should be deleted too
+   Then it should not raise an exception
