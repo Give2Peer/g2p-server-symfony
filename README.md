@@ -99,7 +99,7 @@ RoadMap
 - [ ] Feature: API XML Responses
 - [ ] Testing: a sandbox version of this server to test-drive clients
 - [ ] Setting: move route configuration to annotations
-- [ ] Ensure perfection of RESTfulness
+- [ ] Ensure RESTfulnessimo
 
 
 ### 1.0
@@ -181,7 +181,7 @@ Vendors
 
 You'll need `php >= 5.6`. Here are the packages you'll need at first on Debian-based systems :
 
-    apt install php php-xml php-mbstring php-curl composer
+    apt install php php-xml php-mbstring php-curl php-gd composer
 
 The vendor setup is pretty straightforward if you get [Composer] that way :
 
