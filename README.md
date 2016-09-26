@@ -107,6 +107,15 @@ RoadMap
 
 ### 1.0
 
+- [ ] Feature: Support French
+- [ ] Setting: Freeze the API and release
+
+
+ChangeLog
+---------
+
+### 0.5
+
 - [x] Feature: Stats about the current number of items and users
 - [x] Setting: Version the API (ie: prefix with `v1/` in the URLs)
 - [x] Setting: Optional HTTPS (somewhat, we're still self-signed)
@@ -117,11 +126,7 @@ RoadMap
 - [x] Feature: Report an abusive item (the irony of me writing censorship software is not lost on me)
 - [x] Feature: Cancel a report of an abusive item
 - [x] Licence: Public domain and vendors' libre licences
-- [ ] Setting: Freeze the API and release
 
-
-ChangeLog
----------
 
 ### 0.4
 
