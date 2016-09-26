@@ -5,18 +5,12 @@ namespace Give2Peer\Give2PeerBundle\Controller\Rest;
 use Doctrine\ORM\PersistentCollection;
 use Gedmo\Sluggable\Util\Urlizer;
 use Give2Peer\Give2PeerBundle\Controller\BaseController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Give2Peer\Give2PeerBundle\Controller\ErrorCode as Error;
-use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
-use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Yaml\Yaml;
-
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * Routes are configured in YAML, in `Resources/config/routing.yml`.

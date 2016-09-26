@@ -2,18 +2,7 @@
 
 namespace Give2Peer\Give2PeerBundle\Controller;
 
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\PersistentCollection;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Give2Peer\Give2PeerBundle\Controller\ErrorCode as Error;
-use Give2Peer\Give2PeerBundle\Entity\Item;
-use Give2Peer\Give2PeerBundle\Entity\User;
-use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
-use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
 
 /**
  * Routes are configured in YAML, in `Resources/config/routing.yml`.
