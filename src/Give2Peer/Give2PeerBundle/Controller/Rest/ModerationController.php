@@ -54,6 +54,7 @@ class ModerationController extends BaseController
      */
     public function reportItemAction (Request $request, $id)
     {
+        $required_level = 1;
         // sum of reporters' karma must exceed the author's golden karma
         $defense_buff_factor = 1.618;
 
@@ -70,32 +71,27 @@ class ModerationController extends BaseController
         }
 
         if (null == $item) {
-            return new ErrorJsonResponse(
-                "Item #$id does not exist.", Error::NOT_AUTHORIZED
-            );
+            return $this->error("item.not_found", ['%id%' => $id]);
         }
 
         $thor = $item->getAuthor();
 
         if ($thor == $user) {
-            return new ErrorJsonResponse(
-                "Can't report your own item #$id.", Error::NOT_AUTHORIZED
-            );
+            return $this->error("item.report.own", ['%id%' => $id]);
         }
 
-        if ($user->getLevel() < 1) {
-            return new ErrorJsonResponse(
-                "Level too low to report item #$id.", Error::LEVEL_TOO_LOW
-            );
+        if ($user->getLevel() < $required_level) {
+            return $this->error("item.report.level_too_low", [
+                '%id%'    => $id,
+                '%level%' => $required_level,
+            ]);
         }
 
         if ($cancel) {
             // We're canceling a previous report
             $report = $rr->findOneByUserAndItem($user, $item);
             if ( ! $report) {
-                return new ErrorJsonResponse(
-                    "Can't cancel a report never made on item #$id.", Error::NOT_AUTHORIZED
-                );
+                return $this->error("item.report.cancel", ['%id%' => $id]);
             }
 
             $em->remove($report);
@@ -103,9 +99,7 @@ class ModerationController extends BaseController
         } else {
             // We're making a new report only if one does not exist yet
             if ($rr->hasUserReportedAlready($user, $item)) {
-                return new ErrorJsonResponse(
-                    "Can't report twice item #$id.", Error::ALREADY_DONE
-                );
+                return $this->error("item.report.twice", ['%id%' => $id]);
             }
 
             $report = new Report(); // such neat, very POPO     --   wow
@@ -131,7 +125,7 @@ class ModerationController extends BaseController
         return $this->respond([
             'item'         => $item,
             'item_deleted' => $didWeDeleteSomething,
-            // possible author_deleted in the future
+            // possible author_deleted boolean flag in the future
         ]);
     }
 }

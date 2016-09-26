@@ -17,10 +17,22 @@ api:
                 invalid: "The picture upload failed ; %why%"
                 not_found: "No `picture` file was provided."
                 thumbnail: "The thumbnail creation failed ; %why%"
+            report:
+                cancel: "You cannot cancel a report you never made on item #%id%."
+                level_too_low: "Your karmic level is too low to report item #%id%. You need to be at least level %level% to be able to report that item."
+                own: "You cannot report your own item #%id%."
+                twice: "You cannot report twice item #%id%."
+            thank:
+                no_thanker: "No thanker provided."
+                not_yourself: "You cannot thank yourself, you narcissic tool!"
+                once: "You can only thank once per item."
             type: "Provided item type '%type%' is invalid."
         location:
             missing: "No location was provided."
             unresolvable: "We cannot resolve the location ; %why%"
+        user:
+            missing: "There is no user in the current session. What happeed?"
+#            username: ""
         system:
             insanity: "A sanity check failed. Have you been naughty?"
             not_pgsql: "The database MUST be postgresql. It is not, it seems."

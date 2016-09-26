@@ -47,15 +47,10 @@ quality:
     - Agile
     - Alien
     - Amenable
-    - American
     - Anonymous
     - Antic
     - Aquatic
-    - Arctic
-    - Asian
-    - Asiatic
     - Atomic
-    - Australian
     - Awesome
     - Bald
     - Beautiful
@@ -127,6 +122,7 @@ quality:
     - Radiant
     - Radioactive
     - Raw
+    - Regal
     - Relative
     - Relaxed
     - Relentless
@@ -148,7 +144,7 @@ quality:
     - Slender
     - Small
     - Snowy
-    - Southern
+    - Solid
     - Suave
     - Super
     - Superb
@@ -219,7 +215,6 @@ color:
     - Baked
     - Ball
     - Banana
-    - Bangladesh
     - Barbie
     - Barn
     - Battery
@@ -669,7 +664,6 @@ color:
     - Red
     - Redwood
     - Reef
-    - Regalia
     - Rhythm
     - Rifle
     - Roast
@@ -686,7 +680,6 @@ color:
     - Ruddy
     - Rufous
     - Russet
-    - Russian
     - Rust
     - Rusty
     - Saddle
@@ -734,7 +727,6 @@ color:
     - Soap
     - Socks
     - Soda
-    - Solid
     - Sonic
     - Space
     - Sparkle
@@ -810,7 +802,6 @@ color:
     - Winter
     - Wintergreen
     - Wisteria
-    - Wood
     - Wuzzy
     - Xanadu
     - Yale
@@ -822,7 +813,13 @@ color:
 
 # So many words lacking here... Please contribute !
 origin:
+    - African
     - Alien
+    - American
+    - Arctic
+    - Asian
+    - Australian
+    - Bangladesh
     - Brazilian
     - Canadian
     - Caribbean
@@ -833,6 +830,7 @@ origin:
     - Eastern
     - English
     - Egyptian
+    - European
     - French
     - German
     - Icelandic
@@ -844,9 +842,13 @@ origin:
     - Pakistani
     - Pacific
     - Persian
+    - Portuguese
     - Prussian
+    - Russian
     - Selenite
     - Southern
+    - Sweden
+    - Swiss
     - Turkish
     - Venusian
     - Western

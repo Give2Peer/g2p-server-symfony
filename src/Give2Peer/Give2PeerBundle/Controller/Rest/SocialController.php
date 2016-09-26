@@ -28,13 +28,13 @@ class SocialController extends BaseController
     /**
      * Thank the author of the Item `id`.
      *
-     * You can only thank for a specific item once.
-     *
-     * You cannot thank yourself.
+     * You can only thank for a specific item once,
+     * and you cannot thank yourself.
      *
      * #### Costs Karma
      *
-     * This action costs 1 karma point to use. If you just levelled up, it's free ; it can't make you lose a level.
+     * This action costs 1 karma point to use.
+     * If you just levelled up, it's free ; thanking cannot make you lose a level.
      *
      * #### Effects
      *
@@ -49,24 +49,30 @@ class SocialController extends BaseController
      * @param  Request $request
      * @return ErrorJsonResponse|JsonResponse
      */
-    public function thankForItemAction (Request $request, Item $item)
+    public function thankForItemAction (Request $request, $id)
     {
         /** @var User $thanker */
         $thanker = $this->getUser();
 
         if (empty($thanker)) {
-            return new ErrorJsonResponse("No thanker provided.", Error::NOT_AUTHORIZED);
+            return $this->error("item.thank.no_thanker");
+        }
+
+        $item = $this->getItem($id);
+
+        if (null == $item) {
+            return $this->error("item.not_found", ['%id%' => $id]);
         }
 
         $thankee = $item->getAuthor();
 
         if ($thanker == $thankee) {
-            return new ErrorJsonResponse("You can't thank yourself.", Error::NOT_AUTHORIZED);
+            return $this->error("item.thank.not_yourself");
         }
 
         // Disallow thanking more than once for the same item
         if ($this->getThankRepository()->hasUserThankedAlready($thanker, $item)) {
-            return new ErrorJsonResponse("One thanks per item only.", Error::EXCEEDED_QUOTA);
+            return $this->error("item.thank.once");
         }
 
         $karma_given = min(1, $thanker->getKarmaProgress());
