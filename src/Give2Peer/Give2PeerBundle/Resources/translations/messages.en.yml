@@ -9,6 +9,8 @@
 api:
     error:
         item:
+            add:
+                quota: "You exceeded your daily quota for adding items, sorry. Try again tomorrow !"
             not_author: "You're not the author of the item #%id%. You need to be, for that action."
             not_found: "Item #%id% could not be found. Maybe it was deleted?"
             picture:
@@ -30,6 +32,11 @@ api:
         location:
             missing: "No location was provided."
             unresolvable: "We cannot resolve the location ; %why%"
+        registration:
+            quota: "Too many registrations were made recently from this IP address."
+        system:
+            insanity: "A sanity check failed. Have you been naughty?"
+            not_pgsql: "The database MUST be postgresql, yet it is not, it seems."
         user:
             edit:
                 not_yourself: "You can only edit yourself."
@@ -44,6 +51,3 @@ api:
             username:
                 missing: "No username was provided."
                 taken: "That username is already taken."
-        system:
-            insanity: "A sanity check failed. Have you been naughty?"
-            not_pgsql: "The database MUST be postgresql, yet it is not, it seems."

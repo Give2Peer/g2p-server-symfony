@@ -102,7 +102,7 @@ abstract class BaseController extends Controller
      * Silently fails and returns `null` if the user was not found.
      * 
      * @param $id
-     * @return User|null
+     * @return \FOS\UserBundle\Model\UserInterface|User|null
      */
     protected function getUserById($id)
     {
@@ -120,7 +120,7 @@ abstract class BaseController extends Controller
      * converters instead !
      *
      * @param $id
-     * @return null|Item
+     * @return Item|null
      */
     protected function getItem($id)
     {
@@ -141,7 +141,7 @@ abstract class BaseController extends Controller
      * converters instead !
      *
      * @param $id
-     * @return null|Item
+     * @return Item|null
      */
     protected function getItemIncludingDeleted($id)
     {
@@ -175,7 +175,7 @@ abstract class BaseController extends Controller
      * @param array $headers
      * @return JsonResponse|Response
      */
-    protected function respond($contents, $status=200, $headers=array())
+    protected function respond($contents, $status=Response::HTTP_OK, $headers=[])
     {
         return new JsonResponse($contents, $status, $headers);
     }
@@ -189,7 +189,7 @@ abstract class BaseController extends Controller
      * @param int $status HTTP status code
      * @return ErrorJsonResponse|Response
      */
-    protected function error($msg, $parameters=array(), $status=400)
+    protected function error($msg, $parameters=[], $status=Response::HTTP_BAD_REQUEST)
     {
         $msg = 'api.error.' . $msg; // implicit voodoo ; sorry, I'm lazy.
         return new ErrorJsonResponse(

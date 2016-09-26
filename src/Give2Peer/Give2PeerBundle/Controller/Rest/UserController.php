@@ -13,6 +13,7 @@ use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Give2Peer\Give2PeerBundle\Response\ExceededQuotaJsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Yaml\Yaml;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -424,8 +425,7 @@ class UserController extends BaseController
         $since = (new \DateTime())->sub($duration);
         $count = $um->countUsersCreatedBy($clientIp, $since);
         if ($count > $allowed) {
-            // fixme
-            return new ExceededQuotaJsonResponse("Too many registrations.");
+            return $this->error("registration.quota", [], Response::HTTP_TOO_MANY_REQUESTS);
         }
 
         // Create a new User

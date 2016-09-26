@@ -95,7 +95,7 @@ class ItemController extends BaseController
         // Check whether the user exceeds his quotas or not
         $quota_left = $itemRepo->getAddItemsCurrentQuota($user);
         if ($quota_left < 1) {
-            return new ExceededQuotaJsonResponse(); // fixme
+            return $this->error("item.add.quota", [], Response::HTTP_TOO_MANY_REQUESTS);
         }
 
         // Check whether the location can be geocoded or not
@@ -194,9 +194,7 @@ class ItemController extends BaseController
 
         $this->getEntityManager()->flush();
 
-        return $this->respond([
-            'item' => $item
-        ]);
+        return $this->respond(['item' => $item]);
     }
 
     /**
@@ -334,9 +332,7 @@ class ItemController extends BaseController
         // Flush our changes to the item into the database
         $this->getEntityManager()->flush();
 
-        return $this->respond([
-            'item' => $item
-        ]);
+        return $this->respond(['item' => $item]);
     }
 
     /**
