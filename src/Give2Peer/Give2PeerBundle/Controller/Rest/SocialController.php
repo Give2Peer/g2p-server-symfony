@@ -67,12 +67,12 @@ class SocialController extends BaseController
         $thankee = $item->getAuthor();
 
         if ($thanker == $thankee) {
-            return $this->error("item.thank.not_yourself");
+            return $this->error("item.thank.yourself");
         }
 
         // Disallow thanking more than once for the same item
         if ($this->getThankRepository()->hasUserThankedAlready($thanker, $item)) {
-            return $this->error("item.thank.once");
+            return $this->error("item.thank.twice");
         }
 
         $karma_given = min(1, $thanker->getKarmaProgress());

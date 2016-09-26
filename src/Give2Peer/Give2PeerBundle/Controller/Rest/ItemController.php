@@ -269,7 +269,7 @@ class ItemController extends BaseController
 
         if ( ! $file->isValid()) {
             return $this->error(
-                "item.picture.invalid", ['%why%', $file->getErrorMessage()]
+                "item.picture.invalid", ['%why%' => $file->getErrorMessage()]
             );
         }
 
@@ -299,7 +299,7 @@ class ItemController extends BaseController
             $file->move($publicPath, $filename);
         } catch (\Exception $e) {
             return $this->error(
-                "item.picture.copy", ['%why%', $e->getMessage()]
+                "item.picture.copy", ['%why%' => $e->getMessage()]
             );
         }
 
@@ -317,7 +317,7 @@ class ItemController extends BaseController
             // I'm not sure how secure imagecreatefrom*** functions are, though.
             unlink($publicPath . DIRECTORY_SEPARATOR . $filename);
             return $this->error(
-                "item.picture.thumbnail", ['%why%', $e->getMessage()]
+                "item.picture.thumbnail", ['%why%' => $e->getMessage()]
             );
         }
 

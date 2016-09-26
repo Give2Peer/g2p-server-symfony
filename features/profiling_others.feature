@@ -14,8 +14,15 @@ Feature: Profiling users
 
 Scenario: Fail to get my profile information when not authenticated
   Given I am not authenticated
-    And there is a user named Migi
-   When I request the profile information of Migi
+    And there is a user named Azazel
+   When I request the profile information of the user named Azazel
+   Then the request should be denied
+
+
+
+Scenario: Fail to get the profile information of a nonexistent user
+  Given I am a user named Lucifer
+   When I request the profile information of the user #666
    Then the request should be denied
 
 
@@ -23,7 +30,7 @@ Scenario: Fail to get my profile information when not authenticated
 Scenario: Get another user's public profile information
   Given I am a user named Shin' Ichi
     And there is a user named Migi
-   When I request the profile information of Migi
+   When I request the profile information of the user named Migi
    Then the request should be accepted
     And the response should include :
 """

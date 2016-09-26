@@ -88,6 +88,10 @@ class UserController extends BaseController
     }
 
 
+    /**
+     * Worst password generator ever.
+     * @return string
+     */
     public function generatePassword()
     {
         $a = $this->generateUsername();
@@ -133,8 +137,8 @@ class UserController extends BaseController
         /** @var User $user */
         $user = $this->getUser();
 
-        if (empty($user)) {
-            return new ErrorJsonResponse("Nope.", Error::NOT_AUTHORIZED);
+        if (empty($user)) {  // Does this even ever happen ?
+            return $this->error("user.missing");
         }
 
         /** @var PersistentCollection $items */
@@ -163,10 +167,12 @@ class UserController extends BaseController
      * @param  Request $request
      * @return ErrorJsonResponse|JsonResponse
      */
-    public function publicReadAction (Request $request, User $user)
+    public function publicReadAction (Request $request, $id)
     {
+        $user = $this->getUserById($id);
+
         if (empty($user)) {
-            return new ErrorJsonResponse("Bad username.", Error::BAD_USER_ID);
+            return $this->error("user.not_found.by_id", ['%id%'=>$id], 404);
         }
 
         return $this->respond([
@@ -192,7 +198,7 @@ class UserController extends BaseController
     {
         $password = $request->get('password');
         if (null == $password) {
-            return $this->respond(["error"=>"No password provided."], 400);
+            return $this->error("user.password.missing");
         }
 
         /** @var User $user */
@@ -219,7 +225,7 @@ class UserController extends BaseController
     {
         $username = $request->get('username');
         if (null == $username) {
-            return $this->respond(["error"=>"No username provided."], 400);
+            return $this->error("user.username.missing");
         }
 
         /** @var User $user */
@@ -246,7 +252,7 @@ class UserController extends BaseController
     {
         $email = $request->get('email');
         if (null == $email) {
-            return $this->respond(["error"=>"No email provided."], 400);
+            return $this->error("user.email.missing");
         }
 
         /** @var User $user */
@@ -279,10 +285,10 @@ class UserController extends BaseController
      * ParamConverter("user", class="Give2PeerBundle:User")
      *
      * @param Request $request
-     * @param User $user
+     * @param $id
      * @return JsonResponse
      */
-    public function editAction(Request $request, User $user)
+    public function editAction(Request $request, $id)
     {
         // Recover the user data
         $username = $request->get('username');
@@ -291,17 +297,19 @@ class UserController extends BaseController
 
         $clientIp = $request->getClientIp(); // use this somehow ?
 
+        $user = $this->getUserById($id);
+        if (empty($user)) {
+            return $this->error("user.not_found.by_id", ['%id%'=>$id], 404);
+        }
+
         /** @var User $user */
         $authenticatedUser = $this->getUser();
-
-        if (null == $user || null == $authenticatedUser) {
-            return $this->respond(["error"=>"No user."], 400);
+        if (null == $authenticatedUser) {  // does this ever happen?
+            return $this->error("user.missing");
         }
 
         if ($user->getId() != $authenticatedUser->getId()) {
-            return new ErrorJsonResponse(
-                "You can only edit yourself.", Error::NOT_AUTHORIZED
-            );
+            return $this->error("user.edit.not_yourself");
         }
 
         $um = $this->getUserManager();
@@ -311,9 +319,7 @@ class UserController extends BaseController
             // Rebuke if email is taken
             $existingEmailUser = $um->findUserByEmail($email);
             if (null != $existingEmailUser) {
-                return new ErrorJsonResponse(
-                    "Email already taken.", Error::UNAVAILABLE_EMAIL
-                );
+                return $this->error("user.email.taken");
             }
 
             $user->setEmail($email);
@@ -324,9 +330,7 @@ class UserController extends BaseController
             // Rebuke if username is taken
             $existingUsernameUser = $um->findUserByUsername($username);
             if (null != $existingUsernameUser) {
-                return new ErrorJsonResponse(
-                    "Username already taken.", Error::UNAVAILABLE_USERNAME
-                );
+                return $this->error("user.username.taken");
             }
 
             $user->setUsername($username);
@@ -404,17 +408,13 @@ class UserController extends BaseController
         // Rebuke if username is taken
         $user = $um->findUserByUsername($username);
         if (null != $user) {
-            return new ErrorJsonResponse(
-                "Username already taken.", Error::UNAVAILABLE_USERNAME
-            );
+            return $this->error("user.username.taken");
         }
 
         // Rebuke if email is taken
         $user = $um->findUserByEmail($email);
         if (null != $user) {
-            return new ErrorJsonResponse(
-                "Email already taken.", Error::UNAVAILABLE_EMAIL
-            );
+            return $this->error("user.email.taken");
         }
 
         // Rebuke if too many Users created in 3 days from this IP
@@ -424,6 +424,7 @@ class UserController extends BaseController
         $since = (new \DateTime())->sub($duration);
         $count = $um->countUsersCreatedBy($clientIp, $since);
         if ($count > $allowed) {
+            // fixme
             return new ExceededQuotaJsonResponse("Too many registrations.");
         }
 

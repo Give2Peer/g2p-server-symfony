@@ -266,12 +266,13 @@ class FeatureContext extends    BaseContext
         if (empty($this->client)) {
             $this->fail("No client. Request something first.");
         }
-        $content = $this->client->getResponse()->getContent();
+        $response = $this->client->getResponse();
+        $content = $response->getContent();
         try {
             $content = json_encode(json_decode($content), JSON_PRETTY_PRINT);
         } catch (\Exception $e) {}
 
-        print($content."\n");
+        print($response->getStatusCode() . "\n" . $content . "\n");
     }
 
     /**
@@ -508,11 +509,19 @@ class FeatureContext extends    BaseContext
     }
     
     /**
-     * @When /^I request the profile information of (.+)$/
+     * @When /^I request the profile information of the user named (.+)$/
      */
-    public function iGetTheProfileOf($username)
+    public function iGetTheProfileByUsername($username)
     {
         $id = $this->getUser($username)->getId();
+        $this->request('GET', "user/$id", []);
+    }
+    
+    /**
+     * @When /^I request the profile information of the user #(\d+)$/
+     */
+    public function iGetTheProfileById($id)
+    {
         $this->request('GET', "user/$id", []);
     }
 

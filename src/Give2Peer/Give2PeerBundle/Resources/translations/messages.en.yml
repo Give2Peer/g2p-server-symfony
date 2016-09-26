@@ -15,7 +15,7 @@ api:
                 copy: "We failed to copy the picture file on the server ; %why%"
                 extension: "The extension '%extension%' is not supported. The supported extensions are : %extensions%."
                 invalid: "The picture upload failed ; %why%"
-                not_found: "No `picture` file was provided."
+                not_found: "No picture file was provided."
                 thumbnail: "The thumbnail creation failed ; %why%"
             report:
                 cancel: "You cannot cancel a report you never made on item #%id%."
@@ -24,15 +24,26 @@ api:
                 twice: "You cannot report twice item #%id%."
             thank:
                 no_thanker: "No thanker provided."
-                not_yourself: "You cannot thank yourself, you narcissic tool!"
-                once: "You can only thank once per item."
+                yourself: "You cannot thank yourself, you narcissic tool!"
+                twice: "You can only thank once per item."
             type: "Provided item type '%type%' is invalid."
         location:
             missing: "No location was provided."
             unresolvable: "We cannot resolve the location ; %why%"
         user:
-            missing: "There is no user in the current session. What happeed?"
-#            username: ""
+            edit:
+                not_yourself: "You can only edit yourself."
+            email:
+                missing: "No email was provided."
+                taken: "That email is already taken."
+            missing: "There is no user in the current session. What happened?"
+            not_found:
+                by_id: "We could not find a user with id #%id%."
+            password:
+                missing: "No password was provided."
+            username:
+                missing: "No username was provided."
+                taken: "That username is already taken."
         system:
             insanity: "A sanity check failed. Have you been naughty?"
-            not_pgsql: "The database MUST be postgresql. It is not, it seems."
+            not_pgsql: "The database MUST be postgresql, yet it is not, it seems."

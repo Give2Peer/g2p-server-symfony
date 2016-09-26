@@ -8,6 +8,7 @@ use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
 use Give2Peer\Give2PeerBundle\Entity\ReportRepository;
 use Give2Peer\Give2PeerBundle\Entity\TagRepository;
 use Give2Peer\Give2PeerBundle\Entity\ThankRepository;
+use Give2Peer\Give2PeerBundle\Entity\User;
 use Give2Peer\Give2PeerBundle\Entity\UserManager;
 use Give2Peer\Give2PeerBundle\Entity\UserRepository;
 use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
@@ -94,6 +95,18 @@ abstract class BaseController extends Controller
     protected function getReportRepository()
     {
         return $this->getEntityManager()->getRepository('Give2PeerBundle:Report');
+    }
+
+    /**
+     * Sugary extra layer to find a user by its identifier $id.
+     * Silently fails and returns `null` if the user was not found.
+     * 
+     * @param $id
+     * @return User|null
+     */
+    protected function getUserById($id)
+    {
+        return $this->getUserManager()->findUserBy(['id' => $id]);
     }
 
     /**

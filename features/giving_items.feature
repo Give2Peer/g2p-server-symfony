@@ -18,6 +18,7 @@ Scenario: Give an item without a location
 nope: I'm not going to tell you where it is !
 """
   Then the request should be denied
+   And I dump the response
    And there should be 0 items in the database
 
 

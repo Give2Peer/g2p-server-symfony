@@ -39,7 +39,7 @@ email:    goutte@give2peer.org
     And the response should include :
 """
 error:
-    code: 1
+    code: api.error.user.username.taken
 """
     And there should be 1 user in the database
 
@@ -57,7 +57,7 @@ email:    goutte@give2peer.org
     And the response should include :
 """
 error:
-    code: 1
+    code: api.error.user.username.taken
 """
     And there should be 1 user in the database
 
@@ -75,6 +75,6 @@ email:    goutte@give2peer.org
     And the response should include :
 """
 error:
-    code: 7
+    code: api.error.user.email.taken
 """
     And there should be 1 user in the database
