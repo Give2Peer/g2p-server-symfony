@@ -36,7 +36,7 @@ class CronController extends BaseController
 
     /**
      * This should always do absolutely nothing.
-     * I'm using this to easily monkey-patch the database sometimes.
+     * I'm using this to easily monkey-patch the prod database sometimes.
      *
      * I used it to :
      * 1. encrypt the passwords (my bad, forgot the plaintext before release)
@@ -66,18 +66,27 @@ class CronController extends BaseController
     {
         $itemRepo = $this->getItemRepository();
 
-        $content =
-            "Give2Peer daily CRON task\n" .
-            "-------------------------\n" .
-            "\n";
+        $content = strftime("Y-m-d H:i:m") . " :\n";
+        $doneSomething = false;
 
-        // soft delete old items exceeding their lifespan
+        // Soft delete old items exceeding their lifespan
         $sdc = $itemRepo->softDeleteOldItems(self::ITEM_DEFAULT_LIFETIME);
-        $content .= "Soft deleted items : $sdc\n";
+        if ($sdc > 0) {
+            $doneSomething = true;
+            $content .= "  Soft deleted items : $sdc\n";
+        }
 
-        // hard delete old soft-deleted items
+        // Hard delete old soft-deleted items
         $hdc = $itemRepo->hardDeleteOldItems(self::ITEM_HARD_DELETION_DELAY);
-        $content .= "Hard deleted items : $hdc\n";
+        if ($hdc > 0) {
+            $doneSomething = true;
+            $content .= "  Hard deleted items : $hdc\n";
+        }
+
+        // If nothing was done, don't return anything (no log clutter)
+        if ( ! $doneSomething) {
+            $content = "";
+        }
 
         $response = new Response($content);
 

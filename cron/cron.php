@@ -4,6 +4,8 @@
 # The purpose of this file is to be called in the CLI by CRON, like so:
 # php cron/cron.php daily
 #
+# 37 13 * * * www-data php /home/web/g2p.give2peer.org/cron/cron.php daily >> /home/web/g2p.give2peer.org/app/logs/cron.log 2>&1
+#
 # It should always be safe to call multiple times.
 #
 # NOTE
