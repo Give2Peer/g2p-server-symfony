@@ -8,6 +8,9 @@ use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+use /** @noinspection PhpUnusedAliasInspection */
+    Nelmio\ApiDocBundle\Annotation\ApiDoc; // /!\ used in annotations
+
 /**
  * Routes are configured in YAML, in `Resources/config/routing.yml`.
  * ApiDoc's documentation can be found at :

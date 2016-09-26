@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Yaml\Yaml;
 
+use /** @noinspection PhpUnusedAliasInspection */
+    Nelmio\ApiDocBundle\Annotation\ApiDoc; // /!\ used in annotations
+
+
 /**
  * Routes are configured in YAML, in `Resources/config/routing.yml`.
  * ApiDoc's documentation can be found at :

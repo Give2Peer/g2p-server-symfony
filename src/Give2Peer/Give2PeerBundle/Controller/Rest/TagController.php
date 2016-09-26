@@ -5,7 +5,9 @@ namespace Give2Peer\Give2PeerBundle\Controller\Rest;
 use Give2Peer\Give2PeerBundle\Controller\BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-// used in annotations
+use /** @noinspection PhpUnusedAliasInspection */
+    Nelmio\ApiDocBundle\Annotation\ApiDoc; // /!\ used in annotations
+
 
 /**
  * Actions about tags CRUD.

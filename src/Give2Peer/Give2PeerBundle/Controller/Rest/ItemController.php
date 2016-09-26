@@ -14,7 +14,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-// don't remove ; used as annotation in comments
+use /** @noinspection PhpUnusedAliasInspection */
+    Nelmio\ApiDocBundle\Annotation\ApiDoc; // /!\ used in annotations
+
 
 /**
  * Item CRUD, with level authorization, and item picture upload too.
