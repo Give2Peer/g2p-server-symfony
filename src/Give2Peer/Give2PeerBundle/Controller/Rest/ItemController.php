@@ -77,9 +77,7 @@ class ItemController extends BaseController
         // Recover the item data
         $location = $request->get('location');
         if (null == $location) {
-            return new ErrorJsonResponse(
-                "No location provided.", Error::BAD_LOCATION
-            );
+            return $this->error("location.missing");
         }
         // Note: some title sanitization happens in `Item::setTitle`
         $title = $request->get('title', '');
@@ -97,7 +95,7 @@ class ItemController extends BaseController
         // Check whether the user exceeds his quotas or not
         $quota_left = $itemRepo->getAddItemsCurrentQuota($user);
         if ($quota_left < 1) {
-            return new ExceededQuotaJsonResponse();
+            return new ExceededQuotaJsonResponse(); // fixme
         }
 
         // Check whether the location can be geocoded or not
@@ -105,8 +103,10 @@ class ItemController extends BaseController
         try {
             $coordinates = $g->getCoordinates($location);
         } catch (\Exception $e) {
-            $msg = sprintf("Cannot resolve location: %s", $e->getMessage());
-            return new ErrorJsonResponse($msg, Error::BAD_LOCATION);
+            return $this->error(
+                "location.unresolvable",
+                ['%why%' => $e->getMessage()]
+            );
         }
 
         // Create the item
@@ -118,8 +118,7 @@ class ItemController extends BaseController
         try {
             $item->setType($type);
         } catch (\InvalidArgumentException $e) {
-            $msg = sprintf("Cannot set type: %s", $e->getMessage());
-            return new ErrorJsonResponse($msg, Error::BAD_ITEM_TYPE);
+            return $this->error("item.type", ['%type%' => $type]);
         }
         $item->setDescription($description);
         foreach ($tags as $tag) {
@@ -184,15 +183,11 @@ class ItemController extends BaseController
         $item = $this->getItem($id);
 
         if (null == $item) {
-            return new ErrorJsonResponse(
-                "Item #$id does not exist.", Error::NOT_AUTHORIZED
-            );
+            return $this->error("item.not_found", ['%id%' => $id]);
         }
 
         if ($item->getAuthor() != $user) {
-            return new ErrorJsonResponse(
-                "Not author of item #$id.", Error::NOT_AUTHORIZED
-            );
+            return $this->error("item.not_author", ['%id%' => $id]);
         }
 
         $item->markAsDeleted();
@@ -249,40 +244,32 @@ class ItemController extends BaseController
         $item = $this->getItem($id);
 
         if (null == $item) {
-            return new ErrorJsonResponse(
-                "Item #$id does not exist.", Error::NOT_AUTHORIZED
-            );
+            return $this->error("item.not_found", ['%id%' => $id]);
         }
 
         if ($item->getAuthor() != $user) {
-            return new ErrorJsonResponse(
-                "You are not the owner of item #$id.", Error::NOT_AUTHORIZED
-            );
+            return $this->error("item.not_author", ['%id%' => $id]);
         }
         
         // We have different configurations for prod and test environments.
+        // It's to ensure that we can *safely* delete dummy test files.
         $publicPath = $this->getParameter('give2peer.pictures.directory');
         $publicPath .= DIRECTORY_SEPARATOR . (string) $item->getId();
 
         if (empty($request->files)) {
-            return new ErrorJsonResponse(
-                "No `picture` file provided.", Error::UNSUPPORTED_FILE
-            );
+            return $this->error("item.picture.not_found");
         }
 
         /** @var UploadedFile $file */
         $file = $request->files->get('picture');
 
         if (null == $file) {
-            return new ErrorJsonResponse(
-                "No `picture` file provided.", Error::UNSUPPORTED_FILE
-            );
+            return $this->error("item.picture.not_found");
         }
 
         if ( ! $file->isValid()) {
-            return new ErrorJsonResponse(
-                "Upload failed: ".$file->getErrorMessage(),
-                Error::UNSUPPORTED_FILE
+            return $this->error(
+                "item.picture.invalid", ['%why%', $file->getErrorMessage()]
             );
         }
 
@@ -296,22 +283,23 @@ class ItemController extends BaseController
         //$actualExtension = $file->getExtension(); // NO, tmp files have no ext
         $actualExtension = strtolower($file->getClientOriginalExtension());
         if ( ! in_array($actualExtension, $allowedExtensions)) {
-            return new ErrorJsonResponse(sprintf(
-                "Extension '%s' unsupported. Supported extensions : %s",
-                $actualExtension, join(', ', $allowedExtensions)
-            ), Error::UNSUPPORTED_FILE);
+            return $this->error(
+                "item.picture.extension", [
+                    '%extension%'  => $actualExtension,
+                    '%extensions%' => join(', ', $allowedExtensions),
+                ]
+            );
         }
 
         // Temp filename definition, since we only support one picture right now
         $filename = "1.$actualExtension";
 
-        // Move the picture to a publicly available path
+        // Move the picture to a publicly available path, inch allah
         try {
             $file->move($publicPath, $filename);
         } catch (\Exception $e) {
-            return new ErrorJsonResponse(
-                sprintf("Failed to copy the picture : %s", $e->getMessage()),
-                Error::UNSUPPORTED_FILE
+            return $this->error(
+                "item.picture.copy", ['%why%', $e->getMessage()]
             );
         }
 
@@ -328,9 +316,8 @@ class ItemController extends BaseController
             // the thumbnail generation, so we need to delete the uploaded file.
             // I'm not sure how secure imagecreatefrom*** functions are, though.
             unlink($publicPath . DIRECTORY_SEPARATOR . $filename);
-            return new ErrorJsonResponse(
-                sprintf("Thumbnail creation failed : %s", $e->getMessage()),
-                Error::UNSUPPORTED_FILE
+            return $this->error(
+                "item.picture.thumbnail", ['%why%', $e->getMessage()]
             );
         }
 
@@ -395,8 +382,10 @@ class ItemController extends BaseController
 //            try {
 //                $coordinates = $g->getCoordinates($around);
 //            } catch (\Exception $e) {
-//                $msg = sprintf("Cannot resolve location: %s", $e->getMessage());
-//                return new ErrorJsonResponse($msg, Error::BAD_LOCATION);
+//                return $this->error(
+//                    "location.unresolvable",
+//                    ['%why%' => $e->getMessage()]
+//                );
 //            }
 //            $latitude  = $coordinates[0];
 //            $longitude = $coordinates[1];
@@ -459,7 +448,7 @@ class ItemController extends BaseController
         // We've got to paginate the results !
         $maxResults = $this->getParameter('give2peer.items.max_per_page');
 
-        // This sanitization may not be necessary anymore. Still.
+        // This sanitization may not be necessary anymore. Still ; it's cheap.
         $latitude  = floatval($latitude);
         $longitude = floatval($longitude);
 
@@ -482,14 +471,10 @@ class ItemController extends BaseController
             } else {
                 // Do not hesitate to remove this, it's just a ~sanity check.
                 // Actually, if this happens, you've probably been naughty.
-                return new ErrorJsonResponse(
-                    'Ran findAroundCoordinates twice', Error::SYSTEM_ERROR, 500
-                );
+                $this->error("system.insanity", [], 500);
             }
         } else {
-            return new ErrorJsonResponse(
-                'Database MUST be pgSQL.', Error::SYSTEM_ERROR, 500
-            );
+            $this->error("system.not_pgsql", [], 500);
         }
 
         // Ask the item repository to execute the pgSQL-optimized query for us.

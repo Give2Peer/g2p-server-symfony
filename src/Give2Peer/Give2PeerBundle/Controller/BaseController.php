@@ -10,11 +10,13 @@ use Give2Peer\Give2PeerBundle\Entity\TagRepository;
 use Give2Peer\Give2PeerBundle\Entity\ThankRepository;
 use Give2Peer\Give2PeerBundle\Entity\UserManager;
 use Give2Peer\Give2PeerBundle\Entity\UserRepository;
+use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Give2Peer\Give2PeerBundle\Service\Geocoder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Utilities, mostly sugar for the eyes and auto completion.
@@ -44,6 +46,14 @@ abstract class BaseController extends Controller
     protected function getSecurityContext()
     {
         return $this->get('security.context');
+    }
+
+    /**
+     * @return TranslatorInterface
+     */
+    protected function getTranslator()
+    {
+        return $this->get('translator');
     }
 
     /**
@@ -155,5 +165,22 @@ abstract class BaseController extends Controller
     protected function respond($contents, $status=200, $headers=array())
     {
         return new JsonResponse($contents, $status, $headers);
+    }
+
+    /**
+     * For future support of XML and text Responses.
+     * Something with the _format argument.
+     *
+     * @param string $msg
+     * @param array $parameters for the translation
+     * @param int $status HTTP status code
+     * @return ErrorJsonResponse|Response
+     */
+    protected function error($msg, $parameters=array(), $status=400)
+    {
+        $msg = 'api.error.' . $msg; // implicit voodoo ; sorry, I'm lazy.
+        return new ErrorJsonResponse(
+            $this->getTranslator()->trans($msg, $parameters), $msg, $status
+        );
     }
 }

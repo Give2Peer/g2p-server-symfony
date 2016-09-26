@@ -1,0 +1,26 @@
+# We're using YAML files, because we can leverage the tree-like structure.
+# Also, XML translation files suck at being readable, and readability counts.
+# I'm not sure about the `api` root node ; maybe as file name ?
+# But if we go that way, why not `error` too in the file name ?
+
+# Note : our controller `error` method implicitely prefixes with `api.error.`.
+# Doc : http://symfony.com/doc/current/components/translation/usage.html
+
+api:
+    error:
+        item:
+            not_author: "You're not the author of the item #%id%. You need to be, for that action."
+            not_found: "Item #%id% could not be found. Maybe it was deleted?"
+            picture:
+                copy: "We failed to copy the picture file on the server ; %why%"
+                extension: "The extension '%extension%' is not supported. The supported extensions are : %extensions%."
+                invalid: "The picture upload failed ; %why%"
+                not_found: "No `picture` file was provided."
+                thumbnail: "The thumbnail creation failed ; %why%"
+            type: "Provided item type '%type%' is invalid."
+        location:
+            missing: "No location was provided."
+            unresolvable: "We cannot resolve the location ; %why%"
+        system:
+            insanity: "A sanity check failed. Have you been naughty?"
+            not_pgsql: "The database MUST be postgresql. It is not, it seems."

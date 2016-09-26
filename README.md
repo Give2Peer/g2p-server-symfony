@@ -57,6 +57,7 @@ This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org
 It will provide a server for [Karma](http://www.give2peer.org), the Android app.
 
 
+
 Why
 ===
 
@@ -77,6 +78,7 @@ How about sharing pictures and credits instead with the people that gave you
 the materials you needed for that awesome creation you just made ?
 
 
+
 How
 ===
 
@@ -85,6 +87,7 @@ custom bundle, the `Give2PeerBundle`, and a lot of vendor bundles, blessed be
 the community ; we love you.
 
 The chosen database is [pgSQL], because we need some of its extensions.
+
 
 
 A Work in Progress
@@ -134,7 +137,6 @@ ChangeLog
 
 
 
-
 The Bundle
 ==========
 
@@ -146,30 +148,10 @@ See [the bundle's README](src/Give2Peer/Give2PeerBundle/README.md).
 
 
 
-
 REST API
 ========
 
 See the full and interactive [documentation](http://g2p.give2peer.org) online.
-
-
-Error Codes
------------
-
-The error codes are available as constants in the class `Controller\ErrorCode`.
-
-```
-001 UNAVAILABLE_USERNAME Username already taken
-002 BANNED_FOR_ABUSE     Too many registrations, usually
-003 UNSUPPORTED_FILE     Wrong or missing picture file uploaded
-004 NOT_AUTHORIZED       Wrong credentials or permissions
-005 SYSTEM_ERROR         System error, usually a bad setup
-006 BAD_LOCATION         Provided location could not be resolved to coordinates
-007 UNAVAILABLE_EMAIL    Email already taken
-008 EXCEEDED_QUOTA       User daily quota for that action was exceeded
-009 BAD_USERNAME         Provided username could not be found
-010 BAD_ITEM_TYPE        Provided item type is unknown
-```
 
 
 
@@ -198,7 +180,6 @@ You should probably install the `fortune` package too, but it's not mandatory.
 Neither is fun, think about it.
 
     apt install fortunes
-
 
 
 
