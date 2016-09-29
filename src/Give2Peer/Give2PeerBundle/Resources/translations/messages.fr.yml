@@ -1,0 +1,56 @@
+# We're using YAML files, because we can leverage the tree-like structure.
+# Also, XML translation files suck at being readable, and readability counts.
+# I'm not sure about the `api` root node ; maybe as file name ?
+# But if we go that way, why not `error` too in the file name ?
+
+# Note : our controller `error` method implicitely prefixes with `api.error.`.
+# Doc : http://symfony.com/doc/current/components/translation/usage.html
+
+api:
+    error:
+        item:
+            add:
+                quota: "Vous avez atteint votre quota journalier d'ajout d'objets. Essayez de nouveau demain !"
+            not_author: "Vous n'êtes pas l'auteur de l'item #%id%. Seul l'auteur peut réaliser cette action..."
+            not_found: "L'objet #%id% n'a pas pu être trouvé. Peut-être a-t-il été supprimé depuis ?"
+            picture:
+                copy: "Échec de l'enregistrement de l'image d'un objet : %why%"
+                extension: "L'extension '%extension%' n'est pas supportée. Les extensions supportées sont : %extensions%."
+                invalid: "Échec de validation de l'image d'un objet : %why%"
+                missing: "Aucune image n'a été fournie."
+                thumbnail: "Échec de la création de l'aperçu de l'image d'un objet : %why%"
+            report:
+                cancel: "Vous ne pouvez pas annuler une délation que vous n'avez pas effectuée sur l'objet #%id%. "
+                level_too_low: "Votre niveau karmique n'est pas assez élevé pour effectuer un rapport sur l'objet #%id%. Réessayez quand vous passerez niveau %level%."
+                own: "Vous ne pouvez pas marquer votre propre objet #%id% comme abusif. ... Non."
+                twice: "Vous avez déjà signalé l'objet #%id% comme étant abusif."
+            thank:
+                no_thanker: "Personne à remercier. Remercions tout le mone !"
+                yourself: "Vous esquissez un geste de gratitude envers vous-même."
+                twice: "Vous avez déjà remercié l'auteur de cette annonce d'objet."
+            type: "Le type d'objet '%type%' fourni est invalide. Wow. Seriez-vous en train de bidouiller ?"
+        location:
+            missing: "Aucun lieu n'a été fourni."
+            unresolvable: "Échec de la résolution du lieu : %why%"
+        registration:
+            quota: "Trop d'inscriptions ont été effectuées récemment depuis cette adresse IP. Ré-essayez plus tard !"
+        system:
+            insanity: "Un test d'intégrité a échoué. Auriez-vous été vilain par hasard ?"
+            not_pgsql: "La base de données DOIT être postgresql, mais ne l'est pas il semblerait."
+        user:
+            edit:
+                not_yourself: "Vous ne pouvez éditer que vous-mêmes."
+            email:
+                missing: "Aucune adresse de courriel n'a été fournie."
+                taken: "Cette adresse de courriel est déjà prise."
+            missing: "Il n'y a pas d'utilisateur dans la session courante. Que s'est-il passé ?"
+            not_found:
+                by_id: "Aucun utilisateur répondant à l'identifiant #%id% n'a été trouvé."
+            password:
+                missing: "Aucun mot de passe n'a été fourni."
+            username:
+                missing: "Aucun nom d'utilisateur n'a été fourni."
+                taken: "Ce nom d'utilisateur est déjà pris."
+test:
+    localized:
+        greeting: "Bonjour"

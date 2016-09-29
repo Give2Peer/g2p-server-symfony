@@ -10,15 +10,15 @@ api:
     error:
         item:
             add:
-                quota: "You exceeded your daily quota for adding items, sorry. Try again tomorrow !"
+                quota: "You reached your daily quota for adding items, sorry. Try again tomorrow!"
             not_author: "You're not the author of the item #%id%. You need to be, for that action."
             not_found: "Item #%id% could not be found. Maybe it was deleted?"
             picture:
-                copy: "We failed to copy the picture file on the server ; %why%"
+                copy: "We failed to copy the picture file on the server : %why%"
                 extension: "The extension '%extension%' is not supported. The supported extensions are : %extensions%."
-                invalid: "The picture upload failed ; %why%"
-                not_found: "No picture file was provided."
-                thumbnail: "The thumbnail creation failed ; %why%"
+                invalid: "The picture upload failed : %why%"
+                missing: "No picture file was provided."
+                thumbnail: "The thumbnail creation failed : %why%"
             report:
                 cancel: "You cannot cancel a report you never made on item #%id%."
                 level_too_low: "Your karmic level is too low to report item #%id%. You need to be at least level %level% to be able to report that item."
@@ -31,7 +31,7 @@ api:
             type: "Provided item type '%type%' is invalid."
         location:
             missing: "No location was provided."
-            unresolvable: "We cannot resolve the location ; %why%"
+            unresolvable: "We cannot resolve the location : %why%"
         registration:
             quota: "Too many registrations were made recently from this IP address."
         system:
@@ -51,3 +51,6 @@ api:
             username:
                 missing: "No username was provided."
                 taken: "That username is already taken."
+test:
+    localized:
+        greeting: "Hello"
