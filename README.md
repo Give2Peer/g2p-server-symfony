@@ -107,7 +107,8 @@ RoadMap
 
 ### 1.0
 
-- [ ] Feature: Support French
+- [x] Feature: I18N
+- [x] Feature: Support French
 - [ ] Setting: Freeze the API and release
 
 
@@ -166,11 +167,13 @@ Install
 Vendors
 -------
 
-You'll need `php >= 5.6`. Here are the packages you'll need at first on Debian-based systems :
+You'll need `php >= 5.6`.
 
-    apt install php php-xml php-mbstring php-curl php-gd composer
+Here are the packages you'll need at first on Debian-based systems :
 
-The vendor setup is pretty straightforward if you get [Composer] that way :
+    apt install php php-xml php-intl php-mbstring php-curl php-gd composer
+
+The vendor setup is pretty straightforward if you have [Composer] :
 
     composer install
 
@@ -178,7 +181,12 @@ The vendor setup is pretty straightforward if you get [Composer] that way :
 Database and Testing
 --------------------
 
-Then look at and run the `setup_` scripts as-needed in `script/`.
+Then look at and run the `setup_` scripts as-needed in `script/` :
+
+- `script/setup_behat`
+- `script/setup_pgsql`
+- `script/setup_permissions`
+
 They're made for Debian, you're welcome to add your own.
 
 You should probably install the `fortune` package too, but it's not mandatory.

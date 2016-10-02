@@ -69,7 +69,7 @@ function array_diff_assoc_recursive($array1, $array2) {
  * This prints a fortune cookie when it passes ; sugar for the mind.
  */
 class FeatureContext extends    BaseContext
-                     implements BehatContext, SnippetAcceptingContext
+                     implements BehatContext
 {
     /** @var string $version The version of the API to use */
     static $version = '1';
@@ -471,6 +471,16 @@ class FeatureContext extends    BaseContext
 
     // ROUTES STEPS ////////////////////////////////////////////////////////////
 
+
+    /**
+     * @When /^I greet the server in "(.+)"$/
+     */
+    public function iGreetTheServer($lang)
+    {
+//        $this->request('GET', "/test/greet", ['_locale'=>$lang]);
+        $this->request('GET', "/test/greet", [], [], ['HTTP_ACCEPT_LANGUAGE'=>$lang]);
+    }
+
     /**
      * @When /^I should (fail|succeed) to authenticate(?: with password "(.+)")?$/
      */
@@ -858,6 +868,42 @@ class FeatureContext extends    BaseContext
                 break;
             default:
                 $this->fail("Élu, aimé, jeté, ô poète ! Je miaule !");
+        }
+    }
+
+    /**
+     * Provide YAML in the pystring, it will be arrayed and compared with the
+     * other array in the response's data.
+     *
+     * @Then /^the response should((?: not)?) contain "(.+)"$/
+     */
+    public function theResponseShouldContain($not='', $that='')
+    {
+        if (empty($this->client)) {
+            throw new Exception("No client. Request something first.");
+        }
+
+        $response = $this->client->getResponse();
+        $actual = $response->getContent();
+
+        $found = (false !== mb_strpos($actual, $that));
+
+        if (empty($not) && !$found) {
+            $this->fail(sprintf(
+                "The response did not include the following:\n%s\n" .
+                "Because the response provided:\n%s",
+                print_r($that, true),
+                print_r($actual, true)
+            ));
+        }
+
+        if (!empty($not) && $found) {
+            $this->fail(sprintf(
+                "The response actually included the following:\n%s\n" .
+                "Because the response provided:\n%s",
+                print_r($that, true),
+                print_r($actual, true)
+            ));
         }
     }
 
@@ -1313,8 +1359,9 @@ class FeatureContext extends    BaseContext
             $server['PHP_AUTH_PW']   = $password;
         }
 
-        // Not actually used by server it seems, but still...
-        $server['CONTENT_TYPE'] = "application/json";
+        // Set the desired output format, aka content-type
+        // Not actually used by server it seems... Document!?
+        //$server['CONTENT_TYPE'] = "application/json";
         // Server understands that instead
         //$parameters['_format'] = 'json';
         $parameters['_format'] = 'txt'; // for readable error responses

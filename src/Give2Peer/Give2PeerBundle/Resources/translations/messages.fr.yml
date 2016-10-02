@@ -52,5 +52,4 @@ api:
                 missing: "Aucun nom d'utilisateur n'a été fourni."
                 taken: "Ce nom d'utilisateur est déjà pris."
 test:
-    localized:
-        greeting: "Bonjour"
+    greet: "Bonjour !"

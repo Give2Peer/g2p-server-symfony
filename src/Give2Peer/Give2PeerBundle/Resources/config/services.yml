@@ -24,6 +24,14 @@ services:
             - @fos_user.entity_manager
             - Give2Peer\Give2PeerBundle\Entity\User
 
+    # Register a listener that reads request headers and sets the locale
+    # We're probably not doing it right. Why do we even need this ?
+    g2p.locale_listener:
+        class: Give2Peer\Give2PeerBundle\EventSubscriber\Locale
+        arguments: ['%kernel.default_locale%']
+        tags:
+            - { name: kernel.event_subscriber }
+
     # Register the SoftDeleteableListener to doctrine events,
     # and make sure to inject an annotaions reader into it.
     # The softdeletable filter itself is enabled in config.yml.

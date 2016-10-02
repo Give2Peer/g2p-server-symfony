@@ -262,7 +262,7 @@ class ItemController extends BaseController
         $file = $request->files->get('picture');
 
         if (null == $file) {
-            return $this->error("item.picture.not_found");
+            return $this->error("item.picture.missing");
         }
 
         if ( ! $file->isValid()) {

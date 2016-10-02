@@ -52,5 +52,4 @@ api:
                 missing: "No username was provided."
                 taken: "That username is already taken."
 test:
-    localized:
-        greeting: "Hello"
+    greet: "Welcome!"
