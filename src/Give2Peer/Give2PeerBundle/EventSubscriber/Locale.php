@@ -11,20 +11,23 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * accordingly.
  *
  * This bypasses the `_locale` attribute that can be set in routing.
+ * This will not be a problem for the API but if we handle regular web pages...
+ * Just filter using the `api/` prefix in the URL of the request ; get to work !
  *
  * Class Locale
  * @package Give2Peer\Give2PeerBundle\EventSubscriber
  */
 class Locale implements EventSubscriberInterface
 {
-    const PRIORITY = 15;
+    const PRIORITY = 15; // why are other listeners not using constants ? Hmmm.
 
     private $defaultLocale;
-    private $allowedLocales = ['fr', 'en']; // fixme: get these from config?
+    private $allowedLocales;
 
-    public function __construct($defaultLocale = 'en')
+    public function __construct($defaultLocale = 'en', $allowedLocales = ['en'])
     {
-        $this->defaultLocale = $defaultLocale;
+        $this->defaultLocale  = $defaultLocale;
+        $this->allowedLocales = $allowedLocales;
     }
 
     public function onKernelRequest(GetResponseEvent $event)

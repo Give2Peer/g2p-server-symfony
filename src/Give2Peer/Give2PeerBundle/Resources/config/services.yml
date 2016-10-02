@@ -3,17 +3,6 @@
 
 services:
 
-    # Register a subscriber on every request, that authenticates if need be.
-    # We've disabled this "feature" for now.
-    # The registration API with /register should be easy enough for clients.
-#    g2p.event_subscriber_authentication:
-#        class: Give2Peer\Give2PeerBundle\EventSubscriber\Authentication
-#        arguments:
-#            - @security.token_storage
-#            - @fos_user.user_manager
-#        tags:
-#            - { name: kernel.event_subscriber }
-
     # We roll our own user manager, with username generation and so on.
     g2p.user_manager:
         class: Give2Peer\Give2PeerBundle\Entity\UserManager
@@ -24,11 +13,12 @@ services:
             - @fos_user.entity_manager
             - Give2Peer\Give2PeerBundle\Entity\User
 
-    # Register a listener that reads request headers and sets the locale
-    # We're probably not doing it right. Why do we even need this ?
+    # Register a listener that reads request headers and sets the locale.
+    # /!\ This bypasses the _locale attribute of routing.
+    # We're probably not doing it right ; why do we even need this ?
     g2p.locale_listener:
         class: Give2Peer\Give2PeerBundle\EventSubscriber\Locale
-        arguments: ['%kernel.default_locale%']
+        arguments: ['%kernel.default_locale%', '%locales%']
         tags:
             - { name: kernel.event_subscriber }
 
