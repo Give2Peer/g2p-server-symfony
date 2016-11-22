@@ -31,3 +31,10 @@ Scenario: Multiple languages with explicit priorities
    When I greet the server in "en ; q=0.9, fr ; q=1.0"
    Then the request should be accepted
     And the response should contain "Bonjour !"
+
+
+Scenario: Country locales variants
+  Given I am the user named Chauvin of level 1
+   When I greet the server in "fr_FR"
+   Then the request should be accepted
+    And the response should contain "Bonjour !"
