@@ -52,6 +52,7 @@ quality:
     - Aquatic
     - Atomic
     - Awesome
+    - Babbling
     - Bald
     - Beautiful
     - Bearded
@@ -59,6 +60,8 @@ quality:
     - Blind
     - Brave
     - Brutal
+    - Bubbling
+    - Charming
     - Classic
     - Clawed
     - Clever
@@ -105,6 +108,7 @@ quality:
     - Mad
     - Magical
     - Magnificent
+    - Mechanical
     - Mellow
     - Mercurial
     - Mute
@@ -123,7 +127,7 @@ quality:
     - Radioactive
     - Raw
     - Regal
-    - Relative
+#    - Relative
     - Relaxed
     - Relentless
     - Romantic
@@ -134,6 +138,7 @@ quality:
     - Sacred
     - Sad
     - Scaly
+    - Screaming
     - Sensible
     - Sensitive
     - Sociable
@@ -148,7 +153,6 @@ quality:
     - Suave
     - Super
     - Superb
-    - Spanish
     - Spectacled
     - Splendid
     - Sweet
@@ -262,10 +266,6 @@ color:
     - Bronze
     - Brown
     - Brunswick
-    - Bubble
-    - Bubbles
-    - Bud
-    - Buff
     - Bulgarian
     - Burgundy
     - Burlywood
@@ -304,12 +304,9 @@ color:
     - Charcoal
     - Charged
     - Charleston
-    - Charm
     - Chartreuse
     - Cherry
-    - Chest
     - Chestnut
-    - Chiffon
     - Chlorophyll
     - Chocolate
     - Chrome
@@ -509,15 +506,12 @@ color:
     - Lime
     - Limerick
     - Linen
-    - Lion
     - Liseran
     - Liver
     - Livid
-    - Lizard
     - Lumber
     - Lust
     - Luster
-    - Maastricht
     - Madder
     - Magenta
     - Magic
@@ -542,7 +536,6 @@ color:
     - Maya
     - Meadow
     - Meaty
-    - Mechanical
     - Medium
     - Mellow
     - Melon
@@ -819,11 +812,11 @@ origin:
     - Arctic
     - Asian
     - Australian
-    - Bangladesh
+    - Belgian
     - Brazilian
     - Canadian
     - Caribbean
-    - Catalina
+    - Catalan
     - Caucasian
     - Chinese
     - Dutch
@@ -835,7 +828,9 @@ origin:
     - German
     - Icelandic
     - Italian
+    - Indian
     - Irish
+    - Lebanese
     - Martian
     - Mongol
     - Northern
@@ -847,7 +842,8 @@ origin:
     - Russian
     - Selenite
     - Southern
-    - Sweden
+    - Spanish
+    - Swede
     - Swiss
     - Turkish
     - Venusian
@@ -860,10 +856,12 @@ material:
     - Fire
     - Ice
     - Iron
+    - Marble
     - Plastic
     - Steel
     - Stone
     - Titanium
+#    - Water
     - Wood
 
 
@@ -960,6 +958,7 @@ being:
     - Brown
     - Brush
     - Brushtail
+    - Bubble
     - Buckeye
     - Buffalo
     - Bulbul
@@ -1230,7 +1229,7 @@ being:
     - Meadowlark
     - Meerkat
     - Melba
-    - Miners
+    - Miner
     - Mockingbird
     - Mongoose
     - Monk
@@ -1273,11 +1272,8 @@ being:
     - Owl
     - Ox
     - Oyster
-    - Paca
     - Paddy
     - Pademelon
-    - Painted
-    - Pale
     - Pallass
     - Palm
     - Pampa
@@ -1342,7 +1338,6 @@ being:
     - Rose
     - Roseat
     - Roseate
-    - Russian
     - Sable
     - Saddle
     - Sage
@@ -1353,7 +1348,6 @@ being:
     - Sandhill
     - Sandpiper
     - Sarus
-    - Screamer
     - Scrub
     - Sea
     - Seal
