@@ -19,7 +19,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class Locale implements EventSubscriberInterface
 {
-    const PRIORITY = 15; // why are other listeners not using constants ? Hmmm.
+    const PRIORITY = 15; // Why are other listeners not using constants ? Hmmm.
 
     private $defaultLocale;
     private $allowedLocales;

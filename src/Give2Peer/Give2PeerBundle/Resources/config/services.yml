@@ -13,9 +13,10 @@ services:
             - @fos_user.entity_manager
             - Give2Peer\Give2PeerBundle\Entity\User
 
-    # Register a listener that reads request headers and sets the locale.
-    # /!\ This bypasses the _locale attribute of routing.
-    # We're probably not doing it right ; why do we even need this ?
+    # Register a listener that reads the request header 'Accept-Language' and
+    # sets the locale accordingly.
+    # /!\ This totally bypasses the _locale attribute of routing.
+    #     We're probably not doing it right ; why do we even need this ?
     g2p.locale_listener:
         class: Give2Peer\Give2PeerBundle\EventSubscriber\Locale
         arguments: ['%kernel.default_locale%', '%locales%']
