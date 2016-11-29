@@ -154,6 +154,13 @@ give2peer_report_item:
     requirements:
         id:   \d+
 
+give2peer_delete_item:  # alias for DELETE item/{id}
+    path:     /item/{id}/delete
+    defaults: { _controller: Give2PeerBundle:Rest/Item:itemDelete, _format: json }
+    methods:  [POST]
+    requirements:
+        id:   \d+
+
 
 ## STATISTICS ##################################################################
 
