@@ -1,4 +1,5 @@
 @rest
+@find
 Feature: Find items
   In order to use or recycle items
   As a gatherer
@@ -35,7 +36,7 @@ Scenario: List the first 64 of 70 items around coordinates
   Given there are 70 items at 43.578658, 1.468091
    When I get /items/around/43.579909/1.467469
    Then the request should be accepted
-    And there should be 64 items in the response
+    And there should only be 64 items in the response
 
 
 Scenario: List after the first 64 of 70 items around coordinates
@@ -45,7 +46,18 @@ Scenario: List after the first 64 of 70 items around coordinates
 skip: 64
 """
    Then the request should be accepted
-    And there should be 6 items in the response
+    And there should only be 6 items in the response
+
+
+Scenario: Skip items further than a provided distance in meters
+  Given there are 5 items at 43.578658, 1.468091
+    And there are 3 items at 03.578658, 20.48091
+   When I get /items/around/43.579909/1.467469 with the parameters :
+"""
+maxDistance: 1000
+"""
+   Then the request should be accepted
+    And there should only be 5 items in the response
 
 
 # Handy dumper for creating mock JSON

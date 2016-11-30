@@ -279,7 +279,7 @@ class ItemRepository extends EntityRepository
             ->setParameter('longitude', $longitude)
             ;
         if ($maxDistance > 0) {
-            $qb->andWhere('distance <= :maxDistance')
+            $qb->andWhere('DISTANCE(i.latitude, i.longitude, :latitude, :longitude) <= :maxDistance')
                ->setParameter('maxDistance', $maxDistance);
         }
 

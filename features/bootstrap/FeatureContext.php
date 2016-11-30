@@ -947,7 +947,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Then /^there should be (\d+) items? in the response$/
+     * @Then /^there should (?:only )?be (\d+) items? in the response$/
      */
     public function thereShouldBeItemsInTheResponse($howMany)
     {
