@@ -780,7 +780,7 @@ class FeatureContext extends    BaseContext
     // REQUEST STEPS ///////////////////////////////////////////////////////////
 
     /**
-     * @When /^I GET ([^ ]+)(?: with(?: the parameters) *:)?$/i
+     * @When /^I (?:GET|get) ([^ ]+)(?: with(?: the parameters) *:)?$/i
      */
     public function iGet($route, $pystring='')
     {
@@ -789,7 +789,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @When /^I POST to ([^ ]+) the following ?:$/i
+     * @When /^I (?:POST|post) to ([^ ]+) the following ?:$/i
      */
     public function iPost($route, $pystring='')
     {
@@ -798,7 +798,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @When /^I DELETE ([^ ]+)(?: with(?: the parameters) *:)?$/i
+     * @When /^I (?:DELETE|delete) ([^ ]+)(?: with(?: the parameters) *:)?$/i
      */
     public function iDelete($route, $pystring='')
     {
@@ -807,7 +807,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @When /^I POST to ([^ ]+) the file (.+)?$/i
+     * @When /^I (?:POST|post) to ([^ ]+) the file (.+)?$/i
      */
     public function iPostTheFile($route, $filePath)
     {
