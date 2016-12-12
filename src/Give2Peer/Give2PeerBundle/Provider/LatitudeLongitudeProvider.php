@@ -10,22 +10,22 @@ use Geocoder\Provider\ProviderInterface;
 
 class LatitudeLongitudeProvider extends AbstractProvider
 {
+    protected $maxResults;
+
     /**
      * Returns an associative array with data treated by the provider.
      *
-     * @param string $address An address (IP or street).
-     *
-     * @throws NoResultException           If the address could not be resolved
-     * @throws InvalidCredentialsException If the credentials are invalid
-     * @throws UnsupportedException        If not supported
-     *
+     * @param string $latlon A latitude/longitude pair, eg: "41.2/-2.5"
+     * @throws NoResultException If the latlon could not be resolved
      * @return array
      */
-    public function getGeocodedData($address)
+    public function getGeocodedData($latlon)
     {
+        if (0 === $this->maxResults) return [];
+
         $m = [];
         $regex = '!^\s*(-?[0-9]*[.,]?[0-9]*)\s*[/,|]\s*(-?[0-9]*[.,]?[0-9]*)\s*$!';
-        if (! preg_match($regex, $address, $m)) {
+        if (! preg_match($regex, $latlon, $m)) {
             throw new NoResultException();
         }
         if ('' == $m[0] || '' == $m[1]) {
@@ -52,7 +52,9 @@ class LatitudeLongitudeProvider extends AbstractProvider
      */
     public function getReversedData(array $coordinates)
     {
-        return $this->getGeocodedData(sprintf("%F/%F", $coordinates[0], $coordinates[1]));
+        return $this->getGeocodedData(
+            sprintf("%F/%F", $coordinates[0], $coordinates[1])
+        );
     }
 
     /**
@@ -69,13 +71,12 @@ class LatitudeLongitudeProvider extends AbstractProvider
      * Sets the maximum number of returned results.
      *
      * @param integer $maxResults
-     *
-     * @return ProviderInterface
+     * @return LatitudeLongitudeProvider
      */
     public function setMaxResults($maxResults)
     {
-        // Does nothing, as if we find a result there can be only one.
-        // This breaks the functionality of setting $maxResults to 0. Who cares?
+        $this->maxResults = $maxResults;
+
         return $this;
     }
 }
