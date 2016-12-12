@@ -30,7 +30,7 @@ class Item implements \JsonSerializable
     // use ORMBehaviors\Timestampable\Timestampable;
     // Provides createdAt and updatedAt.
     // /!\ Fool's gold ! -- Y U NO snake_case ?
-    //     Database table column is `createdAt` instead of `created_at` !
+    //     Database table column becomes `createdAt` instead of `created_at` !
     // ... we use our own trait instead !
     use Behavior\GedmoTimestampable;
 
@@ -51,7 +51,8 @@ class Item implements \JsonSerializable
             'longitude'   => $this->getLongitude(),
             'distance'    => $this->getDistance(),
             'description' => $this->getDescription(),
-            'thumbnail'   => $this->getThumbnail(),
+            'thumbnail'   => $this->getThumbnail(), // deprecated
+            'pictures'    => $this->getPictures(),
             'tags'        => $this->getTagnames(),
             'created_at'  => $this->getCreatedAt()->format(DateTime::ISO8601),
             'updated_at'  => $this->getUpdatedAt()->format(DateTime::ISO8601),
@@ -182,6 +183,20 @@ class Item implements \JsonSerializable
     private $thumbnail;
 
     /**
+     * The pictures that were attached to this item.
+     *
+     * This is the inverse side of the relationship with ItemPicture.
+     * Changes made only to the inverse side of an association are ignored.
+     * http://doctrine-orm.readthedocs.org/projects/doctrine-orm/en/latest/reference/unitofwork-associations.html
+     *
+     * This is why there is no addPicture() method in this class.
+     *
+     * @ORM\OneToMany(targetEntity="ItemPicture", mappedBy="author", fetch="EAGER")
+     * @ORM\OrderBy({"createdAt" = "DESC"})
+     */
+    protected $pictures;
+
+    /**
      * Tags are easy to select, and allow for nice hunting filters.
      *
      * @var ArrayCollection
@@ -214,13 +229,15 @@ class Item implements \JsonSerializable
      */
     protected $deletedAt;
 
+
     ////////////////////////////////////////////////////////////////////////////
 
     public function __construct()
     {
-        $this->tags = new ArrayCollection(); // Y U NO [] ? => Useful methods !
+        // We don't use [] because ArrayCollection has useful methods
+        $this->tags = new ArrayCollection();
+        $this->pictures = new ArrayCollection();
     }
-
 
 
     /**
@@ -493,6 +510,7 @@ class Item implements \JsonSerializable
     }
 
     /**
+     * @deprecated
      * @return string
      */
     public function getThumbnail()
@@ -503,6 +521,7 @@ class Item implements \JsonSerializable
     }
 
     /**
+     * @deprecated
      * @param string $thumbnail
      * @return Item
      */
@@ -511,6 +530,14 @@ class Item implements \JsonSerializable
         $this->thumbnail = $thumbnail;
 
         return $this;
+    }
+
+    /**
+     * @return ArrayCollection of ItemPicture
+     */
+    public function getPictures()
+    {
+        return $this->pictures;
     }
 
     /**

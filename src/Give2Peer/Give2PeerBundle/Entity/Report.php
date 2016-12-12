@@ -3,7 +3,6 @@
 namespace Give2Peer\Give2PeerBundle\Entity;
 
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -11,7 +10,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * An action of report, by the reporter on the reportee, about an item.
  * Censorship is therefore applied by the users themselves.
  *
- * The (reporter,item) tuple should be unique as per the specs : no reporting twice.
+ * The (reporter,item) tuple should be unique as per the specs.
+ * A user cannot report the same item twice.
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Give2Peer\Give2PeerBundle\Entity\ReportRepository")
@@ -79,7 +79,7 @@ class Report implements \JsonSerializable
     private $reportee;
 
     /**
-     * The (probably irrelevant) item that triggered this report.
+     * The (probably abusive) item that triggered this report.
      * When the item is deleted, this report will be deleted too.
      *
      * @var Item
@@ -90,7 +90,7 @@ class Report implements \JsonSerializable
     private $item;
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
 
     //public function __construct() {}
 

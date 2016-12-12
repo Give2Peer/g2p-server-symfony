@@ -98,10 +98,17 @@ give2peer_update_user_password:
 
 ## ITEMS #######################################################################
 
-give2peer_item_add:
+give2peer_item_create:
     path:     /item
-    defaults: { _controller: Give2PeerBundle:Rest/Item:itemAdd, _format: json }
+    defaults: { _controller: Give2PeerBundle:Rest/Item:itemCreate, _format: json }
     methods:  [POST]
+
+give2peer_item_read:
+    path:     /item/{id}
+    defaults: { _controller: Give2PeerBundle:Rest/Item:itemRead, _format: json }
+    methods:  [GET]
+    requirements:
+        id:   \d+
 
 give2peer_item_delete:
     path:     /item/{id}

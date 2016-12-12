@@ -562,6 +562,16 @@ class FeatureContext extends    BaseContext
     }
 
     /**
+     * @When /^I get the details of the item titled "(\w+)"$/
+     */
+    public function iGetTheDetailsOfItemTitled($title)
+    {
+        $item = $this->getItemByTitle($title);
+        $id = $item->getId();
+        $this->request('GET', "item/${id}");
+    }
+
+    /**
      * @Then /^I should (?:still |now )?see (\d+) items?$/
      */
     public function iShouldSeeItems($itemsCount)

@@ -46,7 +46,7 @@ class ItemController extends BaseController
      *
      * #### Features
      *
-     *   - [giving_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/giving_items.feature)
+     *   - [giving_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/items/giving_items.feature)
      *
      * @ApiDoc(
      *   parameters = {
@@ -66,9 +66,9 @@ class ItemController extends BaseController
      *   }
      * )
      * @param  Request $request
-     * @return JsonResponse
+     * @return Response
      */
-    public function itemAddAction(Request $request)
+    public function itemCreateAction(Request $request)
     {
         $em = $this->getEntityManager();
         $itemRepo = $this->getItemRepository();
@@ -153,6 +153,31 @@ class ItemController extends BaseController
     }
 
     /**
+     * Get the details of the item `id`.
+     *
+     * #### Features
+     *
+     *   - [getting_an_item.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/items/getting_an_item.feature)
+     *
+     *
+     * @ApiDoc()
+     *
+     * @param Request $request
+     * @param int $id Identifier of the item to get
+     * @return Response
+     */
+    public function itemReadAction(Request $request, $id)
+    {
+        $item = $this->getItem($id);
+
+        if (null == $item) {
+            return $this->error("item.not_found", ['%id%' => $id]);
+        }
+
+        return $this->respond(['item' => $item]);
+    }
+
+    /**
      * Delete the item `id`.
      *
      * #### Restrictions
@@ -168,7 +193,7 @@ class ItemController extends BaseController
      *
      * #### Features
      *
-     *   - [deleting_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/deleting_items.feature)
+     *   - [deleting_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/items/deleting_items.feature)
      *
      *
      * @ApiDoc()
@@ -211,9 +236,12 @@ class ItemController extends BaseController
      *   - `GIF`
      *   - `WebP`
      *
+     * All the image formats will be converted to `JPG`,
+     * so you will lose transparency or animations.
+     *
      * #### Features
      *
-     *   - [picturing_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/picturing_items.feature)
+     *   - [picturing_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/items/picturing_items.feature)
      *
      * #### Ideas
      *
