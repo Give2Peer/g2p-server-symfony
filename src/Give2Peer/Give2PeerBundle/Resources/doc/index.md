@@ -1,4 +1,4 @@
-Tu run behat, you'll possibly need, in your `php.ini` :
+To run behat, you'll possibly need, in your `php.ini` :
 
 xdebug.max_nesting_level=200
 

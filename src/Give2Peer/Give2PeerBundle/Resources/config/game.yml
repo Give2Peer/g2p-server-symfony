@@ -202,8 +202,6 @@ color:
     - Apricot
     - Aqua
     - Aquamarine
-    - Armpit
-    - Army
     - Artichoke
     - Arylide
     - Ash
@@ -866,6 +864,7 @@ material:
 
 
 qualifier:
+    - Army
     - Cosmic
     - Cyclop  # maybe a quality, not a qualifier ?
     - Earth
@@ -875,6 +874,7 @@ qualifier:
     - Nile
     - Oceanic
     - Pocket
+    - River
     - Savannah
     - Sea
     - Sky

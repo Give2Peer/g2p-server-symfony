@@ -1,6 +1,5 @@
 <?php
 
-// todo: autoloading
 // As-is, this does not work.
 // I don't know how to autoload easily.
 // Maybe a python script instead ? import ftw
