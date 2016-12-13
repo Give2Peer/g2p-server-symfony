@@ -10,6 +10,7 @@ Feature: Updating my profile information
 # In this file we're testing the API behind the awkward step :
 # When I (try to )?edit my profile information with the following
 # So don't replace it for another simpler step that may test a different API.
+# (there are other steps that would look better, this is why I'm saying this)
 
 
 
@@ -32,20 +33,20 @@ Scenario: Changing everything
 """
 username: Beta
 email: beta@ateb.mum
-password: Gamma
+password: p455
 """
    Then the request should be accepted
    Then there should not be a user named Alpha
    Then there should be a user named Beta
    When I am the user named Beta
    Then my email should be beta@ateb.mum
-    And I should succeed to authenticate with password "Gamma"
+    And I should succeed to authenticate with password "p455"
 
 
 
 Scenario: Update all or none
   Given there is a user whose email is test@give2peer.org
-    And I am the registered user named Tester
+    And I am the registered user named Batman
    Then there should not be a user named Joker
    When I try to update my profile information with the following :
 """
