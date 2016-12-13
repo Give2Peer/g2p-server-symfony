@@ -10,6 +10,7 @@
     },
     "require": {
         "php":                                  ">=5.6",
+        "ext-gd":                               "*",
         "symfony/symfony":                      "~2.6",
         "symfony/assetic-bundle":               "~2.3",
         "symfony/swiftmailer-bundle":           "~2.3",
@@ -58,7 +59,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
+            "Give2Peer\\Give2PeerBundle\\Composer\\ScriptHandler::replaceBehatRunner"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -67,7 +69,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
+            "Give2Peer\\Give2PeerBundle\\Composer\\ScriptHandler::replaceBehatRunner"
         ]
     },
     "config": {

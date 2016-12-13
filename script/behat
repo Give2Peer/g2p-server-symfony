@@ -28,8 +28,8 @@ if ((!$loader = includeIfExists(__DIR__.'/../vendor/autoload.php'))) {
     exit(1);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// This whole file (and the setup_behat script) exist just for these miserable hacks.
+////////////////////////////////////////////////////////////////////////////////
+// This whole file (and the setup_behat script) exist just for these hacks.
 
 // Hot fix to skip phpunit XML config and Other Trouble ©
 // May break at any given time, of course. Holler me if it does !
@@ -38,7 +38,7 @@ $_SERVER['KERNEL_DIR'] = 'app';
 // Doctrine and the documentation generator NEED annotations support
 AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // Start Behat
 $factory = new \Behat\Behat\ApplicationFactory();
