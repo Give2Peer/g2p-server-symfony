@@ -22,12 +22,17 @@ Background:
 @wip
 Scenario: Pre-upload a JPG picture
   Given there should not be a file at web/item_picture_test/1.jpg
-   When I POST to /item/picture the file features/assets/dummy.jpg
+   When I pre-upload the image file features/assets/dummy.jpg
    Then the request should be accepted
-    And I dump the response
+    And the response should include :
+"""
+picture:
+    id: 1
+    url: http://localhost/item_picture_test/1.jpg
+"""
     And there should be a file at web/item_picture_test/1.jpg
     And there should be a file at web/item_picture_test/1_240x240.jpg
-   When I POST to /item/picture the file features/assets/dummy.jpg
+   When I pre-upload the image file features/assets/dummy.jpg
    Then the request should be accepted
     And there should be a file at web/item_picture_test/2.jpg
     And there should be a file at web/item_picture_test/2_240x240.jpg

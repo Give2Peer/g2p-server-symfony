@@ -14,7 +14,7 @@ give2peer_home:
     path:     /
     defaults: { _controller: Give2PeerBundle:Rest:index }
 
-# Is out of the firewall.
+# This is outside of the firewall.
 # This should return info about the server so that clients may use it to choose
 # configure themselves, like :
 # - version number
@@ -123,6 +123,11 @@ give2peer_picture_upload:
     methods:  [POST]
     requirements:
         id:   \d+
+
+give2peer_picture_upload_beforehand:
+    path:     /item/picture
+    defaults: { _controller: Give2PeerBundle:Rest/Item:itemPictureUploadBeforehand, _format: json }
+    methods:  [POST]
 
 # There are other GET parameters allowed, to filter and paginate the request
 give2peer_items_around:

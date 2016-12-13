@@ -1,5 +1,4 @@
 @rest
-@wip
 Feature: Getting the details of an item
   In order to make sure an item interests me
   As a gatherer

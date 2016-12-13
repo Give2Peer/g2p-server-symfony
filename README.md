@@ -100,7 +100,6 @@ RoadMap
 
 - [ ] Feature: API Text Responses
 - [ ] Feature: API XML Responses
-- [ ] Testing: a sandbox version of this server to test-drive clients
 - [ ] Setting: move route configuration to annotations
 - [ ] Ensure RESTfulnessimo
 
@@ -109,6 +108,8 @@ RoadMap
 
 - [x] Feature: I18N
 - [x] Feature: Support French
+- [ ] Feature: Add multiple pictures to an item
+- [ ] Feature: Upload a picture before uploading an item
 - [ ] Setting: Freeze the API and release
 
 

@@ -29,15 +29,21 @@ framework:
     http_method_override: true
 
 # Our very own configuration
-# Note that sf2 wanted the root node to be called give2_peer, so we hacked
+# Note that sf2 wanted the root node to be called `give2_peer`, so we hacked
 # around to get it to alias it as `give2peer` instead.
 give2peer:
-    pictures:
-        directory: "%kernel.root_dir%/../web/pictures"
-        # In pixels, the side size of the square thumbnail.
-        size: 240
     items:
         max_per_page: 64
+        pictures:
+            # Absolute path to the local directory where pictures are stored
+            directory: "%kernel.root_dir%/../web/item_picture"
+            # URL path where pictures are served by Apache
+            url_path:  "item_picture"
+            thumbnails:
+                # In pixels, the sizes of the thumbnails to generate
+                sizes:
+                    - x: 240
+                      y: 240
 
 # Twig is the Template Engine
 twig:
@@ -57,7 +63,7 @@ assetic:
         #yui_css:
         #    jar: "%kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar"
 
-# Doctrine is both the Database Abstraction Layer and Object Relational Mapping
+# Doctrine is both the Database Abstraction Layer and Object Relational Mapper
 doctrine:
     dbal:
         driver:   "%database_driver%"
@@ -118,7 +124,6 @@ nelmio_api_doc:
     # Probably a good idea
 #    cache:
 #        enabled: true
-    # Hmm, this does not work on localhost ? Maybe I'm doing it wrong ?
     sandbox:
         authentication:
             delivery: http

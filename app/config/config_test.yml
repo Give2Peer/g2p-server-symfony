@@ -4,10 +4,14 @@ imports:
 # We want the tests to use another directory when uploading files,
 # so that we can wipe it safely between each scenario.
 give2peer:
-    pictures:
-        # You should never EVER remove this line and then run the feature suite,
-        # because the suite runner removes this directory before each scenario.
-        directory: "%kernel.root_dir%/../web/pictures_test"
+    items:
+        pictures:
+            # Absolute path to the local directory where pictures are stored
+            # You should never EVER remove this line and then run the feature suite,
+            # because the suite runner removes this directory before each scenario.
+            directory: "%kernel.root_dir%/../web/item_picture_test"
+            # URL path where pictures are served by Apache
+            url_path:  "item_picture_test"
 
 framework:
     test: ~

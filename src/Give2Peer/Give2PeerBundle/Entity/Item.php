@@ -51,7 +51,7 @@ class Item implements \JsonSerializable
             'longitude'   => $this->getLongitude(),
             'distance'    => $this->getDistance(),
             'description' => $this->getDescription(),
-            'thumbnail'   => $this->getThumbnail(), // deprecated
+            'thumbnail'   => $this->getThumbnail(),
             'pictures'    => $this->getPictures(),
             'tags'        => $this->getTagnames(),
             'created_at'  => $this->getCreatedAt()->format(DateTime::ISO8601),

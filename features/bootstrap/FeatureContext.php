@@ -1,5 +1,6 @@
 <?php
 
+use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 use Doctrine\DBAL\Connection;
@@ -60,11 +61,15 @@ function array_diff_assoc_recursive($array1, $array2) {
 /**
  * “You will not censor me through bug terrorism.”
  *     -- James Troup
+ *
+ * Please note that we had to make our own behat runner wrapper in order to
+ * solve the `You must override the KernelTestCase::createKernel() method.`.
+ * It is available in `script/behat`, and it should replace the default runner
+ * automatically thanks to our post-update listener specified in composer.
  * 
  * This file is getting BIG.
  * Traits work well with FeatureContext.
- * 
- * Schedule a refacto when this file gets more than 3333 lines !
+ * Schedule a refactorization when this file gets more than 3333 lines !
  *
  * This prints a fortune cookie when it passes ; sugar for the mind.
  */
@@ -121,22 +126,6 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * Finds the directory where the phpunit.xml(.dist) is stored.
-     *
-     * Motherfuckers bound the kernel creation to phpunit -_-
-     * In response, we're dirtying our code with this hax.
-     * We can simply set $_SERVER['KERNEL_DIR'] = 'app'; instead of this.
-     *
-     * See https://github.com/liip/LiipFunctionalTestBundle/pull/255 too
-     *
-     * @return string The directory where phpunit.xml(.dist) is stored
-     */
-//    protected static function getPhpUnitXmlDir()
-//    {
-//        return 'app';
-//    }
-
-    /**
      * Prepare system for test suite before it runs,
      * by booting the kernel (in test mode, apparently)
      * and loading fresh fixtures into an empty db.
@@ -155,6 +144,7 @@ class FeatureContext extends    BaseContext
         $tables = [
             'Peer', // User is named Peer in the database, as User is reserved
             'Item',
+            'ItemPicture',
             'Tag',
             'Thank',
             'Report',
@@ -185,10 +175,22 @@ class FeatureContext extends    BaseContext
         // Loading an empty array still truncates all tables.
         $this->loadFixtures(array());
 
-        // Empty the public directory where pictures are -- depends on env !
-        $pictures_dir = $this->getParameter('give2peer.pictures.directory');
-        $this->removeDirectory($pictures_dir, false);
+        // Empty the public directory where item pictures are -- depends on env
+        $pics_dir = $this->getParameter('give2peer.items.pictures.directory');
+        $this->removeDirectory($pics_dir, false);
         //print("Removed directory $pictures_dir");
+    }
+
+
+    /**
+     * Clean up after ourselves.
+     * @AfterScenario
+     */
+    public function emptyPicturesDirectory(AfterScenarioScope $scope)
+    {
+        // Empty the public directory where item pictures are -- depends on env
+        $pics_dir = $this->getParameter('give2peer.items.pictures.directory');
+        $this->removeDirectory($pics_dir, false);
     }
 
 
@@ -609,7 +611,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @When /^I (?:try to )?give an(?:other)? item *$/
+     * @When /^I (?:try to )?g[ai]ve an(?:other)? item *$/
      */
     public function iGiveAnItem()
     {
@@ -685,6 +687,14 @@ class FeatureContext extends    BaseContext
     {
         $item = $this->getItemByTitle($title);
         $this->iDelete('item/'.$item->getId());
+    }
+
+    /**
+     * @When /^I pre-upload the image file (.+?)\s*$/i
+     */
+    public function iPreUploadTheImageFile($filePath)
+    {
+        $this->iPostTheFile("/item/picture", $filePath);
     }
 
     /**
@@ -857,8 +867,8 @@ class FeatureContext extends    BaseContext
         $files = ['picture' => $picture];
 
         $this->request('POST', $route, [], $files);
-        
-        //unlink($tmpPath); // nope
+
+        if (is_file($tmpPath)) unlink($tmpPath);
     }
 
 

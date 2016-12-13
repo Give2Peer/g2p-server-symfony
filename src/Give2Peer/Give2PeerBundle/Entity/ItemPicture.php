@@ -2,6 +2,7 @@
 
 namespace Give2Peer\Give2PeerBundle\Entity;
 
+use Exception;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -37,7 +38,8 @@ class ItemPicture implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->getId(),
+            'id'  => $this->getId(),
+            'url' => $this->getUrl(),
         ];
     }
 
@@ -85,6 +87,14 @@ class ItemPicture implements \JsonSerializable
      * @ORM\JoinColumn(name="item_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $item;
+
+
+    /**
+     * The full URL to this picture.
+     * This is not stored in the database, but injected by the ItemPainter.
+     * @var String
+     */
+    private $url;
 
 
     public function __construct() {}
@@ -146,6 +156,29 @@ class ItemPicture implements \JsonSerializable
     public function setItem($item)
     {
         $this->item = $item;
+    }
+
+    /**
+     * @return String
+     * @throws Exception
+     */
+    public function getUrl()
+    {
+        if (null == $this->url) {
+            throw new Exception(
+                "Use ItemPainter.injectUrl() on this item picture first."
+            );
+        }
+
+        return $this->url;
+    }
+
+    /**
+     * @param String $url
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
     }
 
 }

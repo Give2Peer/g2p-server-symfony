@@ -6,8 +6,10 @@ use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Controller\BaseController;
 use Give2Peer\Give2PeerBundle\Entity\Item;
+use Give2Peer\Give2PeerBundle\Entity\ItemPicture;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
+use Give2Peer\Give2PeerBundle\Service\ItemPainter;
 use Give2Peer\Give2PeerBundle\Service\Thumbnailer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -339,7 +341,8 @@ class ItemController extends BaseController
             );
         } catch (\Exception $e) {
             // As the mime-type and/or extension can be forged, we use EAFP on
-            // the thumbnail generation, so we need to delete the uploaded file.
+            // the thumbnail generation, so we need to delete the uploaded file
+            // if the thumbnail creation failed.
             // I'm not sure how secure imagecreatefrom*** functions are, though.
             unlink($publicPath . DIRECTORY_SEPARATOR . $filename);
             return $this->error(
@@ -361,6 +364,111 @@ class ItemController extends BaseController
         $this->getEntityManager()->flush();
 
         return $this->respond(['item' => $item]);
+    }
+
+    /**
+     * Upload a picture.
+     *
+     * #### Restrictions
+     *
+     * There's a maximum limit on the file size of the uploaded picture.
+     * It depends on the server configuration, and should be around 2Mio for
+     * this server.
+     *
+     * #### Supports
+     *
+     *   - `JPG`, `JPEG`
+     *   - `PNG`
+     *   - `GIF`
+     *   - `WebP`
+     *
+     * All the image formats will be converted to `JPG`,
+     * so you will lose transparency and/or animations.
+     *
+     * #### Features
+     *
+     *   - [picturing_items_beforehand.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/items/picturing_items_beforehand.feature)
+     *
+     * @ApiDoc(
+     *   parameters = {
+     *     {
+     *       "name"="picture", "dataType"="file",
+     *       "required"=true, "format"="jpg|png|gif|webp",
+     *       "description"="Picture file to upload."
+     *     }
+     *   }
+     * )
+     * @param  Request  $request
+     * @return Response
+     */
+    public function itemPictureUploadBeforehandAction(Request $request)
+    {
+        $user = $this->getUser();
+
+        if (empty($request->files)) {
+            return $this->error("item.picture.missing");
+        }
+
+        /** @var UploadedFile $file */
+        $file = $request->files->get('picture');
+
+        if (null == $file) {
+            return $this->error("item.picture.missing");
+        }
+
+        if ( ! $file->isValid()) {
+            return $this->error(
+                "item.picture.invalid", ['%why%' => $file->getErrorMessage()]
+            );
+        }
+
+        // Check extension
+        // Note that mime-types can be forged too, so extension is good enough.
+        $allowedExtensions = [ 'jpg', 'jpeg', 'png', 'gif', 'webp' ];
+        $actualExtension = strtolower($file->getClientOriginalExtension());
+        if ( ! in_array($actualExtension, $allowedExtensions)) {
+            return $this->error(
+                "item.picture.extension", [
+                    '%extension%'  => $actualExtension,
+                    '%extensions%' => join(', ', $allowedExtensions),
+                ]
+            );
+        }
+
+        $em = $this->getEntityManager();
+
+        $picture = new ItemPicture();
+        $picture->setAuthor($user);
+
+        // Persisting with the EM fills the Id, and we need it below
+        $em->persist($picture);
+
+        $id = $picture->getId();
+
+        $painter = new ItemPainter(
+            $request,
+            $this->getParameter('give2peer.items.pictures.directory'),
+            $this->getParameter('give2peer.items.pictures.url_path'),
+            $this->getParameter('give2peer.items.pictures.thumbnails.sizes')
+        );
+
+        // Flush our changes to the picture into the database
+        // fixme: test if we really need this
+        $em->flush();
+
+        try {
+            $painter->createFiles($picture, $file);
+        } catch (\Exception $e) {
+            return $this->error(
+                "item.picture.thumbnail", ['%why%' => $e->getMessage()]
+            );
+        }
+
+        // Inject the URL into the picture before serializing it and sending
+        // it back to the client.
+        $painter->injectUrl($picture);
+
+        return $this->respond(['picture' => $picture]);
     }
 
     /**
