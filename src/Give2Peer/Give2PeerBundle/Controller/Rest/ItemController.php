@@ -279,11 +279,6 @@ class ItemController extends BaseController
             return $this->error("item.not_author", ['%id%' => $id]);
         }
         
-        // We have different configurations for prod and test environments.
-        // It's to ensure that we can *safely* delete dummy test files.
-        $publicPath = $this->getParameter('give2peer.pictures.directory');
-        $publicPath .= DIRECTORY_SEPARATOR . (string) $item->getId();
-
         if (empty($request->files)) {
             return $this->error("item.picture.not_found");
         }
@@ -307,7 +302,6 @@ class ItemController extends BaseController
         // Remember to update the `generateSquareThumb` method, too !
         // Later: I remember you, past me, I remember. I <3 u, my only friend !
         $allowedExtensions = [ 'jpg', 'jpeg', 'png', 'gif', 'webp' ];
-
         //$actualExtension = $file->getExtension(); // NO, tmp files have no ext
         $actualExtension = strtolower($file->getClientOriginalExtension());
         if ( ! in_array($actualExtension, $allowedExtensions)) {
@@ -319,49 +313,38 @@ class ItemController extends BaseController
             );
         }
 
-        // Temp filename definition, since we only support one picture right now
-        $filename = "1.$actualExtension";
+        $em = $this->getEntityManager();
 
-        // Move the picture to a publicly available path, inch allah
-        try {
-            $file->move($publicPath, $filename);
-        } catch (\Exception $e) {
-            return $this->error(
-                "item.picture.copy", ['%why%' => $e->getMessage()]
-            );
-        }
+        $picture = new ItemPicture();
+        $picture->setAuthor($user);
 
-        // Create a square thumbnail
+        // Persisting fills the Id, and the ItemPainter needs it
+        $em->persist($picture);
+
+        $painter = new ItemPainter(
+            $request,
+            $this->getParameter('give2peer.items.pictures.directory'),
+            $this->getParameter('give2peer.items.pictures.url_path'),
+            $this->getParameter('give2peer.items.pictures.thumbnails.sizes')
+        );
+
         try {
-            $thumbSize = $this->getParameter('give2peer.pictures.size');
-            Thumbnailer::generateSquare(
-                $publicPath . DIRECTORY_SEPARATOR . $filename,
-                $publicPath . DIRECTORY_SEPARATOR . 'thumb.jpg',
-                $thumbSize, $actualExtension
-            );
+            $painter->createFiles($picture, $file);
         } catch (\Exception $e) {
-            // As the mime-type and/or extension can be forged, we use EAFP on
-            // the thumbnail generation, so we need to delete the uploaded file
-            // if the thumbnail creation failed.
-            // I'm not sure how secure imagecreatefrom*** functions are, though.
-            unlink($publicPath . DIRECTORY_SEPARATOR . $filename);
             return $this->error(
                 "item.picture.thumbnail", ['%why%' => $e->getMessage()]
             );
         }
 
-        // Generate the thumbnail absolute URL and save it.
-        // Note: this does not depend on configuration ; probably should.
-        $thumbUrl = join(DIRECTORY_SEPARATOR, [
-            $request->getSchemeAndHttpHost(),
-            'pictures',
-            $item->getId(),
-            'thumb.jpg',
-        ]);
-        $item->setThumbnail($thumbUrl);
-        
-        // Flush our changes to the item into the database
-        $this->getEntityManager()->flush();
+        $picture->setItem($item);
+        $item->addPicture($picture);
+
+        // Flush our changes to the item and picture into the database
+        $em->flush();
+
+        // Inject the URLs into the picture before serializing it and sending
+        // it back to the client.
+        $painter->injectUrl($picture);
 
         return $this->respond(['item' => $item]);
     }
@@ -440,10 +423,8 @@ class ItemController extends BaseController
         $picture = new ItemPicture();
         $picture->setAuthor($user);
 
-        // Persisting with the EM fills the Id, and we need it below
+        // Persisting fills the Id, and the ItemPainter needs it
         $em->persist($picture);
-
-        $id = $picture->getId();
 
         $painter = new ItemPainter(
             $request,

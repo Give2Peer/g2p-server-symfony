@@ -189,8 +189,6 @@ class Item implements \JsonSerializable
      * Changes made only to the inverse side of an association are ignored.
      * http://doctrine-orm.readthedocs.org/projects/doctrine-orm/en/latest/reference/unitofwork-associations.html
      *
-     * This is why there is no addPicture() method in this class.
-     *
      * @ORM\OneToMany(targetEntity="ItemPicture", mappedBy="author", fetch="EAGER")
      * @ORM\OrderBy({"createdAt" = "DESC"})
      */
@@ -403,15 +401,13 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * fixme: bad design here
-     * solution: second parameter $recursive=true on both inverse and owning ?
-     *
      * @param Tag $tag
+     * @param bool $updateTag
      * @return Item
      */
-    public function addTag(Tag $tag)
+    public function addTag(Tag $tag, $updateTag=true)
     {
-        $tag->addItem($this); // synchronously update the inverse side
+        if ($updateTag) $tag->addItem($this);
         $this->tags->add($tag);
 
         return $this;
@@ -419,22 +415,23 @@ class Item implements \JsonSerializable
 
     /**
      * @param Tag $tag
+     * @param bool $updateTag
      * @return Item
      */
-    public function removeTag(Tag $tag)
+    public function removeTag(Tag $tag, $updateTag=true)
     {
-        $tag->removeItem($this); // synchronously update the inverse side
+        if ($updateTag) $tag->removeItem($this);
         $this->tags->removeElement($tag);
 
         return $this;
     }
 
     /**
-     * @return ArrayCollection of Tag
+     * @return Tag[]
      */
     public function getTags()
     {
-        return $this->tags;
+        return $this->tags->getValues();
     }
 
     /**
@@ -443,7 +440,7 @@ class Item implements \JsonSerializable
     public function getTagnames()
     {
         $names = [];
-        foreach ($this->getTags() as $tag) {
+        foreach ($this->tags as $tag) {
             $names[] = $tag->getName();
         }
 
@@ -533,11 +530,21 @@ class Item implements \JsonSerializable
     }
 
     /**
-     * @return ArrayCollection of ItemPicture
+     * @return ItemPicture[]
      */
     public function getPictures()
     {
-        return $this->pictures;
+        return $this->pictures->getValues();
+    }
+
+    /**
+     * @param ItemPicture $picture
+     * @param bool $updatePicture Update the owning side of the relationship.
+     */
+    public function addPicture(ItemPicture $picture, $updatePicture=false)
+    {
+        $this->pictures->add($picture);
+        if ($updatePicture) $picture->setItem($this, false);
     }
 
     /**

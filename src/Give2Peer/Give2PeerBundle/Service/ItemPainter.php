@@ -54,7 +54,7 @@ class ItemPainter
 
         foreach ($this->thumbs as $k=>$thumb) {
             $x = $thumb['x']; $y = $thumb['y'];
-            $thumbsUrls[] = $this->getThumbUrl($itemPicture, $x, $y);
+            $thumbsUrls["${x}x${y}"] = $this->getThumbUrl($itemPicture, $x, $y);
         }
         $itemPicture->setThumbnailsUrls($thumbsUrls);
 

@@ -159,10 +159,12 @@ class ItemPicture implements \JsonSerializable
 
     /**
      * @param Item $item
+     * @param bool $updateItem Update the inverse side of the relationship too.
      */
-    public function setItem($item)
+    public function setItem(Item $item, $updateItem=false)
     {
         $this->item = $item;
+        if ($updateItem) $item->addPicture($this, false);
     }
 
     /**

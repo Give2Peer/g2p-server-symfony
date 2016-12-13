@@ -30,7 +30,7 @@ picture:
     id: 1
     url: http://localhost/item_picture_test/1.jpg
     thumbnails:
-        - http://localhost/item_picture_test/1_240x240.jpg
+        240x240: http://localhost/item_picture_test/1_240x240.jpg
 """
     And there should be a file at web/item_picture_test/1.jpg
     And there should be a file at web/item_picture_test/1_240x240.jpg

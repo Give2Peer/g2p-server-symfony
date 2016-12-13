@@ -17,38 +17,49 @@ Feature: Picturing items
 Background:
   Given I am the registered user named Goutte
     And I gave an item
+    And I gave another item
     And there is an item at 43.566591, 1.474969
 
 
 
 Scenario: Attach a JPG picture to an item
-   When I POST to /item/1/picture the file features/assets/dummy.jpg
+  Given there should not be a file at web/item_picture_test/1.jpg
+   When I POST to /item/2/picture the file features/assets/dummy.jpg
    Then the request should be accepted
-    And there should be a file at web/pictures_test/1/1.jpg
-    And there should be a file at web/pictures_test/1/thumb.jpg
+    And the response should include :
+"""
+item:
+    pictures:
+        - url: http://localhost/item_picture_test/1.jpg
+          thumbnails:
+              240x240: http://localhost/item_picture_test/1_240x240.jpg
+"""
+    And there should be a file at web/item_picture_test/1.jpg
+    And there should be a file at web/item_picture_test/1_240x240.jpg
+
 
 
 Scenario: Attach a PNG picture to an item
-   When I POST to /item/1/picture the file features/assets/dummy.png
+   When I POST to /item/2/picture the file features/assets/dummy.png
    Then the request should be accepted
-    And there should be a file at web/pictures_test/1/1.png
-    And there should be a file at web/pictures_test/1/thumb.jpg
+    And there should be a file at web/item_picture_test/1.jpg
+    And there should be a file at web/item_picture_test/1_240x240.jpg
 
 
 Scenario: Attach a GIF picture to an item
-   When I POST to /item/1/picture the file features/assets/dummy.gif
+   When I POST to /item/2/picture the file features/assets/dummy.gif
    Then the request should be accepted
-    And there should be a file at web/pictures_test/1/1.gif
-    And there should be a file at web/pictures_test/1/thumb.jpg
+    And there should be a file at web/item_picture_test/1.jpg
+    And there should be a file at web/item_picture_test/1_240x240.jpg
 
 
 # The generated thumbnail has wrong colors, though.
 # I guess PHP and/or GD is not WebP-ready yet.
 Scenario: Attach a WebP picture to an item (buggy)
-   When I POST to /item/1/picture the file features/assets/dummy.webp
+   When I POST to /item/2/picture the file features/assets/dummy.webp
    Then the request should be accepted
-    And there should be a file at web/pictures_test/1/1.webp
-    And there should be a file at web/pictures_test/1/thumb.jpg
+    And there should be a file at web/item_picture_test/1.jpg
+    And there should be a file at web/item_picture_test/1_240x240.jpg
 
 
 ## FAILURES ####################################################################
@@ -57,7 +68,7 @@ Scenario: Attach a WebP picture to an item (buggy)
 # $ file --mime-type -b features/assets/malicious.jpg
 # text/x-php
 Scenario: Fail to attach a malicious JPG picture to an item
-   When I POST to /item/1/picture the file features/assets/malicious.jpg
+   When I POST to /item/2/picture the file features/assets/malicious.jpg
    Then the request should be denied
     And there should not be a file at web/pictures_test/1/1.jpg
 
@@ -65,12 +76,12 @@ Scenario: Fail to attach a malicious JPG picture to an item
 Scenario: Fail to attach a picture to a non-existent item
    When I POST to /item/42/picture the file features/assets/dummy.jpg
    Then the request should be denied
-    And there should not be a file at web/pictures_test/1/1.jpg
-    And there should not be a file at web/pictures_test/42/1.jpg
+    And there should not be a file at web/item_picture_test/1.jpg
+    And there should not be a file at web/item_picture_test/1_240x240.jpg
 
 
 Scenario: Fail to attach a picture to an item you did not create yourself
-   When I POST to /item/2/picture the file features/assets/dummy.jpg
+   When I POST to /item/3/picture the file features/assets/dummy.jpg
    Then the request should be denied
-    And there should not be a file at web/pictures_test/2/1.jpg
+    And there should not be a file at web/item_picture_test/1.jpg
 
