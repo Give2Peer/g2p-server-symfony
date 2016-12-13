@@ -50,6 +50,14 @@ class ItemPainter
     {
         $itemPicture->setUrl($this->getUrl($itemPicture));
 
+        $thumbsUrls = [];
+
+        foreach ($this->thumbs as $k=>$thumb) {
+            $x = $thumb['x']; $y = $thumb['y'];
+            $thumbsUrls[] = $this->getThumbUrl($itemPicture, $x, $y);
+        }
+        $itemPicture->setThumbnailsUrls($thumbsUrls);
+
         return $itemPicture;
     }
 
@@ -195,6 +203,15 @@ class ItemPainter
             $this->request->getSchemeAndHttpHost(),
             $this->url_path,
             $itemPicture->getId() . '.' . $this->extension,
+        ]);
+    }
+
+    private function getThumbUrl(ItemPicture $itemPicture, $x, $y)
+    {
+        return join('/', [
+            $this->request->getSchemeAndHttpHost(),
+            $this->url_path,
+            $itemPicture->getId() . "_${x}x${y}." . $this->extension,
         ]);
     }
 }

@@ -38,8 +38,9 @@ class ItemPicture implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id'  => $this->getId(),
-            'url' => $this->getUrl(),
+            'id'         => $this->getId(),
+            'url'        => $this->getUrl(),
+            'thumbnails' => $this->getThumbnailsUrls(),
         ];
     }
 
@@ -88,13 +89,19 @@ class ItemPicture implements \JsonSerializable
      */
     private $item;
 
-
     /**
      * The full URL to this picture.
      * This is not stored in the database, but injected by the ItemPainter.
      * @var String
      */
     private $url;
+
+    /**
+     * An array of the full URLs to the thumbnails.
+     * This is not stored in the database, but injected by the ItemPainter.
+     * @var String[]
+     */
+    private $thumbnailsUrls;
 
 
     public function __construct() {}
@@ -179,6 +186,29 @@ class ItemPicture implements \JsonSerializable
     public function setUrl($url)
     {
         $this->url = $url;
+    }
+
+    /**
+     * @return String[]
+     * @throws Exception
+     */
+    public function getThumbnailsUrls()
+    {
+        if (null == $this->thumbnailsUrls) {
+            throw new Exception(
+                "Use ItemPainter.injectUrl() on this item picture first."
+            );
+        }
+
+        return $this->thumbnailsUrls;
+    }
+
+    /**
+     * @param String[] $urls
+     */
+    public function setThumbnailsUrls($urls)
+    {
+        $this->thumbnailsUrls = $urls;
     }
 
 }
