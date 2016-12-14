@@ -9,8 +9,6 @@ use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\ItemPicture;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
-use Give2Peer\Give2PeerBundle\Service\ItemPainter;
-use Give2Peer\Give2PeerBundle\Service\Thumbnailer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -338,7 +336,7 @@ class ItemController extends BaseController
         $em->flush();
 
         // Inject the URLs into the picture before serializing it. Usually this
-        // is done by the Repository or a Doctrine hook but here we just added a new picture.
+        // is done by a Doctrine hook but here we just added a new picture.
         $painter->paintItem($item);
 
         return $this->respond(['item' => $item]);
@@ -435,6 +433,7 @@ class ItemController extends BaseController
         }
 
         // Inject the URLs into the picture before serializing it.
+        // Usually this is done by a Doctrine hook, but we just created the pic.
         $painter->injectUrls($picture);
 
         return $this->respond(['picture' => $picture]);

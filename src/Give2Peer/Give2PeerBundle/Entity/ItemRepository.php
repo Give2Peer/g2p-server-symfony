@@ -198,6 +198,7 @@ class ItemRepository extends EntityRepository
 
         $before = $this->countItems();
 
+        // fixme: trouble !
         $this->getEntityManager()
             ->createQueryBuilder()
             ->delete($this->getEntityName(), 'i')
@@ -223,17 +224,11 @@ class ItemRepository extends EntityRepository
         $filters = $this->getEntityManager()->getFilters();
         $filters->disable('softdeleteable');
 
-        $result = $this->getEntityManager()
-            ->createQueryBuilder()
-            ->delete($this->getEntityName(), 'i')
-            ->andWhere('i.id <= :id')
-            ->setParameter('id', $item->getId())
-            ->getQuery()->execute()
-        ;
+        $em = $this->getEntityManager();
+        $em->remove($item);
+        $em->flush();
 
         $filters->enable('softdeleteable');
-
-        return $result;
     }
 
     /**

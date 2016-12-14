@@ -1,14 +1,14 @@
 @rest
 @pic
-Feature: Picturing items
+Feature: Picturing items afterwards
   In order to describe faster than with a thousand words
   As a tagger
-  I need to attach pictures to items
+  I need to attach pictures to existing items
 
 
 # /!\ WARNING
-# We are spec'ing the path `web/pictures_test` but in production the actual path
-# to pictures is simply `web/pictures`. I don't know how to handle this better.
+# We are spec'ing the path `web/item_picture_test` but in production the actual
+# path to pictures is simply `web/item_picture`.
 # Tests use another path so that we can empty the directory between scenarios.
 # It would be too dangerous to use the same path for both the test and prod
 # environments, as simply running the test suite would wreak havoc.
@@ -16,7 +16,7 @@ Feature: Picturing items
 
 Background:
   Given I am the registered user named Goutte
-    And I gave an item
+    And I gave an item titled "Coffee Grinder"
     And I gave another item
     And there is an item at 43.566591, 1.474969
 
@@ -60,6 +60,19 @@ Scenario: Attach a WebP picture to an item (buggy)
    Then the request should be accepted
     And there should be a file at web/item_picture_test/1.jpg
     And there should be a file at web/item_picture_test/1_240x240.jpg
+
+
+
+Scenario: Delete the picture files when an Item is deleted
+  Given there should not be a file at web/item_picture_test/1.jpg
+   When I POST to /item/1/picture the file features/assets/dummy.jpg
+   Then the request should be accepted
+    And there should be a file at web/item_picture_test/1.jpg
+    And there should be a file at web/item_picture_test/1_240x240.jpg
+   When the item titled "Coffee Grinder" is hard deleted
+   Then there should not be a file at web/item_picture_test/1.jpg
+    And there should not be a file at web/item_picture_test/1_240x240.jpg
+
 
 
 ## FAILURES ####################################################################

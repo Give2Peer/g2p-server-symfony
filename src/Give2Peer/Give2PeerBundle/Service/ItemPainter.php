@@ -2,10 +2,10 @@
 
 namespace Give2Peer\Give2PeerBundle\Service;
 
+use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\ItemPicture;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 
@@ -127,6 +127,84 @@ class ItemPainter
     }
 
     /**
+     * Delete the image files that were created by this picture.
+     *
+     * @param ItemPicture $picture
+     * @throws \Exception
+     */
+    public function deleteFiles(ItemPicture $picture)
+    {
+        $id = $picture->getId();
+
+        $main = $this->getFilePath($picture);
+        if (is_file($main)) {
+            if ( ! unlink($main)) {
+                throw new \Exception(
+                    "Unable to delete item picture #${id} " .
+                    "main picture at '${main}'."
+                );
+            }
+        }
+
+        foreach ($this->thumbs as $thumb) {
+            $x = $thumb['x']; $y = $thumb['y'];
+            $thumbDestination = $this->getThumbPath($picture, $x, $y);
+            if (is_file($thumbDestination)) {
+                if ( ! unlink($thumbDestination)) {
+                    throw new \Exception(
+                        "Unable to delete item picture #${id} " .
+                        "thumbnail at '${main}'."
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * Make sure that all Items retrieved from the database are painted with
+     * the appropriate URLs.
+     *
+     * Note that, when using Doctrine\ORM\AbstractQuery#iterate(), postLoad
+     * events will be executed immediately after objects are being hydrated,
+     * and therefore associations are not guaranteed to be initialized.
+     * It is not safe to combine usage of Doctrine\ORM\AbstractQuery#iterate()
+     * and postLoad event handlers.
+     *
+     * @param LifecycleEventArgs $args
+     */
+    public function postLoad(LifecycleEventArgs $args)
+    {
+        $entity = $args->getObject();
+
+        if ($entity instanceof Item) {
+            $this->paintItem($entity);
+        }
+    }
+
+    /**
+     * Make sure that all the pictures
+     *
+     * /!\
+     * | This is not called for a DQL DELETE statement.
+     *
+     * Note that the postRemove event or any events triggered after an entity
+     * removal can receive an uninitializable proxy in case you have configured
+     * an entity to cascade remove relations. In this case, you should load
+     * yourself the proxy in the associated pre event.
+     * (we're using preRemove, it's simpler)
+     *
+     * @param LifecycleEventArgs $args
+     */
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        $entity = $args->getObject();
+
+        if ($entity instanceof ItemPicture) {
+            $this->deleteFiles($entity);
+        }
+    }
+
+    /**
      * Supported image subtypes : jpg, jpeg, png, gif, and webp.
      * The support for webp is flaky at best.
      *
@@ -171,7 +249,7 @@ class ItemPainter
 
     /**
      * Generate a JPG thumbnail $fromResource image.
-     * It will take the biggest square that fits in the center of the image.
+     * It will take the biggest rectangle that fits in the center of the image.
      *
      * Note: transparency will be cast to black.
      *
@@ -234,9 +312,6 @@ class ItemPainter
         ]);
     }
 
-    /**
-     * @return Request
-     */
     private function getRequest()
     {
         return $this->requestStack->getCurrentRequest();

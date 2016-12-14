@@ -5,9 +5,11 @@ Feature: Getting the details of an item
   I need to view the details of an item
 
 
+
 Background:
   Given I am the registered user named "黒滴"
     And there is a tag named "broken"
+
 
 
 # The title is optional, but it's convenient to set it in order to easily
@@ -30,6 +32,7 @@ item:
     pictures: []
     tags: []
 """
+
 
 
 Scenario: Get the details of a detailed item without a picture
@@ -56,7 +59,7 @@ item:
 """
 
 
-@wip
+
 Scenario: Get the details of a detailed item
   Given I pre-uploaded the image file features/assets/dummy.jpg
     And I gave the following item :

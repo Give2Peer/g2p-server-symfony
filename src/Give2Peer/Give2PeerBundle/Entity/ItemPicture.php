@@ -80,12 +80,20 @@ class ItemPicture implements \JsonSerializable
      * The item this picture is a picture of. May be null.
      * In that case, it means this picture is an orphan and it will be deleted
      * automatically by our cleanup CRON routine after 24h of existence.
+     *
      * When the item is deleted, all of its pictures will be deleted too.
+     * We're not using `onDelete="CASCADE"` on the JOIN here, but an ORM-wise
+     * cascade remove (see the Item->picture property), because it will trigger
+     * the appropriate Doctrine hooks, which an SQL directive, albeit faster,
+     * won't, and we defined a preRemove listener in the ItemPainter to delete
+     * the actual jpg files that were generated for this picture.
+     * We did not define the hook in this class because we needed access to
+     * configuration and therefore a Service. See service.yml
      *
      * @var Item
      *
      * @ORM\ManyToOne(targetEntity="Item", inversedBy="pictures")
-     * @ORM\JoinColumn(name="item_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="item_id", referencedColumnName="id")
      */
     private $item;
 

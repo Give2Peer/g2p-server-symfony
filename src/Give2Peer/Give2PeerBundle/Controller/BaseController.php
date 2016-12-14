@@ -138,8 +138,6 @@ abstract class BaseController extends Controller
 
         $item = $this->getItemRepository()->find($id);
 
-        $this->getItemPainter()->paintItem($item); // fixme: move to repository
-
         return $item;
     }
 
@@ -168,7 +166,7 @@ abstract class BaseController extends Controller
 
     /**
      * Should ask a service instead of making an instance.
-     * Should handle locale and region, too.
+     * Should handle locale and region, too, see above. ↑
      *
      * @return Geocoder
      */
