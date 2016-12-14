@@ -39,6 +39,26 @@ item:
 
 
 
+Scenario: Attach multiple JPG pictures to an item
+  Given there should not be a file at web/item_picture_test/1.jpg
+   When I POST to /item/2/picture the file features/assets/dummy.jpg
+   Then the request should be accepted
+   When I POST to /item/2/picture the file features/assets/dummy.jpg
+   Then the request should be accepted
+    And the response should include :
+"""
+item:
+    pictures:
+        - url: http://localhost/item_picture_test/1.jpg
+        - url: http://localhost/item_picture_test/2.jpg
+"""
+    And there should be a file at web/item_picture_test/1.jpg
+    And there should be a file at web/item_picture_test/2.jpg
+
+
+
+## OTHER FILE TYPES ############################################################
+
 Scenario: Attach a PNG picture to an item
    When I POST to /item/2/picture the file features/assets/dummy.png
    Then the request should be accepted
@@ -62,6 +82,8 @@ Scenario: Attach a WebP picture to an item (buggy)
     And there should be a file at web/item_picture_test/1_240x240.jpg
 
 
+
+## DELETION ####################################################################
 
 Scenario: Delete the picture files when an Item is deleted
   Given there should not be a file at web/item_picture_test/1.jpg

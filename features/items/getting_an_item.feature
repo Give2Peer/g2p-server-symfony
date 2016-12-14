@@ -59,7 +59,7 @@ item:
 """
 
 
-
+@wip
 Scenario: Get the details of a detailed item
   Given I pre-uploaded the image file features/assets/dummy.jpg
     And I gave the following item :

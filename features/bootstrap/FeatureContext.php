@@ -6,6 +6,7 @@ use Behat\Testwork\Hook\Scope\AfterSuiteScope;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\Item;
+use Give2Peer\Give2PeerBundle\Entity\ItemPicture;
 use Give2Peer\Give2PeerBundle\Entity\Tag;
 use Give2Peer\Give2PeerBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Client;
@@ -519,6 +520,14 @@ class FeatureContext extends    BaseContext
     {
         $this->request('GET', 'user');
     }
+
+    /**
+     * @When /^I run the (.+) CRON task$/
+     */
+    public function iRunTheCronTask($frequency)
+    {
+        $this->request('GET', "cron/$frequency");
+    }
     
     /**
      * @When /^I request the profile information of the user named (.+)$/
@@ -650,7 +659,7 @@ class FeatureContext extends    BaseContext
      */
     public function iAlreadyGaveItemsBypassingQuotas($howMany, $when=null)
     {
-        if (!empty($when)) {
+        if ( ! empty($when)) {
             $when = new \DateTime("@".strtotime("-".$when));
         }
 
@@ -661,7 +670,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^I gave (\d+) items? *(?:(.+) ago)? *$/
+     * @Given /^I gave (\d+) items? *(?:(.+) ago)?$/
      */
     public function iGaveItems($howMany, $when=null)
     {
@@ -690,11 +699,12 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @When /^I pre-upload(?:ed)? the image file (.+?)$/i
+     * @When /^I pre-upload(?:ed)? the image file ([^ ]+) *(?:(.+) ago)?$/i
      */
-    public function iPreUploadTheImageFile($filePath)
+    public function iPreUploadTheImageFile($filePath, $when=null)
     {
         $this->iPostTheFile("/item/picture", $filePath);
+        if (null != $when) $this->setLastGivenItemPictureCreationDate($when);
     }
 
     /**
@@ -875,7 +885,7 @@ class FeatureContext extends    BaseContext
     // RESPONSE STEPS //////////////////////////////////////////////////////////
     
     /**
-     * @Then /^(?:the|my) request should be (accepted|denied)$/
+     * @Then /^(?:the|my) request (?:should (?:be|have been)|was) (accepted|denied)$/
      */
     public function theRequestShouldBeAcceptedOrDenied($which)
     {
@@ -1144,11 +1154,11 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Then /^there should((?: not)?) be a file at (.*?) *$/
+     * @Then /^there should(?: still)?((?: not)?) be a file at (.*?) *$/
      */
     public function thereShouldBeAFileAt($not, $path)
     {
-        $not = ($not == '') ? false : true;
+        $not = ($not != '');
         // If not absolute, assume relative to parent of kernel dir
         if (strpos($path, DIRECTORY_SEPARATOR) !== 0) {
             $prepend = $this->get('kernel')->getRootDir().'/../';
@@ -1179,31 +1189,59 @@ class FeatureContext extends    BaseContext
      */
     protected function setLastGivenItemCreationDate($when)
     {
+        $this->setLastGivenEntityCreationDate($when, 'Item', 'item', true);
+    }
+
+    /**
+     * Handy tool to hack a PictureItem `createdAt` field after adding them via
+     * the API, so we can add them in the past, or even (gasp!) in the future.
+     * Requires that a request to POST /item/picture was made last.
+     * We grab the item id from the response and tweak its creation date
+     * directly in the database.
+     * @param $when
+     */
+    protected function setLastGivenItemPictureCreationDate($when)
+    {
+        $this->setLastGivenEntityCreationDate($when, 'ItemPicture', 'picture');
+    }
+
+    /**
+     * Handy tool to hack an Entity `createdAt` field after adding them via
+     * the API, so we can add them in the past, or even (gasp!) in the future.
+     * Requires that an appropriate request was made last.
+     * We grab the item id from the response and tweak its creation date
+     * directly in the database.
+     * @param $when
+     * @param $entity
+     * @param $key
+     * @param bool $updatedAtToo
+     */
+    protected function setLastGivenEntityCreationDate($when, $entity, $key, $updatedAtToo=false)
+    {
         $when = new \DateTime("@".strtotime("-".$when));
         $id = null;
         $content = $this->client->getResponse()->getContent();
         try {
-            $ob = json_decode($content);
-            $id = $ob->item->id;
+            $ob = json_decode($content, true);
+            $id = $ob[$key]['id'];
         } catch (\Exception $e) {
             $this->fail("Not the response we expected when hacking createdAt\n".
-                "This requires that a request to POST `/item` was made last.".
-                "Response obtained : $content\n".
+                "This requires that a request to a route that returned an " .
+                "$entity was made last.\n".
+                "Response obtained :$content\n".
                 $e->getMessage()."\n".
                 $e->getTraceAsString());
         }
         if ($id == null) {
-            $this->fail("Nope, nope, NOPE. That's NOT okay ! No id ?!?");
+            $this->fail("No id in response :$content");
         } else {
             $em = $this->getEntityManager();
-            /** @var Item $item */
-            $item = $em->getRepository("Give2PeerBundle:Item")->find($id);
-
-            $item->setCreatedAt($when);
-            $item->setUpdatedAt($when); // it works !
+            /** @var \Gedmo\Timestampable\Traits\TimestampableEntity $ent */
+            $ent = $em->getRepository("Give2PeerBundle:$entity")->find($id);
+            $ent->setCreatedAt($when);
+            if ($updatedAtToo) $ent->setUpdatedAt($when);
             $em->flush();
         }
-
     }
 
     /**
@@ -1306,7 +1344,9 @@ class FeatureContext extends    BaseContext
         if (null == $longitude)
             $longitude = $this->faker->longitude;
         if (null == $title)
-            $title = sprintf("%s %s", $this->faker->colorName, $this->faker->word);
+            $title = sprintf(
+                "%s %s", $this->faker->colorName, $this->faker->word
+            );
 
         // Create the item
         $item = new Item();
@@ -1382,7 +1422,10 @@ class FeatureContext extends    BaseContext
         // Set the desired output format, aka content-type
         // Not actually used by server it seems... Document!?
         //$server['CONTENT_TYPE'] = "application/json";
-        // Server understands that instead
+        // Server understands that instead.
+        // The server ignores that directive and returns json, unless there is
+        // and error in which case Symfony kicks in and the error response is
+        // returned in the specified _format. Such lousiness. Not urgent, tho.
         //$parameters['_format'] = 'json';
         $parameters['_format'] = 'txt'; // for readable error responses
 

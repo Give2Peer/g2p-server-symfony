@@ -25,14 +25,22 @@ class CronController extends BaseController
      * Delay in seconds after which soft-deleted items should be hard-deleted.
      * @var int
      */
-    const ITEM_HARD_DELETION_DELAY = 60 * 60 * 24 * 7;
+    const ITEM_HARD_DELETION_DELAY = 60 * 60 * 24 * 7; // 7d
 
     /**
      * Default lifetime in seconds of items.
      * An item exceeding its lifetime will be soft-deleted.
      * @var int
      */
-    const ITEM_DEFAULT_LIFETIME = 60 * 60 * 24 * 15;
+    const ITEM_DEFAULT_LIFETIME = 60 * 60 * 24 * 15; // 15d
+
+    /**
+     * Maximum lifetime in seconds of orphan item pictures.
+     * An item picture exceeding its lifetime will be deleted, as well as its
+     * generated files (thumbnails included).
+     * @var int
+     */
+    const ORPHAN_ITEM_PICTURE_LIFETIME = 60 * 60 * 24; // 24h
 
     /**
      * This should always do absolutely nothing.
@@ -55,16 +63,20 @@ class CronController extends BaseController
     /**
      * Run the daily CRON task.
      *
-     * - hard delete items that were soft deleted more than 7 days ago
+     * - Hard delete items that were soft deleted more than 7 days ago
      *   The minimum time that can be set between soft and hard deletion is
      *   24h because of the daily karma and daily quotas.
-     * - soft delete non soft-deleted items whose last update is older than
+     * - Soft delete non soft-deleted items whose last update is older than
      *   their lifespan.
+     * - Delete orphan item pictures that are older than 24h.
+     *   We actually do delete pictures alongside items, this is for pictures
+     *   that were pre-uploaded but never assigned an item in the first place.
      *
      */
     public function dailyAction()
     {
         $itemRepo = $this->getItemRepository();
+        $picsRepo = $this->getItemPictureRepository();
 
         $content = strftime("Y-m-d H:i:m") . " :\n";
         $doneSomething = false;
@@ -73,14 +85,23 @@ class CronController extends BaseController
         $sdc = $itemRepo->softDeleteOldItems(self::ITEM_DEFAULT_LIFETIME);
         if ($sdc > 0) {
             $doneSomething = true;
-            $content .= "  Soft deleted items : $sdc\n";
+            $content .= "\tSoft deleted items : $sdc\n";
         }
 
         // Hard delete old soft-deleted items
         $hdc = $itemRepo->hardDeleteOldItems(self::ITEM_HARD_DELETION_DELAY);
         if ($hdc > 0) {
             $doneSomething = true;
-            $content .= "  Hard deleted items : $hdc\n";
+            $content .= "\tHard deleted items : $hdc\n";
+        }
+
+        // Delete orphan pictures
+        $oip = $picsRepo->deleteOldOrphans(self::ORPHAN_ITEM_PICTURE_LIFETIME);
+        $odc = count($oip);
+        if ($odc > 0) {
+            $doneSomething = true;
+            $content .= "\tDeleted $odc orphan item picture(s) : ";
+            $content .= join(', ', $oip) . "\n";
         }
 
         // If nothing was done, don't return anything (no log clutter)

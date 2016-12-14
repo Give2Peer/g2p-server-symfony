@@ -20,7 +20,7 @@ Background:
 
 
 
-Scenario: Pre-upload two JPG pictures
+Scenario: Pre-upload two JPG item pictures
   Given there should not be a file at web/item_picture_test/1.jpg
    When I pre-upload the image file features/assets/dummy.jpg
    Then the request should be accepted
@@ -41,7 +41,7 @@ picture:
 
 
 
-Scenario: Pre-upload a PNG picture
+Scenario: Pre-upload a PNG item picture
   Given there should not be a file at web/item_picture_test/1.jpg
    When I pre-upload the image file features/assets/dummy.png
    Then the request should be accepted
@@ -49,7 +49,7 @@ Scenario: Pre-upload a PNG picture
 
 
 
-Scenario: Pre-upload a GIF picture
+Scenario: Pre-upload a GIF item picture
   Given there should not be a file at web/item_picture_test/1.jpg
    When I pre-upload the image file features/assets/dummy.gif
    Then the request should be accepted
@@ -57,10 +57,24 @@ Scenario: Pre-upload a GIF picture
 
 
 
-Scenario: Pre-upload a WebP picture
+Scenario: Pre-upload a WebP item picture
   Given there should not be a file at web/item_picture_test/1.jpg
    When I pre-upload the image file features/assets/dummy.webp
    Then the request should be accepted
     And there should be a file at web/item_picture_test/1.jpg
+
+
+
+@cron
+Scenario: Automatically delete old orphan item pictures
+  Given I pre-uploaded the image file features/assets/dummy.jpg 20 hours ago
+    And the request was accepted
+    And I pre-uploaded the image file features/assets/dummy.jpg 25 hours ago
+    And the request was accepted
+    And there should be a file at web/item_picture_test/1.jpg
+    And there should be a file at web/item_picture_test/2.jpg
+   When I run the daily CRON task
+   Then there should still be a file at web/item_picture_test/1.jpg
+    But there should not be a file at web/item_picture_test/2.jpg
 
 

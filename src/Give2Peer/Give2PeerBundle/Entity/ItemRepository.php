@@ -148,7 +148,8 @@ class ItemRepository extends EntityRepository
 
         $before = $this->countItems();
 
-        // This hard deletes, as the softdeleteable filter is not THAT advanced.
+        // This hard deletes, as the softdeleteable filter has no power on the
+        // DQL DELETE statement, it appears.
 //        $this->getEntityManager()
 //            ->createQueryBuilder()
 //            ->delete($this->getEntityName(), 'i')

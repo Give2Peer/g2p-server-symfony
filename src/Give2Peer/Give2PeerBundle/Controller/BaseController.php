@@ -4,6 +4,7 @@ namespace Give2Peer\Give2PeerBundle\Controller;
 
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\Item;
+use Give2Peer\Give2PeerBundle\Entity\ItemPictureRepository;
 use Give2Peer\Give2PeerBundle\Entity\ItemRepository;
 use Give2Peer\Give2PeerBundle\Entity\ReportRepository;
 use Give2Peer\Give2PeerBundle\Entity\TagRepository;
@@ -21,7 +22,7 @@ use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
- * Utilities, mostly sugar for the eyes and auto completion.
+ * Utilities, mostly sugar for the eyes and for auto completion.
  */
 abstract class BaseController extends Controller
 {
@@ -31,6 +32,14 @@ abstract class BaseController extends Controller
     protected function getEntityManager()
     {
         return $this->get('doctrine.orm.entity_manager');
+    }
+    
+    /**
+     * @return EntityManager
+     */
+    protected function getEm()
+    {
+        return $this->getEntityManager();
     }
 
     /**
@@ -71,7 +80,7 @@ abstract class BaseController extends Controller
      */
     protected function getUserRepository()
     {
-        return $this->getEntityManager()->getRepository('Give2PeerBundle:User');
+        return $this->getEm()->getRepository('Give2PeerBundle:User');
     }
 
     /**
@@ -79,7 +88,15 @@ abstract class BaseController extends Controller
      */
     protected function getItemRepository()
     {
-        return $this->getEntityManager()->getRepository('Give2PeerBundle:Item');
+        return $this->getEm()->getRepository('Give2PeerBundle:Item');
+    }
+
+    /**
+     * @return ItemPictureRepository
+     */
+    protected function getItemPictureRepository()
+    {
+        return $this->getEm()->getRepository('Give2PeerBundle:ItemPicture');
     }
 
     /**
@@ -87,7 +104,7 @@ abstract class BaseController extends Controller
      */
     protected function getTagRepository()
     {
-        return $this->getEntityManager()->getRepository('Give2PeerBundle:Tag');
+        return $this->getEm()->getRepository('Give2PeerBundle:Tag');
     }
 
     /**
@@ -95,7 +112,7 @@ abstract class BaseController extends Controller
      */
     protected function getThankRepository()
     {
-        return $this->getEntityManager()->getRepository('Give2PeerBundle:Thank');
+        return $this->getEm()->getRepository('Give2PeerBundle:Thank');
     }
 
     /**
@@ -103,7 +120,7 @@ abstract class BaseController extends Controller
      */
     protected function getReportRepository()
     {
-        return $this->getEntityManager()->getRepository('Give2PeerBundle:Report');
+        return $this->getEm()->getRepository('Give2PeerBundle:Report');
     }
 
     /**
@@ -142,7 +159,8 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * Sugary extra layer to `find()` and sanitize input `$id`, and disable the soft-deletion filter.
+     * Sugary extra layer to `find()` and sanitize input `$id`,
+     * and disable the soft-deletion filter.
      *
      * Return `null` when no item by that id could be found.
      *

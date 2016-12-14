@@ -189,7 +189,7 @@ class Item implements \JsonSerializable
      * Changes made only to the inverse side of an association are ignored.
      * http://doctrine-orm.readthedocs.org/projects/doctrine-orm/en/latest/reference/unitofwork-associations.html
      *
-     * @ORM\OneToMany(targetEntity="ItemPicture", mappedBy="author", fetch="EAGER", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="ItemPicture", mappedBy="item", fetch="EAGER", cascade={"remove"})
      * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     protected $pictures;
