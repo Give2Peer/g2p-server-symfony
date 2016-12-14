@@ -184,7 +184,6 @@ Database and Testing
 
 Then look at and run the `setup_` scripts as-needed in `script/` :
 
-- `script/setup_behat`
 - `script/setup_pgsql`
 - `script/setup_permissions`
 

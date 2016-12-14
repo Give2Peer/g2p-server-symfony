@@ -8,7 +8,6 @@ TLDR;
 $ sudo apt-get install composer fortunes
 $ cd <project root where composer.json resides>
 $ composer install
-$ script/setup_behat
 $ script/reset_db_schema
 $ bin/behat -vv --tags=~geocode
 ```
@@ -71,8 +70,6 @@ We first write the specifications in those files, and then code until all's gree
 
 How
 ---
-
-Run `script/setup_behat` once.
 
 We needed to customize the feature runner script, so this setup script only
 symlinks `bin/behat` to point to `script/behat`.

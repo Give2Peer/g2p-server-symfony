@@ -29,7 +29,7 @@ if ((!$loader = includeIfExists(__DIR__.'/../vendor/autoload.php'))) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// This whole file (and the setup_behat script) exist just for these hacks.
+// This whole file (and the composer hook) exist just for these hacks.
 
 // Hot fix to skip phpunit XML config and Other Trouble ©
 // May break at any given time, of course. Holler me if it does !

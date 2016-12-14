@@ -1,7 +1,7 @@
 A bunch of handy scripts.
 
 The `script/behat` script should be symlinked to `bin/behat`.
-Use `script/setup_behat` to that effect.
+We wrote a composer hook to that effect.
 
     
 SSL KEYS
