@@ -19,9 +19,11 @@ branches:
     - master
 
 before_install:
-  # Composer install will run out of memory otherwise.
-  # Another solution would be to add composer.lock to the source tree.
+  # Composer install will easily run out of memory.
+  # Disabling xdebug is not enough, but it helps.
   - phpenv config-rm xdebug.ini
+  # Composer self-update is already done by default no need to specify it.
+  #- composer selfupdate
 
 install:
   - composer install --no-interaction --prefer-source
