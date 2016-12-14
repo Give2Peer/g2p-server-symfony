@@ -321,12 +321,7 @@ class ItemController extends BaseController
         // Persisting fills the Id, and the ItemPainter needs it
         $em->persist($picture);
 
-        $painter = new ItemPainter(
-            $request,
-            $this->getParameter('give2peer.items.pictures.directory'),
-            $this->getParameter('give2peer.items.pictures.url_path'),
-            $this->getParameter('give2peer.items.pictures.thumbnails.sizes')
-        );
+        $painter = $this->getItemPainter();
 
         try {
             $painter->createFiles($picture, $file);
@@ -342,9 +337,9 @@ class ItemController extends BaseController
         // Flush our changes to the item and picture into the database
         $em->flush();
 
-        // Inject the URLs into the picture before serializing it and sending
-        // it back to the client.
-        $painter->injectUrl($picture);
+        // Inject the URLs into the picture before serializing it. Usually this
+        // is done by the Repository or a Doctrine hook but here we just added a new picture.
+        $painter->paintItem($item);
 
         return $this->respond(['item' => $item]);
     }
@@ -426,15 +421,9 @@ class ItemController extends BaseController
         // Persisting fills the Id, and the ItemPainter needs it
         $em->persist($picture);
 
-        $painter = new ItemPainter(
-            $request,
-            $this->getParameter('give2peer.items.pictures.directory'),
-            $this->getParameter('give2peer.items.pictures.url_path'),
-            $this->getParameter('give2peer.items.pictures.thumbnails.sizes')
-        );
+        $painter = $this->getItemPainter();
 
-        // Flush our changes to the picture into the database
-        // fixme: test if we really need this
+        // Flush our changes to the picture into the database (we need to)
         $em->flush();
 
         try {
@@ -445,9 +434,8 @@ class ItemController extends BaseController
             );
         }
 
-        // Inject the URL into the picture before serializing it and sending
-        // it back to the client.
-        $painter->injectUrl($picture);
+        // Inject the URLs into the picture before serializing it.
+        $painter->injectUrls($picture);
 
         return $this->respond(['picture' => $picture]);
     }

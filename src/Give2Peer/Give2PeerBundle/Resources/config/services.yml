@@ -13,6 +13,17 @@ services:
             - @fos_user.entity_manager
             - Give2Peer\Give2PeerBundle\Entity\User
 
+    # ItemPainter is a service, for easier instanciation and parameter access.
+    # Every Item we serialize and send back in the responses must be painted
+    # by the ItemPainter, who will create and inject the URLs of the images.
+    g2p.item_painter:
+        class: Give2Peer\Give2PeerBundle\Service\ItemPainter
+        arguments:
+            - @request_stack
+            - %give2peer.items.pictures.directory%
+            - %give2peer.items.pictures.url_path%
+            - %give2peer.items.pictures.thumbnails.sizes%
+
     # Register a listener that reads the request header 'Accept-Language' and
     # sets the locale accordingly.
     # /!\ This totally bypasses the _locale attribute of routing.

@@ -259,7 +259,8 @@ class ItemRepository extends EntityRepository
             ->getQuery()
             ->execute()
             ;
-        // Ugly injection to provide the additional `distance` property to items
+
+        // Inject the additional `distance` property to items
         foreach ($rows as $row) {
             $items[] = $row[0]->setDistance($row['distance']);
         }

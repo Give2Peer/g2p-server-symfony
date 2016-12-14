@@ -13,6 +13,7 @@ use Give2Peer\Give2PeerBundle\Entity\UserManager;
 use Give2Peer\Give2PeerBundle\Entity\UserRepository;
 use Give2Peer\Give2PeerBundle\Response\ErrorJsonResponse;
 use Give2Peer\Give2PeerBundle\Service\Geocoder;
+use Give2Peer\Give2PeerBundle\Service\ItemPainter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,6 +56,14 @@ abstract class BaseController extends Controller
     protected function getTranslator()
     {
         return $this->get('translator');
+    }
+
+    /**
+     * @return ItemPainter
+     */
+    protected function getItemPainter()
+    {
+        return $this->get('g2p.item_painter');
     }
 
     /**
@@ -127,7 +136,11 @@ abstract class BaseController extends Controller
         // Sanitize (this is *mandatory* !)
         $id = intval($id);
 
-        return $this->getItemRepository()->find($id);
+        $item = $this->getItemRepository()->find($id);
+
+        $this->getItemPainter()->paintItem($item); // fixme: move to repository
+
+        return $item;
     }
 
     /**

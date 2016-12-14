@@ -690,7 +690,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @When /^I pre-upload the image file (.+?)\s*$/i
+     * @When /^I pre-upload(?:ed)? the image file (.+?)$/i
      */
     public function iPreUploadTheImageFile($filePath)
     {

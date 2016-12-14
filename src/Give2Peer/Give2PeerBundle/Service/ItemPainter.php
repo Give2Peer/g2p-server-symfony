@@ -2,9 +2,11 @@
 
 namespace Give2Peer\Give2PeerBundle\Service;
 
+use Give2Peer\Give2PeerBundle\Entity\Item;
 use Give2Peer\Give2PeerBundle\Entity\ItemPicture;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 
 /**
@@ -20,22 +22,39 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ItemPainter
 {
-    protected $request;
+    protected $requestStack;
     protected $dir_path;
     protected $url_path;
     protected $thumbs;
     private $extension;
     private $quality;
 
-    public function __construct(Request $request, $dir_path, $url_path, $thumbs)
+    public function __construct(RequestStack $requestStack, $dir_path, $url_path, $thumbs)
     {
-        $this->request  = $request;
+        $this->requestStack = $requestStack;
         $this->dir_path = $dir_path;
         $this->url_path = $url_path;
         $this->thumbs   = $thumbs;
 
         $this->extension = 'jpg'; // change imagejpeg() calls if you change that
         $this->quality = 83;
+    }
+
+    /**
+     * Inject the URLs of the pictures (and of their thumbnails) of the provided
+     * $item, effectively painting it and completing the data it needs for
+     * serialization.
+     *
+     * We need this because the URLs are generated from the server host and
+     * configuration, and entities know nothing about these.
+     *
+     * @param Item $item
+     */
+    public function paintItem(Item $item)
+    {
+        foreach ($item->getPictures() as $picture) {
+            $this->injectUrls($picture);
+        }
     }
 
     /**
@@ -46,7 +65,7 @@ class ItemPainter
      * @param ItemPicture $itemPicture
      * @return ItemPicture
      */
-    public function injectUrl(ItemPicture $itemPicture)
+    public function injectUrls(ItemPicture $itemPicture)
     {
         $itemPicture->setUrl($this->getUrl($itemPicture));
 
@@ -200,7 +219,7 @@ class ItemPainter
     private function getUrl(ItemPicture $itemPicture)
     {
         return join('/', [
-            $this->request->getSchemeAndHttpHost(),
+            $this->getRequest()->getSchemeAndHttpHost(),
             $this->url_path,
             $itemPicture->getId() . '.' . $this->extension,
         ]);
@@ -209,9 +228,17 @@ class ItemPainter
     private function getThumbUrl(ItemPicture $itemPicture, $x, $y)
     {
         return join('/', [
-            $this->request->getSchemeAndHttpHost(),
+            $this->getRequest()->getSchemeAndHttpHost(),
             $this->url_path,
             $itemPicture->getId() . "_${x}x${y}." . $this->extension,
         ]);
+    }
+
+    /**
+     * @return Request
+     */
+    private function getRequest()
+    {
+        return $this->requestStack->getCurrentRequest();
     }
 }
