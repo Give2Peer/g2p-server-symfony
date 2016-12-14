@@ -18,6 +18,11 @@ branches:
   only:
     - master
 
+before_install:
+  # Composer install will run out of memory otherwise.
+  # Another solution would be to add composer.lock to the source tree.
+  - phpenv config-rm xdebug.ini
+
 install:
   - composer install --no-interaction --prefer-source
   - ./script/setup_pgsql

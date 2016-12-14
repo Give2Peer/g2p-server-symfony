@@ -1,6 +1,8 @@
 Give2Peer API for Karma ☯
 =========================
 
+[![Build Status](https://travis-ci.org/Give2Peer/g2p-server-symfony.svg?branch=master)](https://travis-ci.org/Give2Peer/g2p-server-symfony)
+
 What
 ====
 
