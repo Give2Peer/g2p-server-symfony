@@ -35,9 +35,10 @@ EOSU
 
 
 # Create a system user that pgsql needs for peer auth (by default)
+# The --gecos option is to disable the shell interactivity (for travis)
 
 echo "Creating give2peer system user..."
-sudo adduser give2peer --no-create-home --disabled-password
+sudo adduser give2peer --no-create-home --disabled-password --gecos ""
 
 
 # Now let's see if Doctrine can do the rest
