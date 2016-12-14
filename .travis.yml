@@ -1,0 +1,28 @@
+language: php
+
+php:
+  - '5.6'
+  - '7.0'
+  - '7.1'
+  - hhvm
+  - nightly
+
+sudo: required
+
+git:
+  # Default is 50 commits, which is way too much
+  depth: 3
+
+branches:
+  # Whitelist of the branches to build
+  only:
+    - master
+
+install:
+  - composer install --no-interaction --prefer-source
+  - ./script/setup_pgsql
+  - ./script/setup_permissions
+  - ./script/reset_db_schema
+
+script:
+  - ./bin/behat --tags=~geocode
