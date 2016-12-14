@@ -15,7 +15,7 @@ Feature: Picturing items afterwards
 
 
 Background:
-  Given I am the registered user named Goutte
+  Given I am the registered user named Colombine
     And I gave an item titled "Coffee Grinder"
     And I gave another item
     And there is an item at 43.566591, 1.474969

@@ -115,6 +115,11 @@ class ItemPicture implements \JsonSerializable
     public function __construct() {}
 
 
+    public function isOrphan()
+    {
+        return $this->item === null;
+    }
+
     /**
      * Get id
      *

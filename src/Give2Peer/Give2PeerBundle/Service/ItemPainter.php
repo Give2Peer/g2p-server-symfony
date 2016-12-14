@@ -53,7 +53,7 @@ class ItemPainter
     public function paintItem(Item $item)
     {
         foreach ($item->getPictures() as $picture) {
-            $this->injectUrls($picture);
+            $this->paintItemPicture($picture);
         }
     }
 
@@ -65,7 +65,7 @@ class ItemPainter
      * @param ItemPicture $itemPicture
      * @return ItemPicture
      */
-    public function injectUrls(ItemPicture $itemPicture)
+    public function paintItemPicture(ItemPicture $itemPicture)
     {
         $itemPicture->setUrl($this->getUrl($itemPicture));
 
@@ -178,6 +178,9 @@ class ItemPainter
 
         if ($entity instanceof Item) {
             $this->paintItem($entity);
+        }
+        if ($entity instanceof ItemPicture) {
+            $this->paintItemPicture($entity);
         }
     }
 

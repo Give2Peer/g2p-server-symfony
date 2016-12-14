@@ -71,6 +71,7 @@ class ItemController extends BaseController
     public function itemCreateAction(Request $request)
     {
         $em = $this->getEntityManager();
+        $picsRepo = $this->getItemPictureRepository();
         $itemRepo = $this->getItemRepository();
         $tagsRepo = $this->getTagRepository();
 
@@ -84,9 +85,14 @@ class ItemController extends BaseController
         $description = $request->get('description', '');
         $type = $request->get('type', Item::TYPE_MOOP);
         $tagnames = $request->get('tags', []);
+        $pictures = $request->get('pictures', []);
 
         // Fetch the Tags -- Ignore tags not found, for now.
         $tags = $tagsRepo->findTags($tagnames);
+
+        // Fetch the item pictures
+        /** @var ItemPicture[] $pictures */
+        $pictures = $picsRepo->findById($pictures);
 
         // Access the user data
         /** @var User $user */
@@ -115,25 +121,29 @@ class ItemController extends BaseController
         $item->setLatitude(floatval($coordinates[0]));
         $item->setLongitude(floatval($coordinates[1]));
         $item->setTitle($title);
+        $item->setDescription($description);
         try {
             $item->setType($type);
         } catch (\InvalidArgumentException $e) {
             return $this->error("item.type", ['%type%' => $type]);
         }
-        $item->setDescription($description);
         foreach ($tags as $tag) {
             $item->addTag($tag);
         }
-
+        foreach ($pictures as $picture) {
+            if ($picture->isOrphan()) {
+                $item->addPicture($picture, true);
+            } else {
+                // Should we throw ? Or silently ignore it ? Or overwrite ?
+            }
+        }
         $item->setAuthor($user);
-        // I'm pretty confident this is not mandatory as it is the inverse side
+        // This is not mandatory as it is the inverse side
         // of the bidirectional relationship, BUT it IS good design.
         $user->addItemAuthored($item);
 
-        // Add the item to database
+        // Add the item to the database
         $em->persist($item);
-        // Not needed because item is owning side of relationship. Good design ?
-        // $em->persist($user);
 
         // Compute how much karma the user gains and then give it
         // 3 points for giving, plus one point for a title, and one for tags.
@@ -434,7 +444,7 @@ class ItemController extends BaseController
 
         // Inject the URLs into the picture before serializing it.
         // Usually this is done by a Doctrine hook, but we just created the pic.
-        $painter->injectUrls($picture);
+        $painter->paintItemPicture($picture);
 
         return $this->respond(['picture' => $picture]);
     }

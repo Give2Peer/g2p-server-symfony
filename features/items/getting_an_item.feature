@@ -9,6 +9,7 @@ Feature: Getting the details of an item
 Background:
   Given I am the registered user named "黒滴"
     And there is a tag named "broken"
+    And there is a tag named "dirty"
 
 
 
@@ -59,25 +60,26 @@ item:
 """
 
 
-@wip
+
 Scenario: Get the details of a detailed item
   Given I pre-uploaded the image file features/assets/dummy.jpg
     And I gave the following item :
 """
-title: Test
+title: Soul
 description: A handy description !
 location: 43.566591, 1.474969
-tags:
-    - broken
 pictures:
     - 1
+tags:
+    - broken
+    - dirty
 """
-   When I get the details of the item titled "Test"
+   When I get the details of the item titled "Soul"
    Then the request should be accepted
     And the response should include :
 """
 item:
-    title: Test
+    title: Soul
     latitude: 43.566591
     longitude: 1.474969
     description: A handy description !
@@ -86,6 +88,7 @@ item:
           url: http://localhost/item_picture_test/1.jpg
     tags:
         - broken
+        - dirty
 """
 
 

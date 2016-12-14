@@ -18,8 +18,6 @@ class ItemPictureRepository extends EntityRepository
         $duration = new \DateInterval("PT${seconds}S");
         $since = (new \DateTime())->sub($duration);
 
-        $ids = [];
-
         $em = $this->getEntityManager();
 
         $pics = $em->createQueryBuilder()
@@ -31,6 +29,7 @@ class ItemPictureRepository extends EntityRepository
             ->getQuery()->execute()
         ;
 
+        $ids = [];
         foreach ($pics as $pic) {
             /** @var ItemPicture $pic */
             $ids[] = $pic->getId();
