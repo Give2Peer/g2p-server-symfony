@@ -75,11 +75,11 @@ Scenario: Attach a GIF picture to an item
 
 # The generated thumbnail has wrong colors, though.
 # I guess PHP and/or GD is not WebP-ready yet.
-Scenario: Attach a WebP picture to an item (buggy)
-   When I POST to /item/2/picture the file features/assets/dummy.webp
-   Then the request should be accepted
-    And there should be a file at web/item_picture_test/1.jpg
-    And there should be a file at web/item_picture_test/1_240x240.jpg
+#Scenario: Attach a WebP picture to an item (buggy)
+#   When I POST to /item/2/picture the file features/assets/dummy.webp
+#   Then the request should be accepted
+#    And there should be a file at web/item_picture_test/1.jpg
+#    And there should be a file at web/item_picture_test/1_240x240.jpg
 
 
 

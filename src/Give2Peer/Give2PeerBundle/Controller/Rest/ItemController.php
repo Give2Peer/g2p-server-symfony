@@ -309,7 +309,8 @@ class ItemController extends BaseController
         // This may be improved further -- hi, you, future self ! Remember me ?
         // Remember to update the `generateSquareThumb` method, too !
         // Later: I remember you, past me, I remember. I <3 u, my only friend !
-        $allowedExtensions = [ 'jpg', 'jpeg', 'png', 'gif', 'webp' ];
+        // fixme: move this list to the ItemPainter
+        $allowedExtensions = [ 'jpg', 'jpeg', 'png', 'gif' ];
         //$actualExtension = $file->getExtension(); // NO, tmp files have no ext
         $actualExtension = strtolower($file->getClientOriginalExtension());
         if ( ! in_array($actualExtension, $allowedExtensions)) {
@@ -366,7 +367,6 @@ class ItemController extends BaseController
      *   - `JPG`, `JPEG`
      *   - `PNG`
      *   - `GIF`
-     *   - `WebP`
      *
      * All the image formats will be converted to `JPG`,
      * so you will lose transparency and/or animations.
@@ -410,7 +410,7 @@ class ItemController extends BaseController
 
         // Check extension
         // Note that mime-types can be forged too, so extension is good enough.
-        $allowedExtensions = [ 'jpg', 'jpeg', 'png', 'gif', 'webp' ];
+        $allowedExtensions = [ 'jpg', 'jpeg', 'png', 'gif' ];
         $actualExtension = strtolower($file->getClientOriginalExtension());
         if ( ! in_array($actualExtension, $allowedExtensions)) {
             return $this->error(

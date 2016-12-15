@@ -230,10 +230,10 @@ class ItemPainter
             case 'gif';
                 $sourceImage = imagecreatefromgif($filename);
                 break;
-            case 'webp';
-                // I have 'undefined function' in my IDE ?! ; it works, though. Kinda.
-                $sourceImage = imagecreatefromwebp($filename);
-                break;
+//            case 'webp';
+//                // Nope, too many bugs.
+//                $sourceImage = imagecreatefromwebp($filename);
+//                break;
             default:
                 throw new \Exception("Unsupported image subtype: '$subtype'.");
 
