@@ -1,7 +1,11 @@
 Give2Peer API for Karma ☯
 =========================
 
-[![Build Status](https://travis-ci.org/Give2Peer/g2p-server-symfony.svg?branch=master)](https://travis-ci.org/Give2Peer/g2p-server-symfony)
+[![Build Status](https://img.shields.io/travis/Give2Peer/g2p-server-symfony.svg)](https://travis-ci.org/Give2Peer/g2p-server-symfony/)
+[![Website Status](https://img.shields.io/website-up-down-green-red/http/g2p.give2peer.org.svg)](https://g2p.give2peer.org/)
+[![Github Release](https://img.shields.io/github/release/Give2Peer/g2p-server-symfony.svg)](https://github.com/Give2Peer/g2p-server-symfony/releases/)
+[![License Libre](http://img.shields.io/badge/license-libre-blue.svg)](https://github.com/Give2Peer/g2p-server-symfony/blob/master/LICENCE.md)
+
 
 What
 ====
