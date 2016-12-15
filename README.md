@@ -63,6 +63,7 @@ This is the REST service running at [g2p.give2peer.org](http://g2p.give2peer.org
 
 It will provide a server for [Karma](http://www.give2peer.org), the Android app.
 
+[![Karma](https://raw.githubusercontent.com/Give2Peer/g2p-server-symfony/master/assets/logo_karma.png)](https://play.google.com/store/apps/details?id=org.give2peer.karma)
 
 
 Why
