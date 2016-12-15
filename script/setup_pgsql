@@ -8,12 +8,9 @@ echo "(it should be safe, but it will crash)"
 # Installs postgresql
 
 echo "Installing required debian packages..."
-
 sudo apt-get install php-pgsql
 # You may need php5.6-pgsql, php7-pgsql or simply php5-pgsql
 sudo apt-get install postgresql postgresql-doc postgresql-contrib
-
-
 
 
 # We use a "here document" below, because it is convenient
