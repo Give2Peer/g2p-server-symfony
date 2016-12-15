@@ -5,6 +5,7 @@ Give2Peer API for Karma ☯
 [![Website Status](https://img.shields.io/website-up-down-green-red/http/g2p.give2peer.org.svg)](https://g2p.give2peer.org/)
 [![Github Release](https://img.shields.io/github/release/Give2Peer/g2p-server-symfony.svg)](https://github.com/Give2Peer/g2p-server-symfony/releases/)
 [![License Libre](http://img.shields.io/badge/license-libre-blue.svg)](https://github.com/Give2Peer/g2p-server-symfony/blob/master/LICENCE.md)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/560/badge)](https://bestpractices.coreinfrastructure.org/projects/560)
 
 
 What
