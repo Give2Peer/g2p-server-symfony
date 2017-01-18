@@ -134,12 +134,14 @@ class ItemController extends BaseController
             if ($picture->isOrphan()) {
                 $item->addPicture($picture, true);
             } else {
-                // Should we throw ? Or silently ignore it ? Or overwrite ?
+                // fixme: decide what to do when the pic is already used.
+                // Currently we silently ignore the picture. May not be best.
+                // Should we throw ? Or overwrite ?
             }
         }
         $item->setAuthor($user);
         // This is not mandatory as it is the inverse side
-        // of the bidirectional relationship, BUT it IS good design.
+        // of the bidirectional relationship, but it IS good design.
         $user->addItemAuthored($item);
 
         // Add the item to the database

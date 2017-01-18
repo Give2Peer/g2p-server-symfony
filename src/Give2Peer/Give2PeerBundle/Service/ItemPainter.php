@@ -187,8 +187,7 @@ class ItemPainter
     /**
      * Make sure that all the pictures
      *
-     * /!\
-     * | This is not called for a DQL DELETE statement.
+     * /!\ This is not called for a DQL DELETE statement.
      *
      * Note that the postRemove event or any events triggered after an entity
      * removal can receive an uninitializable proxy in case you have configured

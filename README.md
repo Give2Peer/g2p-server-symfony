@@ -116,8 +116,8 @@ RoadMap
 
 - [x] Feature: I18N
 - [x] Feature: Support French
-- [ ] Feature: Add multiple pictures to an item
-- [ ] Feature: Upload a picture before uploading an item
+- [x] Feature: Add multiple pictures to an item
+- [x] Feature: Upload a picture before uploading an item
 - [ ] Setting: Freeze the API and release
 
 
