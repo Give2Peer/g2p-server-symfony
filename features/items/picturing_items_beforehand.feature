@@ -6,6 +6,7 @@ Feature: Picturing items beforehand
   I need to upload a picture while I'm still filling out the item form
 
 
+
 # /!\ WARNING
 # We are spec'ing the path `picture_test` but in production the actual path
 # to pictures is simply `picture`. I don't know how to handle this better.
@@ -13,10 +14,52 @@ Feature: Picturing items beforehand
 # It would be too dangerous to use the same path for both the test and prod
 # environments, as simply running the test suite would wreak havoc.
 # See `app/config/config.yml` and `app/config/config_test.yml`.
+# /!\ NOTE
+# We could possibly avoid that discrepancy by using the following step instead:
+# Then there should be a picture file at (.+)
+
 
 
 Background:
   Given I am the registered user named Goutte
+
+
+
+Scenario: Pre-upload a JPG item picture and then attach it to an item
+  Given there should not be a file at web/item_picture_test/1.jpg
+   When I pre-upload the image file features/assets/dummy.jpg
+   Then the request should be accepted
+    And the response should include :
+"""
+picture:
+    id: 1
+    url: http://localhost/item_picture_test/1.jpg
+    thumbnails:
+        240x240: http://localhost/item_picture_test/1_240x240.jpg
+"""
+    And there should be a file at web/item_picture_test/1.jpg
+    And there should be a file at web/item_picture_test/1_240x240.jpg
+   When I give the following item :
+"""
+location: -1.441, 43.601
+pictures:
+    - 1
+"""
+   Then the request should be accepted
+    And the response should include :
+"""
+item:
+    location: -1.441, 43.601
+    latitude: -1.441
+    longitude: 43.601
+    pictures:
+        -
+            id: 1
+            url: http://localhost/item_picture_test/1.jpg
+            thumbnails:
+                240x240: http://localhost/item_picture_test/1_240x240.jpg
+"""
+    And there should be 1 item in the database
 
 
 
@@ -36,6 +79,14 @@ picture:
     And there should be a file at web/item_picture_test/1_240x240.jpg
    When I pre-upload the image file features/assets/dummy.jpg
    Then the request should be accepted
+    And the response should include :
+"""
+picture:
+    id: 2
+    url: http://localhost/item_picture_test/2.jpg
+    thumbnails:
+        240x240: http://localhost/item_picture_test/2_240x240.jpg
+"""
     And there should be a file at web/item_picture_test/2.jpg
     And there should be a file at web/item_picture_test/2_240x240.jpg
 
@@ -57,7 +108,7 @@ Scenario: Pre-upload a GIF item picture
 
 
 
-# PHP GD is not WebP-ready yet
+# PHP GD is not WebP-ready yet, so this will stay as comment until it is.
 #Scenario: Pre-upload a WebP item picture
 #  Given there should not be a file at web/item_picture_test/1.jpg
 #   When I pre-upload the image file features/assets/dummy.webp
