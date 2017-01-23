@@ -5,8 +5,10 @@ Feature: Giving items
   I want to give items for free
 
 
+
 Background:
   Given I am the registered user named Goutte
+
 
 
 ## WRONG LOCATIONS #############################################################
@@ -32,6 +34,7 @@ location: The ass-end of nowhere !
    And there should be 0 items in the database
 
 
+
 ## GOOD LOCATIONS ##############################################################
 
 
@@ -51,6 +54,7 @@ item:
    And there should be 1 item in the database
 
 
+
 Scenario: Give an item with only a latitude, longitude location
   When I give the following item :
 """
@@ -67,6 +71,7 @@ item:
    And there should be 1 item in the database
 
 
+
 Scenario: Give an item with a weird latitude/longitude location
   When I give the following item :
 """
@@ -81,6 +86,7 @@ item:
   longitude: .12
 """
    And there should be 1 item in the database
+
 
 
 # Why not, in the future ? Easy enough to add a custom provider for this.
@@ -100,6 +106,7 @@ item:
 #   And there should be 1 item in the database
 
 
+
 @geocode
 Scenario: Give an item with only a postal address location
   When I give the following item :
@@ -115,6 +122,7 @@ item:
   longitude: 2.3053611
 """
    And there should be 1 item in the database
+
 
 
 @geocode
@@ -135,6 +143,7 @@ item:
   longitude: 1.444
 """
    And there should be 1 item in the database
+
 
 
 ## TITLE AND TAGS ##############################################################
@@ -171,6 +180,7 @@ item:
     And there should be 1 item in the database
 
 
+
 Scenario: Give an item with a title with special characters
    When I give the following item :
 """
@@ -190,6 +200,7 @@ item:
     And there should be 1 item in the database
 
 
+
 Scenario: Give an item with a very long title that gets truncated
    When I give the following item :
 """
@@ -203,6 +214,7 @@ item:
   title: I am longer than 32 characters ❤
 """
     And there should be 1 item in the database
+
 
 
 Scenario: Give an item with tags, and ignore non-existing tags
@@ -228,6 +240,7 @@ item:
     - nope
 """
     And there should be 1 item in the database
+
 
 
 ## KARMA ##################################################################
@@ -256,6 +269,7 @@ title: This thing
 karma: 4
 """
    And the user Goutte should have 7 karma points
+
 
 
 ## QUOTAS ######################################################################
@@ -294,6 +308,7 @@ tags:
 # Because my quotas are now level 1, not 0
 
 
+
 @quotas
 Scenario: Fail to exceed level 1 daily quota of 4
  Given I am level 1
@@ -302,6 +317,7 @@ Scenario: Fail to exceed level 1 daily quota of 4
   When I try to give an item
   Then the request should be denied
    And there should be 4 items in the database
+
 
 
 @quotas
@@ -315,6 +331,7 @@ Scenario: Fail to exceed level 9 daily quota of 20
   When I try to give an item
   Then the request should be denied
    And there should be 20 items in the database
+
 
 
 @quotas
