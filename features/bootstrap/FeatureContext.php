@@ -1,5 +1,7 @@
 <?php
 
+// namespace Give2PeerFeatures; // then Behat cannot find the FeatureContext :(
+
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Testwork\Hook\Scope\AfterSuiteScope;
@@ -97,7 +99,7 @@ class FeatureContext extends    BaseContext
      * sometimes override the fact that all of our created users have the same
      * password as username.
      *
-     * In the steps to change the password, for instance.
+     * Used in the steps to change the password, mostly.
      *
      * @var String $password
      */
@@ -1147,9 +1149,7 @@ class FeatureContext extends    BaseContext
      */
     public function iShouldHaveItemsInMyProfile($count)
     {
-        $actual = $this->getItemRepository()
-            ->countAuthoredBy($this->getI());
-
+        $actual = $this->getItemRepository()->countAuthoredBy($this->getI());
         $this->assertEquals($count, $actual);
     }
 
@@ -1245,7 +1245,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * Get the user from its username, or null if not found.
+     * Get the user from its username, or null when not found.
      *
      * @param $username
      * @return null|User
@@ -1293,7 +1293,7 @@ class FeatureContext extends    BaseContext
         // $um->refresh($this->user);
 
         // We want a fresh user from database, because we might have made some
-        // requests with this user between its creation and now. Karma changes
+        // requests with this user between its creation and now; Karma changes.
         return $this->getUser($this->user->getUsername());
     }
 
@@ -1407,7 +1407,7 @@ class FeatureContext extends    BaseContext
 
         $this->client = $this->getOrCreateClient();
 
-        if (!empty($this->user)) {
+        if ( ! empty($this->user)) {
 
             if (null != $this->password) {
                 $password = $this->password;
@@ -1422,11 +1422,10 @@ class FeatureContext extends    BaseContext
         // Set the desired output format, aka content-type
         // Not actually used by server it seems... Document!?
         //$server['CONTENT_TYPE'] = "application/json";
-        // Server understands that instead.
+        // The server understands _format instead.
         // The server ignores that directive and returns json, unless there is
         // and error in which case Symfony kicks in and the error response is
-        // returned in the specified _format. Such lousiness. Not urgent, tho.
-        //$parameters['_format'] = 'json';
+        // returned in the specified _format.
         $parameters['_format'] = 'txt'; // for readable error responses
 
         $this->crawler = $this->client->request(
@@ -1456,7 +1455,7 @@ class FeatureContext extends    BaseContext
         //    $content = json_encode(json_decode($content), JSON_PRETTY_PRINT);
         //} catch (\Exception $e) {}
 
-        if (!$this->client->getResponse()->isSuccessful()) {
+        if ( ! $this->client->getResponse()->isSuccessful()) {
             $this->fail(
                 sprintf("Response is unsuccessful, with '%d' HTTP status code ".
                     "and the following content:\n%s",

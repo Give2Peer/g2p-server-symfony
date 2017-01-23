@@ -1,5 +1,6 @@
 <?php
 
+// namespace Give2PeerFeatures;
 
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Entity\ItemRepository;

@@ -1,5 +1,7 @@
 <?php
 
+// namespace Give2PeerFeatures;
+
 /**
  * Fakes latitude and longitude, to provide to the Faker\Generator.
  * 

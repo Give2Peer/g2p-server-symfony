@@ -19,6 +19,7 @@ function includeIfExists($file)
     }
 }
 
+/** @var \Composer\Autoload\ClassLoader $loader */
 if ((!$loader = includeIfExists(__DIR__.'/../vendor/autoload.php'))) {
     fwrite(STDERR,
         'You must set up the project dependencies, run:'.PHP_EOL.
@@ -37,6 +38,9 @@ $_SERVER['KERNEL_DIR'] = 'app';
 
 // Doctrine and the documentation generator NEED annotations support
 AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
+
+// Would be great to have a namespace for our FeatureContext !
+//$loader->addPsr4('Give2PeerFeatures\\', 'features/bootstrap/');
 
 ////////////////////////////////////////////////////////////////////////////////
 
