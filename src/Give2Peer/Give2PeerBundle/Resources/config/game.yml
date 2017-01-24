@@ -1,20 +1,21 @@
 # todo: a script to uniquify and sort this ? (while keeping comments)
-# todo: fix inconsistencies and add more words
+# todo: fix inconsistencies (curate) and add more words
 # todo: do the same in french, belle marquise !
 
 # collected at first from wikipedia pages with
 # var s=""; $("table.wikitable tr a").each(function(t, e){s+="- "+$(e).text()+"\n"}); s;
 
-# This is a good place to start contributing.
+# This is a good place to start contributing if you do not code.
+# - curate
 # - add words
 # - move adjectives to their proper category
 # - no duplicates
 # - no `-`, `,`, or `'`.
 # - basically just [a-z0-9] but don't end beings with numbers.
-#   (the current client prettifies the usernames by removing trailing numbers)
+#   (the android client prettifies the usernames by removing trailing numbers)
 
 # Default usernames will be generated as follows :
-# <adjective1> <adjective2> <being>
+# <adjective1> <adjective2> <being> <random number>
 
 # Order of adjectives in english :
 # - Quantity or number
@@ -142,8 +143,10 @@ quality:
     - Sensible
     - Sensitive
     - Sociable
+    - Sharp
     - Shiny
     - Sick
+    - Singing
     - Skilled
     - Sleeping
     - Slender
@@ -158,7 +161,9 @@ quality:
     - Sweet
     - Swift
     - Tropical
+    - Tyrannic
     - Unhinged
+    - Unique
     - Unmellow
     - Vague
     - Vehement
@@ -236,7 +241,6 @@ color:
     - Bittersweet
     - Black
     - Blanched
-    - Blast
     - Bleu
     - Blizzard
     - Blond
@@ -337,7 +341,6 @@ color:
     - Dark
     - Deep
     - Desaturated
-    - Desert
     - Diamond
     - Dingy
     - Dirt
@@ -716,8 +719,6 @@ color:
     - Smoky
     - Snow
     - Soap
-    - Socks
-    - Soda
     - Sonic
     - Space
     - Sparkle
@@ -758,7 +759,6 @@ color:
     - Topaz
     - Tractor
     - Trolley
-    - Tropical
     - True
     - Tufts
     - Tulip
@@ -824,6 +824,7 @@ origin:
     - European
     - French
     - German
+    - Greek
     - Icelandic
     - Italian
     - Indian
@@ -832,12 +833,15 @@ origin:
     - Martian
     - Mongol
     - Northern
+    - Norwegian
     - Pakistani
     - Pacific
     - Persian
     - Portuguese
     - Prussian
+    - Roman
     - Russian
+    - Scottish
     - Selenite
     - Southern
     - Spanish
@@ -865,8 +869,10 @@ material:
 
 qualifier:
     - Army
+    - Cave
     - Cosmic
     - Cyclop  # maybe a quality, not a qualifier ?
+    - Desert
     - Earth
     - Forest
     - Grassland
@@ -879,9 +885,12 @@ qualifier:
     - Sea
     - Sky
     - Space
+    - Tropical
     - Water
 
 
+# This also needs some more curating
+# I wish I had MaddaddaM
 being:
     - Aardwolf
     - Adjutant
@@ -943,7 +952,7 @@ being:
     - Boat
     - Bobcat
     - Bohor
-    - Bonnet
+    - Bonobo
     - Bontebok
     - Booby
     - Bottle
@@ -965,7 +974,7 @@ being:
     - Bunting
     - Burchells
     - Burmese
-    - Burrowing
+    - Burrower
     - Bush
     - Bushbaby
     - Bushbuck
@@ -1038,7 +1047,6 @@ being:
     - Deer
     - Defassa
     - Denhams
-    - Desert
     - Devil
     - Diamond
     - Diamondback
@@ -1359,7 +1367,6 @@ being:
     - Sheep
     - Shelduck
     - Short
-    - Shouldered
     - Shrew
     - Shrike
     - Sifaka
@@ -1371,8 +1378,6 @@ being:
     - Sloth
     - Snake
     - Sockeye
-    - South
-    - Southern
     - Sparrow
     - Spider
     - Spoonbill
@@ -1410,7 +1415,6 @@ being:
     - Tasmanian
     - Tawny
     - Tayra
-    - Teal
     - Tenrec
     - Tern
     - Thorns

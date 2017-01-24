@@ -16,7 +16,7 @@ Feature: Picturing items beforehand
 # See `app/config/config.yml` and `app/config/config_test.yml`.
 # /!\ NOTE
 # We could possibly avoid that discrepancy by using the following step instead:
-# Then there should be a picture file at (.+)
+# Then there should be a picture file named 1.jpg
 
 
 

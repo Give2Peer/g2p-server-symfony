@@ -213,14 +213,14 @@ abstract class BaseController extends Controller
      * For future support of XML and text Responses.
      * Something with the _format argument.
      *
-     * @param string $msg
-     * @param array $parameters for the translation
+     * @param string $msg The translation key `api.error.<msg>`
+     * @param array $parameters Parameters for the translation
      * @param int $status HTTP status code
      * @return ErrorJsonResponse|Response
      */
     protected function error($msg, $parameters=[], $status=Response::HTTP_BAD_REQUEST)
     {
-        $msg = 'api.error.' . $msg; // implicit voodoo ; sorry, I'm lazy.
+        $msg = 'api.error.' . $msg; // implicit voodoo
         return new ErrorJsonResponse(
             $this->getTranslator()->trans($msg, $parameters), $msg, $status
         );
