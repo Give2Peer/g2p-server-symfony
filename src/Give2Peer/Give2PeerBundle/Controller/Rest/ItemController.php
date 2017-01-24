@@ -2,6 +2,7 @@
 
 namespace Give2Peer\Give2PeerBundle\Controller\Rest;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\EntityManager;
 use Give2Peer\Give2PeerBundle\Controller\BaseController;
@@ -92,7 +93,9 @@ class ItemController extends BaseController
 
         // Fetch the item pictures
         /** @var ItemPicture[] $pictures */
-        $pictures = $picsRepo->findById($pictures);
+        try {
+            $pictures = $picsRepo->findById($pictures);
+        } catch (DBALException $e) {} // ignore crappy ids (like empty ones)
 
         // Access the user data
         /** @var User $user */
