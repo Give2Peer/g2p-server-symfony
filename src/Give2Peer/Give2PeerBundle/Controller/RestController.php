@@ -59,7 +59,7 @@ class RestController extends BaseController
      * give2peer ~protocol, and should provide some public information about the
      * server and API and maybe even some very basic stats, or metadata.
      *
-     * fixme: This should return useful information about the server.
+     * fixme: This should return useful information about the server, no?
      *
      * ... then we'll be able to enable
      * ApiDoc()
@@ -68,7 +68,7 @@ class RestController extends BaseController
      */
     public function checkAction()
     {
-        return $this->respond("pong");
+        return $this->respond(array('status' => 'ok'));
     }
 
 }
