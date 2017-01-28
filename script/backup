@@ -7,7 +7,7 @@
 
 USER=web
 SERVER=web.qrok.me
-REMOTE_DIR=/home/web/g2p.give2peer.org
+REMOTE_DIR=/home/web/org.give2peer.api
 
 DATETIME=$(date +"%Y%m%d%H%M%S")
 DUMP_FILE="g2p_dump_${DATETIME}.pgdump"
