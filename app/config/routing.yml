@@ -1,12 +1,6 @@
-# We keep that one for now, but should we ?
-# Don't advertise it, as it may disappear in the future.
-# Note : we cannot activate BOTH ? WTF ?
-#give2peer_root:
-#    resource: "@Give2PeerBundle/Resources/config/routing.yml"
-#    prefix:   /
 
 # The released and publicized API, version 1.
-give2peer_v1:
+give2peer_api_v1:
     resource: "@Give2PeerBundle/Resources/config/routing.yml"
     prefix:   /v1
 
@@ -14,9 +8,9 @@ give2peer_v1:
 # Deprecated
 # Actually this does not even work ? It's overwriten by NelmioApiDocBundle_1
 # Why ? Why !? WHY !? @lutangar
-NelmioApiDocBundle_2:
-    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
-    prefix:   /api/doc
+#NelmioApiDocBundle_2:
+#    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+#    prefix:   /api/doc
 
 NelmioApiDocBundle_1:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"

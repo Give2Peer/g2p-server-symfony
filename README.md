@@ -106,10 +106,7 @@ RoadMap
 
 ### Perhaps
 
-- [ ] Feature: API Text Responses
-- [ ] Feature: API XML Responses
-- [ ] Setting: move route configuration to annotations
-- [ ] Ensure RESTfulnessimo
+- [ ] Setting: move route configuration to annotations ?
 
 
 ### 1.0
