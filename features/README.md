@@ -1,16 +1,36 @@
 Welcome to the Features
 =======================
 
-TLDR;
------
+The `.feature` files contain _scenarios_ such as :
 
+``` gherkin
+Feature: Hindering spammers
+  In order to own your brain
+  As a spammer
+  I want to try to abuse the system
+
+Background:
+  Given I am the registered user named "V14Gr4"
+
+Scenario: Fail to exceed level 0 daily quota of 2
+  Given I am level 0
+    And I gave 2 items 1 minute ago
+   Then there should be 2 items in the database
+   When I try to give an item
+   Then I should fail
+    And there should still be 2 items in the database
 ```
-$ sudo apt-get install composer fortunes
-$ cd <project root where composer.json resides>
-$ composer install
-$ script/reset_db_schema
-$ bin/behat -vv --tags=~geocode
-```
+
+You don't need to know how to code to read them, or even edit them !
+
+The best part is that each line is automagically ran as code that either
+succeeds or fails, so that the developers know if they broke something
+or if their newly added feature is done yet.
+
+We first write the specifications in those files, and then code until all's green !
+
+You can read [the latest run of all the features](https://travis-ci.org/Give2Peer/g2p-server-symfony/)
+on our continuous integration platform, Travis.
 
 
 What
@@ -39,35 +59,6 @@ They cover :
 That's pretty much everything this API offers right now.
 
 
-The `.feature` files contain _scenarios_ such as :
-
-``` gherkin
-Feature: Hindering spammers
-  In order to own your brain
-  As a spammer
-  I want to try to abuse the system
-
-Background:
-  Given I am the registered user named "V14Gr4"
-
-Scenario: Fail to exceed level 0 daily quota of 2
-  Given I am level 0
-    And I gave 2 items 1 minute ago
-   Then there should be 2 items in the database
-   When I try to give an item
-   Then I should fail
-    And there should still be 2 items in the database
-```
-
-You don't need to know how to code to read them, or even (gasp!) edit them !
-
-The best part is that each line is automagically ran as code that either
-succeeds or fails, so that the developers know if they broke something
-or if the newly added feature is done yet.
-
-We first write the specifications in those files, and then code until all's green !
-
-
 How
 ---
 
@@ -91,13 +82,17 @@ Notes
 
 You should install the `fortunes` package. It's optional, as fun is.
 
-As of April 2016, we have :
+As of January 2017, we have :
 
-    45 scenarios (45 passed)
-    287 steps (287 passed)
+    72 scenarios (72 passed)
+    540 steps (540 passed)
+
+Running the whole test suite takes about one full minute.
+[Travis](https://travis-ci.org/Give2Peer/g2p-server-symfony/) is going to do it
+automatically for each commit and pull request.
 
 
-Hey
+FAQ
 ---
 
 Q: What's the tech behind that ?
@@ -105,3 +100,14 @@ A: _[Behat](http://docs.behat.org) runs [Gherkin](http://docs.behat.org/en/v3.0/
 
 Q: It's unusual to test an API using Gherkin ! Why ?
 A: _For some, I would not recommend it. But for that one, 5/5 would do again._
+
+
+Try
+---
+
+```
+$ sudo apt-get install composer fortunes
+$ cd <project root where composer.json resides>
+$ composer install
+$ script/reset_db_schema
+$ bin/behat -vv --tags=~geocode

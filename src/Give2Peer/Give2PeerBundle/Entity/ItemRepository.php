@@ -36,8 +36,12 @@ class ItemRepository extends EntityRepository
     }
 
     /**
-     * Counts all the items that were published since the beginning, even the
-     * ones that were deleted.
+     * Counts all the items that were published since the beginning,
+     * even the ones that were deleted.
+     *
+     * /!\
+     * | Known bug : when the last inserted items are deleted,
+     * | this is lower than it should be. It's okay for now.
      *
      * @return int
      */
@@ -49,9 +53,7 @@ class ItemRepository extends EntityRepository
             ->execute()
             [0][1] // first column of first row holds the MAX
             ;
-        if (empty($total)) {
-            $total = 0;
-        }
+        if (empty($total)) { $total = 0; }
 
         return $total;
     }

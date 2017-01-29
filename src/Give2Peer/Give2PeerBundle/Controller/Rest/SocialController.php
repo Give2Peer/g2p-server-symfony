@@ -39,9 +39,12 @@ class SocialController extends BaseController
      *
      *   - [thanking_someone.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/thanking_someone.feature)
      *
-     * @ApiDoc()
+     * @ApiDoc(
+     *   section = "2. Items"
+     * )
      *
      * @param  Request $request
+     * @param  int $id Identifier of the item to be thankful for.
      * @return ErrorJsonResponse|JsonResponse
      */
     public function thankForItemAction (Request $request, $id)

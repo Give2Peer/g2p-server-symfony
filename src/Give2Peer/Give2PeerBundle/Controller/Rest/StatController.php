@@ -21,7 +21,9 @@ class StatController extends BaseController
      * - `items_count`: number of published items right now.
      * - `items_total`: number of published items since the beginning.
      *
-     * @ApiDoc()
+     * @ApiDoc(
+     *   section = "3. Others"
+     * )
      * @return JsonResponse
      */
     public function allAction()

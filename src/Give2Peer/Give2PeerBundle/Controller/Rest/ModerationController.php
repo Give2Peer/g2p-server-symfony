@@ -40,7 +40,9 @@ class ModerationController extends BaseController
      *   - [reporting_abuse.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/reporting_abuse.feature)
      *
      * 
-     * @ApiDoc()
+     * @ApiDoc(
+     *   section = "2. Items"
+     * )
      *
      * @param  Request $request
      * @return ErrorJsonResponse|JsonResponse

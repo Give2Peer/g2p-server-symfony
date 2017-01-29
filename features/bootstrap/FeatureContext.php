@@ -640,14 +640,15 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^I (?:try to )?g[ai]ve an item titled "?(.+?)"?$/
+     * @Given /^I ((?:try to )?)g[ai]ve an item titled "?(.+?)"?$/
      */
-    public function iGiveAnItemTitled($title)
+    public function iGiveAnItemTitled($tried, $title)
     {
         $location = sprintf("%s/%s", $this->faker->lat, $this->faker->lng);
         $pystring  = "location: $location\n";
         $pystring .= "title: $title\n";
         $this->iPost('item', $pystring);
+        if (empty($tried)) $this->assertRequestSuccess();
     }
 
     /**
@@ -1442,7 +1443,10 @@ class FeatureContext extends    BaseContext
     }
 
 
-
+    /**
+     * Asserts that the previously made request was a success.
+     * @throws Exception
+     */
     public function assertRequestSuccess()
     {
         if (empty($this->client)) {

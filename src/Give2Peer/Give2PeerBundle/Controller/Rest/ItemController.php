@@ -50,6 +50,7 @@ class ItemController extends BaseController
      *   - [giving_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/items/giving_items.feature)
      *
      * @ApiDoc(
+     *   section = "2. Items",
      *   parameters = {
      *     {
      *       "name"="location", "dataType"="string", "required"=true,
@@ -175,10 +176,12 @@ class ItemController extends BaseController
      *   - [getting_an_item.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/items/getting_an_item.feature)
      *
      *
-     * @ApiDoc()
+     * @ApiDoc(
+     *   section = "2. Items"
+     * )
      *
      * @param Request $request
-     * @param int $id Identifier of the item to get
+     * @param int $id Identifier of the item to get.
      * @return Response
      */
     public function itemReadAction(Request $request, $id)
@@ -211,10 +214,12 @@ class ItemController extends BaseController
      *   - [deleting_items.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/items/deleting_items.feature)
      *
      *
-     * @ApiDoc()
+     * @ApiDoc(
+     *   section = "2. Items"
+     * )
      *
      * @param Request $request
-     * @param int $id Identifier of the item to delete
+     * @param int $id Identifier of the item to delete.
      * @return ErrorJsonResponse|JsonResponse
      */
     public function itemDeleteAction(Request $request, $id)
@@ -265,6 +270,7 @@ class ItemController extends BaseController
      *
      *
      * @ApiDoc(
+     *   section = "2. Items",
      *   parameters = {
      *     {
      *       "name"="picture", "dataType"="file",
@@ -273,8 +279,8 @@ class ItemController extends BaseController
      *     }
      *   }
      * )
-     * @param  Request  $request
-     * @param  int      $id      Id of the Item to upload the picture for.
+     * @param  Request $request
+     * @param  int $id Identifier of the item to upload the picture for.
      * @return Response
      */
     public function itemPictureUploadAction(Request $request, $id)
@@ -381,6 +387,7 @@ class ItemController extends BaseController
      *   - [picturing_items_beforehand.feature](https://github.com/Give2Peer/g2p-server-symfony/blob/master/features/items/picturing_items_beforehand.feature)
      *
      * @ApiDoc(
+     *   section = "2. Items",
      *   parameters = {
      *     {
      *       "name"="picture", "dataType"="file",
@@ -471,6 +478,7 @@ class ItemController extends BaseController
      * Note that the distances are computed along the great circles of Earth.
      *
      * @ApiDoc(
+     *   section = "2. Items",
      *   parameters = {
      *     {
      *       "name"="maxDistance", "dataType"="float", "required"=false, "default"=0,

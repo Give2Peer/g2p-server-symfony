@@ -126,7 +126,9 @@ class UserController extends BaseController
     /**
      * Get the (private) profile information of the current user.
      * 
-     * @ApiDoc()
+     * @ApiDoc(
+     *     section = "1. Users"
+     * )
      *
      * @param  Request $request
      * @return ErrorJsonResponse|JsonResponse
@@ -154,16 +156,11 @@ class UserController extends BaseController
      * Get the (public) profile information of the user identifier by `id`.
      * 
      * @ApiDoc(
-     *   requirements = {
-     *     {
-     *       "name"="id",
-     *       "requirement"="[0-9]+", "type"="integer",
-     *       "description"="The unique identifier of the user.",
-     *     }
-     *   }
+     *   section = "1. Users"
      * )
      *
      * @param  Request $request
+     * @param  int $id Identifier of the user.
      * @return ErrorJsonResponse|JsonResponse
      */
     public function publicReadAction (Request $request, $id)
@@ -185,6 +182,7 @@ class UserController extends BaseController
      * If you need to change more than the password, use `POST user/{id}`.
      *
      * @ApiDoc(
+     *   section = "1. Users",
      *   parameters = {
      *     { "name"="password", "dataType"="string", "required"=true },
      *   }
@@ -203,7 +201,7 @@ class UserController extends BaseController
         /** @var User $user */
         $user = $this->getUser();
 
-        return $this->editAction($request, $user);
+        return $this->editAction($request, $user->getId());
     }
 
     /**
@@ -212,6 +210,7 @@ class UserController extends BaseController
      * If you need to change more than the username, use `POST user/{id}`.
      *
      * @ApiDoc(
+     *   section = "1. Users",
      *   parameters = {
      *     { "name"="username", "dataType"="string", "required"=true },
      *   }
@@ -230,7 +229,7 @@ class UserController extends BaseController
         /** @var User $user */
         $user = $this->getUser();
 
-        return $this->editAction($request, $user);
+        return $this->editAction($request, $user->getId());
     }
 
     /**
@@ -239,6 +238,7 @@ class UserController extends BaseController
      * If you need to change more than the email, use `POST user/{id}`.
      *
      * @ApiDoc(
+     *   section = "1. Users",
      *   parameters = {
      *     { "name"="email", "dataType"="string", "required"=true },
      *   }
@@ -257,7 +257,7 @@ class UserController extends BaseController
         /** @var User $user */
         $user = $this->getUser();
 
-        return $this->editAction($request, $user);
+        return $this->editAction($request, $user->getId());
     }
 
     /**
@@ -273,6 +273,7 @@ class UserController extends BaseController
      * The flow to change such important properties may be different. But how ?
      *
      * @ApiDoc(
+     *   section = "1. Users",
      *   parameters = {
      *     { "name"="username", "dataType"="string", "required"=false },
      *     { "name"="password", "dataType"="string", "required"=false },
@@ -284,7 +285,7 @@ class UserController extends BaseController
      * ParamConverter("user", class="Give2PeerBundle:User")
      *
      * @param Request $request
-     * @param $id
+     * @param int $id Identifier of the user.
      * @return JsonResponse
      */
     public function editAction(Request $request, $id)
@@ -296,12 +297,12 @@ class UserController extends BaseController
 
         $clientIp = $request->getClientIp(); // use this somehow ?
 
+        /** @var User $user The user who's going to be edited */
         $user = $this->getUserById($id);
         if (empty($user)) {
             return $this->error("user.not_found.by_id", ['%id%'=>$id], 404);
         }
 
-        /** @var User $user */
         $authenticatedUser = $this->getUser();
         if (null == $authenticatedUser) {  // does this ever happen?
             return $this->error("user.missing");
@@ -360,6 +361,7 @@ class UserController extends BaseController
      * back to you in the response.
      *
      * @ApiDoc(
+     *   section = "1. Users",
      *   parameters = {
      *     { "name"="username", "dataType"="string", "required"=false },
      *     { "name"="password", "dataType"="string", "required"=false },

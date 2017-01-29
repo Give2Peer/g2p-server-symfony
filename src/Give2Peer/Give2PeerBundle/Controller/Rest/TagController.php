@@ -17,7 +17,9 @@ class TagController extends BaseController
     /**
      * Return all available tags sorted alphabetically.
      *
-     * @ApiDoc()
+     * @ApiDoc(
+     *    section = "3. Others"
+     * )
      * @return JsonResponse
      */
     public function indexAlphabeticallyAction()
