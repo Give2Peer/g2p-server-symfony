@@ -394,7 +394,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^there is a user named "?(.+?)"? *(?:of level (\d+))?$/
+     * @Given /^there is an? ?(?:other)? user named "?(.+?)"? *(?:of level (\d+))?$/
      */
     public function thereIsANamedUserOfLevel($name, $level=null)
     {
@@ -403,7 +403,7 @@ class FeatureContext extends    BaseContext
     }
 
     /**
-     * @Given /^there is a user (?:with|whose) email (?:is )?"?(.+?)"? *$/
+     * @Given /^there is an? ?(?:other)? user (?:with|whose) email (?:is )?"?(.+?)"? *$/
      */
     public function thereIsAUserWithEmail($email)
     {

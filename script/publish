@@ -83,6 +83,7 @@ rsync -r --delete \
 # REMOTE CLEANUP ###############################################################
 
 # Run some scripts on the server, now
+# If this fails, look into the setup_permissions script
 echo -e "${Green}Cleaning remote files...${Off}"
 ssh -t -t ${USER}@${SERVER} <<-ENDSSH
     cd ${REMOTE_DIR}

@@ -63,11 +63,11 @@ security:
         # These are run automatically by the webserver itself
         # eg: /v1/cron/daily every day
         rest_cron:
-            pattern:  ^/?(v[\d]+)?/cron/(monkey|hourly|daily|weekly|monthly)$
+            pattern:  ^(/v[\d]+)?/cron/(monkey|hourly|daily|weekly|monthly)$
             security: false
         # The private API (everything else)
         rest_api:
-            pattern:   ^/(v[\d]+)
+            pattern:   ^/v[\d]+
             stateless: true
             http_basic:
                 realm: "The Karmic Realm"

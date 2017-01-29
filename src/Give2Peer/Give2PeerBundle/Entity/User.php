@@ -152,8 +152,6 @@ class User extends BaseUser implements \JsonSerializable
      * Changes made only to the inverse side of an association are ignored.
      * http://doctrine-orm.readthedocs.org/projects/doctrine-orm/en/latest/reference/unitofwork-associations.html
      *
-     * ORM\OneToMany(targetEntity="Item", mappedBy="author", fetch="EAGER")
-     *
      * @ORM\OneToMany(targetEntity="Item", mappedBy="author", fetch="EAGER")
      * @ORM\OrderBy({"updatedAt" = "DESC"})
      */
@@ -178,7 +176,7 @@ class User extends BaseUser implements \JsonSerializable
 
     /**
      * Ordered by updatedAt DESC.
-     * todo: limits, and make sure it passes through softdeleteable
+     * INCLUDING THE ITEMS MARKED FOR DELETION !
      *
      * @return Item[]
      */

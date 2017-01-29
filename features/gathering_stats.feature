@@ -7,7 +7,7 @@ Feature: Providing statistics
 
 
 Background:
-  Given I am the registered user named Watson
+  Given I am the registered user named Bayes
 
 
 Scenario: Get initial statistics
@@ -22,13 +22,12 @@ items_total: 0
 
 
 Scenario: Get updated statistics
-  Given I gave an item titled "mistake"
-    And I already gave 42 items
-    And I deleted the item titled "mistake"
-    And there is a user named Sherlock
+  Given I already gave 42 items
+    And I gave an item titled "Theorem"
+    And I deleted the item titled "Theorem"
+    And there is another user named Ramanujan
    When I request the statistics
    Then the request should be accepted
-    And I dump the response
     And the response should include :
 """
 users_count: 2
