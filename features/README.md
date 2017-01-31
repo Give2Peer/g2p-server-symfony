@@ -9,12 +9,10 @@ Feature: Hindering spammers
   As a spammer
   I want to try to abuse the system
 
-Background:
-  Given I am the registered user named "V14Gr4"
-
 Scenario: Fail to exceed level 0 daily quota of 2
-  Given I am level 0
-    And I gave 2 items 1 minute ago
+  Given I am the registered user named "V14Gr4"
+    And I am level 0
+    And I already gave 2 items 1 minute ago
    Then there should be 2 items in the database
    When I try to give an item
    Then I should fail
@@ -36,19 +34,19 @@ on our continuous integration platform, Travis.
 What
 ----
 
-These describe how the server should respond to HTTP REST requests from a
+The features describe how the server should respond to HTTP REST requests from a
 client, say a mobile app.
 
 They cover :
 - registering
-- editing profile
+- editing your profile
 - finding items
   - around various locations :
       - latitude / longitude _(preferred)_
       - postal addresses
       - IPs _(that one randomly fails)_
   - with pagination (to review)
-  - filtered by tags (to do)
+  - filtered by tags (todo)
 - giving items
   - gaining karma
   - daily quotas
@@ -62,13 +60,10 @@ That's pretty much everything this API offers right now.
 How
 ---
 
-We needed to customize the feature runner script, so this setup script only
-symlinks `bin/behat` to point to `script/behat`.
-
-Then, to perfunctorily run the features while coding, I suggest you use :
+To perfunctorily run the features while coding, use :
 
 ```
-$ script/behat --tags=~geocode -vv
+$ bin/behat --tags=~geocode
 ```
 
 Because scenarios tagged with `geocode` use third-party geocoding services with
@@ -111,3 +106,4 @@ $ cd <project root where composer.json resides>
 $ composer install
 $ script/reset_db_schema
 $ bin/behat -vv --tags=~geocode
+```
